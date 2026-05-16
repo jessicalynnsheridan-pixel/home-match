@@ -6,7 +6,7 @@ const steps = [
     number: "01",
     title: "Tell us what matters to you",
     description:
-      "Answer a few thoughtful questions about your lifestyle, budget, and ideal home — at your own pace, with no pressure and no sales calls.",
+      "Answer a few thoughtful questions about your lifestyle, budget, and ideal home, at your own pace, with no pressure and no sales calls.",
   },
   {
     number: "02",
@@ -18,23 +18,23 @@ const steps = [
     number: "03",
     title: "Explore homes that fit",
     description:
-      "Browse properties matched to your real priorities — not a generic search. Every home shown aligns with what you actually told us.",
+      "Browse properties matched to your real priorities, not a generic search. Every home shown aligns with what you actually told us.",
   },
   {
     number: "04",
     title: "Connect when you're ready",
     description:
-      "When the time feels right, share your profile with a professional. No obligation, no cold calls — just a warm, informed introduction.",
+      "When the time feels right, share your profile with a professional. No obligation, no cold calls. Just a warm, informed introduction.",
   },
 ];
 
 const buyerBenefits = [
   "Understand your true budget before you fall in love with a home",
-  "See hidden costs — closing fees, taxes, and maintenance — upfront",
+  "See hidden costs upfront: closing fees, taxes, and maintenance",
   "Explore neighbourhoods matched to your lifestyle, not just price",
   "Keep your preferences in one place, shareable when you're ready",
   "Get homes that fit your life, not just your square footage",
-  "Move at your own pace — no pressure, no scripts, no sales tactics",
+  "Move at your own pace. No pressure, no scripts, no sales tactics.",
 ];
 
 const tools = [
@@ -48,13 +48,13 @@ const tools = [
     icon: BookOpen,
     title: "Hidden Cost Calculator",
     description:
-      "Land transfer tax, closing costs, inspection fees — we surface the numbers most buyers don't see until it's too late.",
+      "Land transfer tax, closing costs, inspection fees: we surface the numbers most buyers don't see until it's too late.",
   },
   {
     icon: MapPin,
     title: "Neighbourhood Lifestyle Match",
     description:
-      "Based on your vibe preferences, we highlight areas that suit how you actually want to live — not just where homes are listed.",
+      "Based on your vibe preferences, we highlight areas that suit how you actually want to live, not just where homes are listed.",
   },
   {
     icon: ShieldCheck,
@@ -72,14 +72,14 @@ const tools = [
     icon: Clock,
     title: "Connect When You're Ready",
     description:
-      "When you want expert guidance, share your completed profile with a professional — on your terms, not theirs.",
+      "When you want expert guidance, share your completed profile with a professional, on your terms, not theirs.",
   },
 ];
 
 const stats = [
   { value: "8 min", label: "Average time to build your home profile" },
   { value: "94%", label: "Of buyers say they felt truly understood" },
-  { value: "$0", label: "Cost to explore — always free for buyers" },
+  { value: "$0", label: "Cost to explore, always free for buyers" },
   { value: "No pressure", label: "Connect with a professional only when you're ready" },
 ];
 
@@ -102,7 +102,7 @@ export default function HomePage() {
             actually fits your life.
           </h1>
           <p className="text-[#8c8580] text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto mb-12">
-            Know your budget, understand the real costs, explore the right neighbourhoods — and connect with a professional only when you feel ready.
+            Know your budget, understand the real costs, explore the right neighbourhoods, and connect with a professional only when you feel ready.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -164,7 +164,7 @@ export default function HomePage() {
               How it works
             </h2>
             <p className="text-[#8c8580] mt-4 text-lg max-w-xl mx-auto">
-              From first visit to informed decision — at your pace, on your terms.
+              From first visit to informed decision, at your pace, on your terms.
             </p>
           </div>
 
@@ -191,7 +191,7 @@ export default function HomePage() {
               Everything you need to buy with confidence
             </h2>
             <p className="text-[#e8e4de]/70 text-lg max-w-xl mx-auto">
-              Most buyers go in blind. Home Match gives you the tools, insights, and clarity to make one of the biggest decisions of your life — without the pressure.
+              Most buyers go in blind. Home Match gives you the tools, insights, and clarity to make one of the biggest decisions of your life, without the pressure.
             </p>
           </div>
 
@@ -216,7 +216,7 @@ export default function HomePage() {
                   href="/questionnaire"
                   className="inline-flex items-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-7 py-3.5 rounded-full hover:bg-[#c9b99b] transition-colors"
                 >
-                  Build Your Profile — Free
+                  Build Your Profile (Free)
                   <ArrowRight size={15} />
                 </Link>
               </div>
@@ -270,10 +270,10 @@ export default function HomePage() {
               Smart Matching
             </p>
             <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c2825] tracking-tight mb-6">
-              Homes that mean something —<br />not just homes that are available.
+              Homes that mean something. Not just homes that are available.
             </h2>
             <p className="text-[#8c8580] text-lg leading-relaxed mb-6">
-              Every property shown is chosen against your actual profile — your must-haves, your deal breakers, your neighbourhood priorities, your budget. Not a keyword search.
+              Every property shown is chosen against your actual profile: your must-haves, your deal breakers, your neighbourhood priorities, your budget. Not a keyword search.
             </p>
             <p className="text-[#8c8580] text-lg leading-relaxed">
               This is what informed searching looks like: grounded in who you are, not just what you can afford.
@@ -294,7 +294,7 @@ export default function HomePage() {
             Move when you&apos;re ready.
           </h2>
           <p className="text-[#8c8580] text-lg leading-relaxed mb-10">
-            Build your home profile in under 8 minutes. Get instant affordability insights, neighbourhood matches, and a personalised home checklist — no sign-up, no obligation.
+            Build your home profile in under 8 minutes. Get instant affordability insights, neighbourhood matches, and a personalised home checklist, no sign-up, no obligation.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">

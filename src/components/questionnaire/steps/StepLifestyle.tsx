@@ -147,7 +147,7 @@ export default function StepLifestyle({ answers, update, onNext, onBack, onSubmi
     <div>
       <StepHeader
         title="Lifestyle & priorities."
-        subtitle="Select everything that matters — we'll use this to match you with the right homes."
+        subtitle="Select everything that matters. We'll use this to match you with the right homes."
       />
 
       <div className="space-y-8">

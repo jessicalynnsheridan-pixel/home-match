@@ -114,7 +114,7 @@ export default function DashboardPage() {
             { label: "Total Leads", value: mockLeads.length },
             { label: "Hot Leads", value: hot },
             { label: "Warm Leads", value: warm },
-            { label: "New — Uncontacted", value: newLeads },
+            { label: "New (Uncontacted)", value: newLeads },
           ].map((s) => (
             <div
               key={s.label}

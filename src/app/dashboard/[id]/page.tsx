@@ -140,8 +140,8 @@ export default function LeadDetailPage() {
                   />
                 </div>
                 <div className="flex gap-4 mt-3 text-xs text-[#8c8580]">
-                  <span>Pre-approval: <strong className="text-[#2c2825]">{answers.preApprovalStatus || "—"}</strong></span>
-                  <span>Timeline: <strong className="text-[#2c2825]">{answers.timeline || "—"}</strong></span>
+                  <span>Pre-approval: <strong className="text-[#2c2825]">{answers.preApprovalStatus || "-"}</strong></span>
+                  <span>Timeline: <strong className="text-[#2c2825]">{answers.timeline || "-"}</strong></span>
                 </div>
               </div>
             </div>
@@ -335,7 +335,7 @@ function DetailRow({ label, value }: { label: string; value: string | number }) 
   return (
     <div>
       <p className="text-[#8c8580] text-xs mb-0.5">{label}</p>
-      <p className="text-[#2c2825] text-sm font-medium">{value || "—"}</p>
+      <p className="text-[#2c2825] text-sm font-medium">{value || "-"}</p>
     </div>
   );
 }

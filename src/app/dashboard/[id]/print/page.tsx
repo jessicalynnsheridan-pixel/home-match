@@ -73,9 +73,9 @@ export default function PrintProfilePage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
               {[
                 { label: "Budget", value: `${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}` },
-                { label: "Timeline", value: answers.timeline || "—" },
-                { label: "Property", value: `${answers.propertyType || "—"}` },
-                { label: "Pre-Approval", value: answers.preApprovalStatus || "—" },
+                { label: "Timeline", value: answers.timeline || "-" },
+                { label: "Property", value: `${answers.propertyType || "-"}` },
+                { label: "Pre-Approval", value: answers.preApprovalStatus || "-" },
               ].map((s) => (
                 <div key={s.label} className="bg-white/10 rounded-xl px-4 py-3">
                   <p className="text-[#e8e4de]/50 text-xs uppercase tracking-wider mb-1">{s.label}</p>
@@ -238,7 +238,7 @@ function InfoRow({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex justify-between text-sm border-b border-[#f5f3f0] pb-2">
       <span className="text-[#8c8580]">{label}</span>
-      <span className="text-[#2c2825] font-medium text-right max-w-xs">{value || "—"}</span>
+      <span className="text-[#2c2825] font-medium text-right max-w-xs">{value || "-"}</span>
     </div>
   );
 }

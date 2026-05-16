@@ -61,10 +61,10 @@ export default function LeadCard({ lead }: LeadCardProps) {
         <Fact label="Budget">
           {formatCurrency(answers.budgetMin)} – {formatCurrency(answers.budgetMax)}
         </Fact>
-        <Fact label="Timeline">{answers.timeline || "—"}</Fact>
-        <Fact label="Location">{answers.preferredCity || "—"}</Fact>
-        <Fact label="Property type">{answers.propertyType || "—"}</Fact>
-        <Fact label="Pre-approval">{answers.preApprovalStatus || "—"}</Fact>
+        <Fact label="Timeline">{answers.timeline || "-"}</Fact>
+        <Fact label="Location">{answers.preferredCity || "-"}</Fact>
+        <Fact label="Property type">{answers.propertyType || "-"}</Fact>
+        <Fact label="Pre-approval">{answers.preApprovalStatus || "-"}</Fact>
         <Fact label="Beds / Baths">
           {answers.bedrooms}+ bed · {answers.bathrooms}+ bath
         </Fact>

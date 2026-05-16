@@ -36,7 +36,7 @@ export default function ResultsPage() {
             Your Home Profile is Ready.
           </h1>
           <p className="text-[#8c8580] text-lg leading-relaxed max-w-lg mx-auto">
-            Your preferences are saved. Explore your affordability insights, matched homes, and buyer tools — or connect with a professional when you&apos;re ready.
+            Your preferences are saved. Explore your affordability insights, matched homes, and buyer tools, or connect with a professional when you&apos;re ready.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export default function ResultsPage() {
                 label="Name"
                 value={`${answers.firstName} ${answers.lastName}`}
               />
-              <SummaryRow label="Timeline" value={answers.timeline || "—"} />
+              <SummaryRow label="Timeline" value={answers.timeline || "-"} />
               <SummaryRow
                 label="Budget"
                 value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`}
@@ -63,20 +63,20 @@ export default function ResultsPage() {
                 value={
                   [answers.preferredCity, answers.preferredNeighbourhoods]
                     .filter(Boolean)
-                    .join(" — ") || "—"
+                    .join(", ") || "-"
                 }
               />
               <SummaryRow
                 label="Property type"
-                value={`${answers.propertyType || "—"} · ${answers.bedrooms} bed · ${answers.bathrooms} bath`}
+                value={`${answers.propertyType || "-"} · ${answers.bedrooms} bed · ${answers.bathrooms} bath`}
               />
               <SummaryRow
                 label="Pre-approval"
-                value={answers.preApprovalStatus || "—"}
+                value={answers.preApprovalStatus || "-"}
               />
               <SummaryRow
                 label="School district"
-                value={answers.schoolDistrictImportance || "—"}
+                value={answers.schoolDistrictImportance || "-"}
               />
             </div>
 
@@ -142,7 +142,7 @@ export default function ResultsPage() {
             <div className="flex-1">
               <p className="text-[#2c2825] font-medium mb-1">Explore your buyer tools</p>
               <p className="text-[#8c8580] text-sm leading-relaxed">
-                See your affordability breakdown, hidden costs, neighbourhood lifestyle matches, and closing checklist — all in your portal.
+                See your affordability breakdown, hidden costs, neighbourhood lifestyle matches, and closing checklist, all in your portal.
               </p>
             </div>
             <Link href="/portal" className="text-sm text-[#2c2825] font-medium border border-[#e8e4de] px-4 py-2 rounded-full hover:border-[#2c2825] transition-colors whitespace-nowrap">
@@ -171,7 +171,7 @@ export default function ResultsPage() {
           <div className="bg-[#2c2825] rounded-2xl p-6 text-center">
             <p className="text-[#e8e4de] font-medium mb-2">Ready to connect with a professional?</p>
             <p className="text-[#e8e4de]/70 text-sm leading-relaxed mb-5">
-              When you feel informed and ready, a real estate professional can review your completed profile and hit the ground running — no introductory back-and-forth needed.
+              When you feel informed and ready, a real estate professional can review your completed profile and hit the ground running. No introductory back-and-forth needed.
             </p>
             <Link
               href="/portal"

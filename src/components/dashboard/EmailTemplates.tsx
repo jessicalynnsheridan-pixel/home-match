@@ -17,7 +17,7 @@ interface Template {
 const TEMPLATES: Template[] = [
   {
     id: "intro",
-    label: "First Touch — Introduction",
+    label: "First Touch: Introduction",
     badge: "All leads",
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     subject: (l) => `${l.answers.firstName}, I've reviewed your Home Match profile`,
@@ -37,13 +37,13 @@ Warmly,`,
   },
   {
     id: "hot-followup",
-    label: "Hot Lead — Move Fast",
+    label: "Hot Lead: Move Fast",
     badge: "Hot leads",
     badgeColor: "bg-rose-50 text-rose-700 border-rose-200",
-    subject: (l) => `${l.answers.firstName} — a few homes I think you'll love`,
+    subject: (l) => `${l.answers.firstName}: a few homes I think you'll love`,
     body: (l) => `Hi ${l.answers.firstName},
 
-I've found ${l.answers.propertyType?.toLowerCase() || "properties"} in ${l.answers.preferredNeighbourhoods || l.answers.preferredCity} that are a strong match for your profile — and based on your ${l.answers.timeline} timeline, I'd love to book showings before these move.
+I've found ${l.answers.propertyType?.toLowerCase() || "properties"} in ${l.answers.preferredNeighbourhoods || l.answers.preferredCity} that are a strong match for your profile. Based on your ${l.answers.timeline} timeline, I'd love to book showings before these move.
 
 A few things from your profile stood out to me: ${l.answers.mustHaves.slice(0, 3).join(", ")}. The homes I have in mind check all of those boxes.
 
@@ -55,13 +55,13 @@ Looking forward to speaking,`,
   },
   {
     id: "warm-nurture",
-    label: "Warm Lead — Stay Connected",
+    label: "Warm Lead: Stay Connected",
     badge: "Warm leads",
     badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
     subject: (l) => `Checking in on your search, ${l.answers.firstName}`,
     body: (l) => `Hi ${l.answers.firstName},
 
-I wanted to check in on your search and let you know I've been keeping an eye on ${l.answers.preferredCity} — specifically in ${l.answers.preferredNeighbourhoods || "your preferred areas"}.
+I wanted to check in on your search and let you know I've been keeping an eye on ${l.answers.preferredCity}, specifically in ${l.answers.preferredNeighbourhoods || "your preferred areas"}.
 
 The market has had some activity recently that's relevant to what you're looking for, and I want to make sure you're in the loop as we get closer to your ${l.answers.timeline} timeline.
 
@@ -70,23 +70,23 @@ A few quick questions to help me refine the search:
 - Are there any new must-haves or deal breakers I should know about?
 - Would you be open to a 20-minute call to review what's available right now?
 
-I'm here whenever you're ready to move forward — no pressure at all.
+I'm here whenever you're ready to move forward, no pressure at all.
 
 Best,`,
   },
   {
     id: "browsing",
-    label: "Browsing Lead — Build Trust",
+    label: "Browsing Lead: Build Trust",
     badge: "Browsing",
     badgeColor: "bg-slate-100 text-slate-600 border-slate-200",
     subject: (l) => `${l.answers.firstName}, a few thoughts on your search`,
     body: (l) => `Hi ${l.answers.firstName},
 
-Thank you for taking the time to complete your Home Match profile — I loved learning more about what you're looking for.
+Thank you for taking the time to complete your Home Match profile. I loved learning more about what you're looking for.
 
 I know you're still in the early stages of your search, and I think that's actually the best place to be. The more time we have to look, the more strategic we can be about finding the right fit in ${l.answers.preferredCity}.
 
-There's no rush or pressure from my end. But I'd love to start building a relationship so that when you're ready — whether that's in 3 months or 12 — we're already aligned on exactly what you want.
+There's no rush or pressure from my end. But I'd love to start building a relationship so that when you're ready (whether that's in 3 months or 12) we're already aligned on exactly what you want.
 
 Some things I'd love to do for you right now:
 - Set up a custom market alert for ${l.answers.preferredCity}
@@ -102,14 +102,14 @@ Best,`,
     label: "Post-Showing Follow-Up",
     badge: "After showing",
     badgeColor: "bg-teal-50 text-teal-700 border-teal-200",
-    subject: (l) => `${l.answers.firstName} — thoughts on today's showing?`,
+    subject: (l) => `${l.answers.firstName}: thoughts on today's showing?`,
     body: (l) => `Hi ${l.answers.firstName},
 
 It was great spending time with you today. I hope the showing gave you a good sense of what's possible in ${l.answers.preferredCity}.
 
 I'd love to hear your honest thoughts:
 - How did it feel compared to what you had in mind?
-- Was there anything that stood out — positively or negatively?
+- Was there anything that stood out, positively or negatively?
 - Did it confirm any of your must-haves or surface new priorities?
 
 Based on your feedback, I'll continue refining the search. I have a couple of other properties in mind that I think could be a strong fit, and I'd love to book those showings next.
@@ -127,10 +127,10 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
   const template = TEMPLATES.find((t) => t.id === selected)!;
   const subject = template.subject(lead);
   const body = template.body(lead);
-  const fullEmail = `Subject: ${subject}\n\n${body}\n\n— ${lead.answers.firstName}'s Realtor\n   Home Match`;
+  const fullEmail = `Subject: ${subject}\n\n${body}\n\n${lead.answers.firstName}'s Realtor\n   Home Match`;
 
   function copy(type: "subject" | "body") {
-    navigator.clipboard.writeText(type === "subject" ? subject : `${body}\n\n— Your Realtor\n   Home Match`);
+    navigator.clipboard.writeText(type === "subject" ? subject : `${body}\n\nYour Realtor\n   Home Match`);
     setCopied(type);
     setTimeout(() => setCopied(null), 2000);
   }

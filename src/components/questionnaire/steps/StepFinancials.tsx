@@ -11,8 +11,8 @@ const PRE_APPROVAL_OPTIONS: PreApprovalStatus[] = [
 
 const OWNERSHIP_OPTIONS: HomeOwnershipStatus[] = [
   "Renting",
-  "Own — need to sell first",
-  "Own — can buy independently",
+  "Own (need to sell first)",
+  "Own (can buy independently)",
   "First-time buyer",
 ];
 

@@ -284,7 +284,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                 <option value="">Select a lead…</option>
                 {mockLeads.map((lead) => (
                   <option key={lead.id} value={lead.id}>
-                    {lead.answers.firstName} {lead.answers.lastName} — {lead.score}
+                    {lead.answers.firstName} {lead.answers.lastName} ({lead.score})
                   </option>
                 ))}
               </select>

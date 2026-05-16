@@ -23,7 +23,7 @@ export const mockLeads: Lead[] = [
     realtorNotes: [
       {
         id: "note-001",
-        text: "Called and left voicemail. Very motivated — relocating for work.",
+        text: "Called and left voicemail. Very motivated, relocating for work.",
         createdAt: "2026-05-14T11:00:00Z",
       },
     ],
@@ -57,12 +57,12 @@ export const mockLeads: Lead[] = [
       lifestylePriorities: ["Walkability", "Good schools", "Green space nearby", "Quiet street"],
       investmentOrPersonal: "Personal use",
       preApprovalStatus: "Yes, fully approved",
-      ownershipStatus: "Own — need to sell first",
+      ownershipStatus: "Own (need to sell first)",
       mortgageChecklist: [
         ...DEFAULT_MORTGAGE_CHECKLIST.map((i, idx) => ({ ...i, completed: idx < 6 })),
       ],
       additionalNotes:
-        "Relocating from Vancouver. Need to close within 90 days ideally. Very particular about finishes — love modern farmhouse aesthetic.",
+        "Relocating from Vancouver. Need to close within 90 days ideally. Very particular about finishes, love modern farmhouse aesthetic.",
     },
   },
   {
@@ -197,7 +197,7 @@ export const mockLeads: Lead[] = [
       lifestylePriorities: ["Privacy", "Prestige address", "Large lot", "Entertainment space"],
       investmentOrPersonal: "Both",
       preApprovalStatus: "Paying cash",
-      ownershipStatus: "Own — can buy independently",
+      ownershipStatus: "Own (can buy independently)",
       mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: true })),
       additionalNotes:
         "Looking for a forever home. Willing to do a full renovation if the lot and location are right.",

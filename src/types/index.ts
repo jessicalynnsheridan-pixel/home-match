@@ -32,8 +32,8 @@ export type PreApprovalStatus =
 
 export type HomeOwnershipStatus =
   | "Renting"
-  | "Own — need to sell first"
-  | "Own — can buy independently"
+  | "Own (need to sell first)"
+  | "Own (can buy independently)"
   | "First-time buyer";
 
 // ─── Mortgage Readiness Checklist ─────────────────────────────────────────

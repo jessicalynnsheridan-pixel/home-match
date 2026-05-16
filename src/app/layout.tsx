@@ -9,7 +9,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Home Match — Find the Home That Fits Your Life",
+  title: "Home Match: Find the Home That Fits Your Life",
   description:
     "A smarter way for buyers to share what they want, what they need, and where they see themselves living next.",
 };

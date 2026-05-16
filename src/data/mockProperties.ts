@@ -12,7 +12,7 @@ export const mockProperties: PropertyRecommendation[] = [
     sqft: 2840,
     imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
     matchReason:
-      "Quiet tree-lined street in top-rated school zone. Renovated chef's kitchen, double garage, and private backyard — matches every must-have.",
+      "Quiet tree-lined street in top-rated school zone. Renovated chef's kitchen, double garage, and private backyard. Matches every must-have.",
     realtorNotes: "Sellers are motivated. Listed 14 days ago. Could negotiate to $1.65M.",
     listingUrl: "#",
   },
@@ -26,8 +26,8 @@ export const mockProperties: PropertyRecommendation[] = [
     sqft: 3100,
     imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
     matchReason:
-      "Forest Hill Village — walkable, top schools, stunning primary ensuite. Home office addition completed 2024.",
-    realtorNotes: "New listing — expected to move fast. Book showing ASAP.",
+      "Forest Hill Village, walkable, top schools, stunning primary ensuite. Home office addition completed 2024.",
+    realtorNotes: "New listing, expected to move fast. Book showing ASAP.",
     listingUrl: "#",
   },
   {
@@ -40,7 +40,7 @@ export const mockProperties: PropertyRecommendation[] = [
     sqft: 1920,
     imageUrl: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80",
     matchReason:
-      "Steps to Port Credit GO station and the waterfront trail. Fenced backyard — perfect for a dog. Updated kitchen and finished basement.",
+      "Steps to Port Credit GO station and the waterfront trail. Fenced backyard, perfect for a dog. Updated kitchen and finished basement.",
     realtorNotes: "Great value for the street. Has been on market 21 days.",
     listingUrl: "#",
   },
@@ -55,7 +55,7 @@ export const mockProperties: PropertyRecommendation[] = [
     imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80",
     matchReason:
       "Iconic Bridle Path estate. Wine cellar, home gym, resort-style pool, Crestron smart home. Triple garage on 110ft lot.",
-    realtorNotes: "Off-market opportunity — exclusive preview available.",
+    realtorNotes: "Off-market opportunity, exclusive preview available.",
     listingUrl: "#",
   },
 ];

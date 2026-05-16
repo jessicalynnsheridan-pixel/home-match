@@ -7,19 +7,19 @@ const TEMPLATES = [
   {
     id: "invite",
     label: "Invite a Buyer",
-    subject: "A smarter way to start your home search — takes 8 minutes",
+    subject: "A smarter way to start your home search (takes 8 minutes)",
     body: `Hi [First Name],
 
-I'm so glad we connected — and I want to make sure your home search starts off the right way.
+I'm so glad we connected, and I want to make sure your home search starts off the right way.
 
-I use a tool called Home Match that lets me understand exactly what you're looking for before we even get on a call. Instead of asking you the same questions over and over, you fill out one thoughtful profile — your budget, timeline, must-haves, deal breakers, neighbourhood preferences — and I get everything I need to start curating homes specifically for you.
+I use a tool called Home Match that lets me understand exactly what you're looking for before we even get on a call. Instead of asking you the same questions over and over, you fill out one thoughtful profile (your budget, timeline, must-haves, deal breakers, neighbourhood preferences) and I get everything I need to start curating homes specifically for you.
 
 It takes about 8 minutes and the experience is actually quite good.
 
 Here's your personal link to get started:
 → [Your Home Match Link]
 
-Once you've submitted, I'll review your profile and send you a personally selected shortlist — no generic listings, no noise. Just homes that actually fit your life.
+Once you've submitted, I'll review your profile and send you a personally selected shortlist. No generic listings, no noise. Just homes that actually fit your life.
 
 Looking forward to working with you.
 
@@ -30,10 +30,10 @@ Looking forward to working with you.
   {
     id: "followup",
     label: "After Profile Submitted",
-    subject: "Got your profile — here's what happens next",
+    subject: "Got your profile. Here's what happens next.",
     body: `Hi [First Name],
 
-Thank you for completing your Home Match profile — I've had a chance to review everything and I'm already thinking about some properties that could be a strong fit.
+Thank you for completing your Home Match profile. I've had a chance to review everything and I'm already thinking about some properties that could be a strong fit.
 
 A few things I noticed from your profile:
 - Your budget of [Budget Range] puts you in a competitive position in [Preferred City]
@@ -53,20 +53,20 @@ Talk soon,
   {
     id: "recommendations",
     label: "Sending Recommendations",
-    subject: "Your matched homes — [X] properties I think you'll love",
+    subject: "Your matched homes: [X] properties I think you'll love",
     body: `Hi [First Name],
 
 I've been through the current market with your profile in mind, and I've put together [X] homes I think are worth a closer look.
 
-I've shared them directly to your Home Match portal — you can view photos, details, and why each one was chosen for you:
+I've shared them directly to your Home Match portal. You can view photos, details, and why each one was chosen for you:
 → [Portal Link]
 
 Quick notes on my top pick:
-[Property Address] — [Price]
+[Property Address] | [Price]
 [1–2 sentences on why it fits their specific criteria]
 
 I'd love to book showings for any that feel right. A few things to keep in mind:
-• [City/Market] is moving [fast/steadily] right now — good properties don't sit long
+• [City/Market] is moving [fast/steadily] right now. Good properties don't sit long.
 • Your pre-approval puts you in a strong position to move quickly if we find the one
 • I've flagged [Property X] as worth seeing in person even if the photos don't fully sell it
 
@@ -82,13 +82,13 @@ What days work best for you this week or next?
     subject: "Thoughts on what we saw today?",
     body: `Hi [First Name],
 
-Thanks for making the time today — it's always useful to walk through properties together, even the ones that don't end up being "the one."
+Thanks for making the time today. It's always useful to walk through properties together, even the ones that don't end up being the right fit.
 
 I'd love to hear your honest reaction:
 
 1. Did anything today shift what you're looking for?
 2. Was [Property Address] closer or further from what you had in mind?
-3. Anything you saw — good or bad — that you want me to factor in going forward?
+3. Anything you saw, good or bad, that you want me to factor in going forward?
 
 The more I understand about what resonated (and what didn't), the sharper the next round of recommendations will be.
 
@@ -103,19 +103,19 @@ Talk soon,
   {
     id: "reengagement",
     label: "Re-Engagement",
-    subject: "Checking in — how's the search feeling?",
+    subject: "Checking in: how's the search feeling?",
     body: `Hi [First Name],
 
-It's been a little while since we last connected and I wanted to reach out — not to push, but just to check in on where you're at.
+It's been a little while since we last connected and I wanted to reach out, not to push, just to check in on where you're at.
 
 The market in [City] has shifted a bit since we last spoke:
-[One honest sentence about current conditions — e.g. "Inventory is up slightly, which means more time to make considered decisions." or "Competition has eased in the $X–$Y range."]
+[One honest sentence about current conditions, e.g. "Inventory is up slightly, which means more time to make considered decisions." or "Competition has eased in the $X-$Y range."]
 
 If your situation or timeline has changed, I'd love to update your Home Match profile so my recommendations stay relevant. If you're still looking, I may have a few new properties worth discussing.
 
-And if the timing just isn't right yet — completely understood. I'll be here when you're ready.
+And if the timing just isn't right yet, completely understood. I'll be here when you're ready.
 
-No pressure either way — just wanted you to know I'm still thinking about your search.
+No pressure either way. Just wanted you to know I'm still thinking about your search.
 
 [Your Name]
 [Your Title] | [Agency]
@@ -198,7 +198,7 @@ export default function RealtorEmailTemplates() {
         </div>
 
         <p className="text-xs text-[#8c8580] pt-1">
-          Replace all <span className="font-medium text-[#2c2825]">[bracketed text]</span> before sending. These templates are starting points — personalise freely.
+          Replace all <span className="font-medium text-[#2c2825]">[bracketed text]</span> before sending. These templates are starting points, so personalise freely.
         </p>
       </div>
     </div>

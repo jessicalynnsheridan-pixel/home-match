@@ -1,7 +1,7 @@
 import QuestionnaireForm from "@/components/questionnaire/QuestionnaireForm";
 
 export const metadata = {
-  title: "Home Match Questionnaire — Home Match",
+  title: "Home Match Questionnaire | Home Match",
   description: "Tell us about your dream home in under 8 minutes.",
 };
 
@@ -19,7 +19,7 @@ export default function QuestionnairePage() {
           </h1>
           <p className="text-[#8c8580] text-base leading-relaxed">
             Takes about 8 minutes. Your answers help your realtor send homes
-            that genuinely fit — not just listings that fit the price.
+            that genuinely fit, not just listings that fit the price.
           </p>
         </div>
 

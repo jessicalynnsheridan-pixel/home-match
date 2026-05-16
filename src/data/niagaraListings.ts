@@ -34,7 +34,7 @@ export const niagaraListings: Listing[] = [
       "Top-rated school district",
     ],
     description:
-      "An exceptional custom-built residence in the heart of Old Town Niagara-on-the-Lake. Designed for those who expect nothing less than the finest — every surface, fixture, and finish has been curated with care. The open-concept main floor flows seamlessly to a covered terrace and private garden, making this the ideal home for entertaining. Minutes from world-class wineries, the Shaw Festival, and the lakefront.",
+      "An exceptional custom-built residence in the heart of Old Town Niagara-on-the-Lake. Designed for those who expect nothing less than the finest: every surface, fixture, and finish has been curated with care. The open-concept main floor flows seamlessly to a covered terrace and private garden, making this the ideal home for entertaining. Minutes from world-class wineries, the Shaw Festival, and the lakefront.",
     images: [
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80",
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&q=80",
@@ -71,7 +71,7 @@ export const niagaraListings: Listing[] = [
       "Walking distance to wineries",
     ],
     description:
-      "Charming updated home on one of Old Town's most coveted tree-lined streets. A rare opportunity to own in NOTL at an approachable price point — with room to add your own finishing touches. The private rear garden is a true seasonal sanctuary.",
+      "Charming updated home on one of Old Town's most coveted tree-lined streets. A rare opportunity to own in NOTL at an approachable price point, with room to add your own finishing touches. The private rear garden is a true seasonal sanctuary.",
     images: [
       "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&q=80",
       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&q=80",
@@ -138,7 +138,7 @@ export const niagaraListings: Listing[] = [
     basement: "Unfinished",
     heating: "Forced air gas",
     features: [
-      "Lakefront community — steps to the beach",
+      "Lakefront community, steps to the beach",
       "Updated kitchen and main bath",
       "Gas fireplace in living room",
       "Mature private lot",
@@ -146,7 +146,7 @@ export const niagaraListings: Listing[] = [
       "Strong rental/investment potential",
     ],
     description:
-      "An incredible opportunity in Port Dalhousie — one of St. Catharines' most beloved lakeside communities. Walk to the beach, the marina, and the historic carousel. The home has been well maintained and updated in key areas, with upside potential for renovation or investment.",
+      "An incredible opportunity in Port Dalhousie, one of St. Catharines' most beloved lakeside communities. Walk to the beach, the marina, and the historic carousel. The home has been well maintained and updated in key areas, with upside potential for renovation or investment.",
     images: [
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=900&q=80",
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80",
@@ -182,7 +182,7 @@ export const niagaraListings: Listing[] = [
       "In-unit laundry",
     ],
     description:
-      "Contemporary freehold townhome in vibrant Glenridge — no condo fees, low maintenance, and strong rental history. The location puts you within walking distance of Brock University, Pen Centre, and quick access to the 406. Perfect for professionals, investors, or right-sizing buyers.",
+      "Contemporary freehold townhome in vibrant Glenridge. No condo fees, low maintenance, and strong rental history. The location puts you within walking distance of Brock University, Pen Centre, and quick access to the 406. Perfect for professionals, investors, or right-sizing buyers.",
     images: [
       "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=900&q=80",
       "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&q=80",
@@ -221,7 +221,7 @@ export const niagaraListings: Listing[] = [
       "Escarpment views from backyard",
     ],
     description:
-      "Stunning lakeside community home with coveted Escarpment backdrop and glimpses of Lake Ontario. Grimsby Beach is one of Niagara's best-kept secrets — a tight-knit waterfront community with real character, great schools, and a fast-growing food scene. Commuters love the easy GO Train access.",
+      "Stunning lakeside community home with coveted Escarpment backdrop and glimpses of Lake Ontario. Grimsby Beach is one of Niagara's best-kept secrets: a tight-knit waterfront community with real character, great schools, and a fast-growing food scene. Commuters love the easy GO Train access.",
     images: [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80",
       "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=900&q=80",
@@ -260,7 +260,7 @@ export const niagaraListings: Listing[] = [
       "Backup generator",
     ],
     description:
-      "Prestigious Fonthill — Pelham's crown jewel — offers this exceptional family home on a rare oversized lot. Five bedrooms, four bathrooms, finished basement with in-law potential, and one of the region's best school catchments. The kind of home that rarely comes to market twice.",
+      "Prestigious Fonthill, Pelham's crown jewel, offers this exceptional family home on a rare oversized lot. Five bedrooms, four bathrooms, finished basement with in-law potential, and one of the region's best school catchments. The kind of home that rarely comes to market twice.",
     images: [
       "https://images.unsplash.com/photo-1598228723793-52759bba239c?w=900&q=80",
       "https://images.unsplash.com/photo-1602941525421-8f8b81d3edbb?w=900&q=80",
@@ -329,7 +329,7 @@ export const niagaraListings: Listing[] = [
     basement: "Finished, wet bar",
     heating: "Forced air gas",
     features: [
-      "Niagara River corridor — backs to greenspace",
+      "Niagara River corridor, backs to greenspace",
       "Open concept with vaulted ceilings",
       "Granite kitchen with large island",
       "Primary ensuite with freestanding tub",
@@ -337,7 +337,7 @@ export const niagaraListings: Listing[] = [
       "Near Navy Island Park",
     ],
     description:
-      "Situated in sought-after Chippawa — a quiet residential enclave along the Niagara River corridor — this near-new home offers outstanding value. Backs to peaceful greenspace with trail access right from your backyard. A rare blend of nature and modern comfort in Niagara Falls' most desirable pocket.",
+      "Situated in sought-after Chippawa, a quiet residential enclave along the Niagara River corridor, this near-new home offers outstanding value. Backs to peaceful greenspace with trail access right from your backyard. A rare blend of nature and modern comfort in Niagara Falls' most desirable pocket.",
     images: [
       "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&q=80",
       "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=900&q=80",
@@ -365,7 +365,7 @@ export const niagaraListings: Listing[] = [
     basement: "Unfinished",
     heating: "Forced air gas",
     features: [
-      "Freehold — no condo fees",
+      "Freehold, no condo fees",
       "Modern finishes throughout",
       "Open concept main floor",
       "Private fenced backyard",
@@ -403,16 +403,16 @@ export const niagaraListings: Listing[] = [
     basement: "Partial",
     heating: "Forced air gas",
     features: [
-      "Steps to Crystal Beach — one of Ontario's finest sand beaches",
+      "Steps to Crystal Beach, one of Ontario's finest sand beaches",
       "Full renovation completed 2022",
       "Open concept kitchen & living",
       "Spacious rear deck for entertaining",
-      "Beach community — vibrant summer village",
+      "Beach community, vibrant summer village",
       "Short drive to Buffalo border crossing",
       "Investment / cottage potential",
     ],
     description:
-      "Crystal Beach is having a moment — and this fully renovated home puts you right in the middle of it. Steps from one of Ontario's most stunning sandy beaches, with a thriving year-round community, new restaurants, and a creative arts scene. Perfect as a primary residence, a weekend retreat, or a rental investment.",
+      "Crystal Beach is having a moment, and this fully renovated home puts you right in the middle of it. Steps from one of Ontario's most stunning sandy beaches, with a thriving year-round community, new restaurants, and a creative arts scene. Perfect as a primary residence, a weekend retreat, or a rental investment.",
     images: [
       "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=900&q=80",
       "https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=900&q=80",
@@ -450,7 +450,7 @@ export const niagaraListings: Listing[] = [
       "Quick access to Hwy 406",
     ],
     description:
-      "Solid, well-cared-for family home in quiet North Welland. Updated throughout with a new kitchen, fresh paint, and updated flooring. The kind of turnkey home that makes every first-time buyer's list — and checks all the boxes. A wonderful street, a fenced yard, and a finished basement.",
+      "Solid, well-cared-for family home in quiet North Welland. Updated throughout with a new kitchen, fresh paint, and updated flooring. The kind of turnkey home that makes every first-time buyer's list and checks all the boxes. A wonderful street, a fenced yard, and a finished basement.",
     images: [
       "https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=900&q=80",
       "https://images.unsplash.com/photo-1560440021-33f9b867899d?w=900&q=80",
@@ -480,7 +480,7 @@ export const niagaraListings: Listing[] = [
     basement: "Unfinished",
     heating: "Forced air gas",
     features: [
-      "Character home — original hardwood",
+      "Character home, original hardwood",
       "Covered front porch",
       "Deep private lot",
       "Walking distance to Brock University",
@@ -488,7 +488,7 @@ export const niagaraListings: Listing[] = [
       "Close to Welland Canal trail",
     ],
     description:
-      "A classic character home with strong bones and excellent location. The Brock University corridor makes this an outstanding rental investment — Thorold is one of the Niagara region's most overlooked markets, with rising demand and limited supply. Add your own vision and unlock serious value.",
+      "A classic character home with strong bones and excellent location. The Brock University corridor makes this an outstanding rental investment. Thorold is one of the Niagara region's most overlooked markets, with rising demand and limited supply. Add your own vision and unlock serious value.",
     images: [
       "https://images.unsplash.com/photo-1464082354059-27db6ce50048?w=900&q=80",
       "https://images.unsplash.com/photo-1510627489930-0c1b0bfb6785?w=900&q=80",
@@ -519,7 +519,7 @@ export const niagaraListings: Listing[] = [
     basement: "Finished",
     heating: "Forced air gas",
     features: [
-      "Oversized lot — rare for the area",
+      "Oversized lot, rare for the area",
       "Renovated kitchen & baths",
       "Hardwood floors throughout",
       "Large private backyard with mature trees",
@@ -555,10 +555,10 @@ export const niagaraListings: Listing[] = [
     lotSize: "2.8 acres",
     yearBuilt: 2021,
     garage: "3-car attached, heated",
-    basement: "Full finished — home theatre, gym, wine cellar",
+    basement: "Full finished: home theatre, gym, wine cellar",
     heating: "Geothermal / radiant floor throughout",
     features: [
-      "Custom-built 2021 — never lived in",
+      "Custom-built 2021, never lived in",
       "Vineyard and Escarpment views",
       "Heated saltwater pool with cabana",
       "Home theatre & professional gym",
@@ -570,7 +570,7 @@ export const niagaraListings: Listing[] = [
       "Surrounded by working vineyards",
     ],
     description:
-      "The pinnacle of Niagara wine country living. Set on 2.8 acres in the prestigious Virgil corridor, this extraordinary custom estate was completed in 2021 and has never been occupied. World-class finishes at every turn — geothermal heating, Crestron automation, a La Cornue kitchen, and a private primary wing that rivals the finest hotels. The wine cellar, home theatre, and professional gym ensure every amenity is within reach. A true legacy property.",
+      "The pinnacle of Niagara wine country living. Set on 2.8 acres in the prestigious Virgil corridor, this extraordinary custom estate was completed in 2021 and has never been occupied. World-class finishes at every turn: geothermal heating, Crestron automation, a La Cornue kitchen, and a private primary wing that rivals the finest hotels. The wine cellar, home theatre, and professional gym ensure every amenity is within reach. A true legacy property.",
     images: [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80",
       "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=900&q=80",
@@ -606,7 +606,7 @@ export function matchListingToLead(
       reasons.push("Within budget range");
     } else if (listing.price < answers.budgetMin) {
       score += 20;
-      reasons.push("Below budget — room to negotiate or invest in renovations");
+      reasons.push("Below budget, room to negotiate or invest in renovations");
     } else {
       const over = ((listing.price - answers.budgetMax) / answers.budgetMax) * 100;
       if (over <= 10) { score += 15; warnings.push(`Slightly over budget by ${over.toFixed(0)}%`); }
@@ -635,12 +635,12 @@ export function matchListingToLead(
   // Bedrooms (10 pts)
   if (answers.bedrooms && listing.bedrooms >= answers.bedrooms) {
     score += 10;
-    reasons.push(`${listing.bedrooms} bedrooms — meets requirement`);
+    reasons.push(`${listing.bedrooms} bedrooms, meets requirement`);
   } else if (answers.bedrooms && listing.bedrooms < answers.bedrooms) {
     warnings.push(`Only ${listing.bedrooms} bed (wanted ${answers.bedrooms}+)`);
   }
 
-  // Must-haves keyword match (15 pts — 3pts each, up to 5)
+  // Must-haves keyword match (15 pts, 3pts each, up to 5)
   let mustHaveMatches = 0;
   for (const must of answers.mustHaves) {
     const keyword = must.toLowerCase();

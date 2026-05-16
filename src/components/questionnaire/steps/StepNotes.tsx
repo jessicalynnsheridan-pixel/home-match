@@ -5,7 +5,7 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit }:
     <div>
       <StepHeader
         title="Anything else to share?"
-        subtitle="This is your space to tell your realtor what hasn't been captured yet — story, nuance, context."
+        subtitle="This is your space to share what hasn't been captured yet: story, nuance, context."
       />
 
       <div className="space-y-5">
@@ -25,12 +25,12 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit }:
           <p className="text-[#2c2825] font-medium text-sm mb-4">Your profile at a glance</p>
 
           {[
-            { label: "Name", value: `${answers.firstName} ${answers.lastName}` || "—" },
-            { label: "Timeline", value: answers.timeline || "—" },
-            { label: "Location", value: answers.preferredCity || "—" },
-            { label: "Property type", value: answers.propertyType || "—" },
-            { label: "Bedrooms", value: answers.bedrooms ? `${answers.bedrooms}+` : "—" },
-            { label: "Pre-approval", value: answers.preApprovalStatus || "—" },
+            { label: "Name", value: `${answers.firstName} ${answers.lastName}` || "-" },
+            { label: "Timeline", value: answers.timeline || "-" },
+            { label: "Location", value: answers.preferredCity || "-" },
+            { label: "Property type", value: answers.propertyType || "-" },
+            { label: "Bedrooms", value: answers.bedrooms ? `${answers.bedrooms}+` : "-" },
+            { label: "Pre-approval", value: answers.preApprovalStatus || "-" },
           ].map((row) => (
             <div key={row.label} className="flex justify-between text-sm">
               <span className="text-[#8c8580]">{row.label}</span>

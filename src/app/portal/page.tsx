@@ -73,10 +73,10 @@ const CLOSING_STEPS = [
 
 // ─── First-time buyer tips ─────────────────────────────────────────────────
 const FTB_TIPS = [
-  { title: "Get pre-approved, not just pre-qualified", body: "Pre-approval means a lender has verified your income and credit. It's a real number — not an estimate. Most sellers won't take your offer seriously without it." },
-  { title: "Land Transfer Tax is real money", body: "In Ontario, expect to pay 1–2% of purchase price in land transfer tax. First-time buyers get a rebate up to $4,000 — but anything above goes out of pocket on closing day." },
-  { title: "The list price is rarely the final price", body: "In competitive markets, homes often sell above asking. Build a buffer into your max budget — never use your full approval amount as your shopping price." },
-  { title: "Freehold vs. condo: very different commitments", body: "Condo buyers share maintenance costs through monthly fees. Freehold owners handle everything themselves. Neither is better — it depends on your lifestyle and risk tolerance." },
+  { title: "Get pre-approved, not just pre-qualified", body: "Pre-approval means a lender has verified your income and credit. It's a real number, not an estimate. Most sellers won't take your offer seriously without it." },
+  { title: "Land Transfer Tax is real money", body: "In Ontario, expect to pay 1–2% of purchase price in land transfer tax. First-time buyers get a rebate up to $4,000, but anything above goes out of pocket on closing day." },
+  { title: "The list price is rarely the final price", body: "In competitive markets, homes often sell above asking. Build a buffer into your max budget. Never use your full approval amount as your shopping price." },
+  { title: "Freehold vs. condo: very different commitments", body: "Condo buyers share maintenance costs through monthly fees. Freehold owners handle everything themselves. Neither is better. It depends on your lifestyle and risk tolerance." },
   { title: "Your lawyer matters more than you think", body: "A real estate lawyer reviews the title, coordinates funds, and catches anything your agent might miss. Budget $1,500–$2,500 and find one before you make an offer." },
 ];
 
@@ -116,12 +116,12 @@ export default function BuyerPortalPage() {
             Welcome back, {answers.firstName}.
           </h1>
           <p className="text-[#e8e4de]/70 text-sm mb-6">
-            Your profile is active. Explore your tools, insights, and matched homes below — at your pace.
+            Your profile is active. Explore your tools, insights, and matched homes below, at your pace.
           </p>
           <div className="flex flex-wrap gap-4">
             <Stat label="Readiness Score" value={`${DEMO_LEAD.matchScore}/100`} />
             <Stat label="Budget" value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`} />
-            <Stat label="Timeline" value={answers.timeline || "—"} />
+            <Stat label="Timeline" value={answers.timeline || "-"} />
             <Stat label="Saved Homes" value={String(savedIds.size)} />
           </div>
         </div>
@@ -168,9 +168,9 @@ export default function BuyerPortalPage() {
             <p className="text-xs text-[#8c8580] mb-3 font-medium uppercase tracking-wider">What your budget gets you in {answers.preferredCity || "your area"}</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
               {[
-                { range: formatCurrency(answers.budgetMin), label: "Entry point — look for townhomes or smaller detached" },
-                { range: formatCurrency(Math.round(midPrice)), label: "Mid-range — detached with good bones in your neighbourhoods" },
-                { range: formatCurrency(answers.budgetMax), label: "Top of range — larger lots, more finishes, less compromise" },
+                { range: formatCurrency(answers.budgetMin), label: "Entry point: look for townhomes or smaller detached" },
+                { range: formatCurrency(Math.round(midPrice)), label: "Mid-range: detached with good bones in your neighbourhoods" },
+                { range: formatCurrency(answers.budgetMax), label: "Top of range: larger lots, more finishes, less compromise" },
               ].map((b) => (
                 <div key={b.range} className="flex items-start gap-2">
                   <span className="text-[#b8a88a] font-semibold shrink-0">{b.range}</span>
@@ -188,16 +188,16 @@ export default function BuyerPortalPage() {
             <h2 className="text-[#2c2825] font-semibold">Hidden Cost Estimator</h2>
           </div>
           <p className="text-[#8c8580] text-sm mb-6">
-            Beyond your purchase price, plan for these costs on closing day — most buyers are surprised by them.
+            Beyond your purchase price, plan for these costs on closing day. Most buyers are surprised by them.
           </p>
 
           <div className="space-y-2 mb-5">
             {[
               { label: "Ontario Land Transfer Tax", amount: ltt, note: isFirstTimeBuyer ? `Less $4,000 first-time buyer rebate = ${formatCurrency(Math.max(0, ltt - 4000))}` : "Paid on closing" },
               { label: "Closing Costs (legal, title, admin)", amount: closingCosts, note: "~1.5% of purchase price" },
-              { label: "Home Inspection", amount: 500, note: "Strongly recommended — budgets $450–$600" },
+              { label: "Home Inspection", amount: 500, note: "Strongly recommended, budgets $450-$600" },
               { label: "Real Estate Lawyer", amount: 2000, note: "Estimated $1,500–$2,500" },
-              { label: "Moving Costs", amount: 3000, note: "Local move estimate — varies by size" },
+              { label: "Moving Costs", amount: 3000, note: "Local move estimate, varies by size" },
               { label: "First Year Maintenance Reserve", amount: Math.round(midPrice * 0.01), note: "~1% of purchase price annually" },
             ].map((row) => (
               <div key={row.label} className="flex items-start justify-between gap-4 py-3 border-b border-[#f0ece6] last:border-0">
@@ -298,7 +298,7 @@ export default function BuyerPortalPage() {
             <ShieldCheck size={16} className="text-[#b8a88a]" />
             <h2 className="text-[#2c2825] font-semibold">Closing Checklist</h2>
           </div>
-          <p className="text-[#8c8580] text-sm mb-5">From accepted offer to keys in hand — what to expect at each stage.</p>
+          <p className="text-[#8c8580] text-sm mb-5">From accepted offer to keys in hand. Here's what to expect at each stage.</p>
           <div className="space-y-2">
             {CLOSING_STEPS.map((phase) => (
               <div key={phase.phase} className="border border-[#e8e4de] rounded-xl overflow-hidden">
@@ -357,7 +357,7 @@ export default function BuyerPortalPage() {
         <section>
           <div className="mb-5">
             <h2 className="text-[#2c2825] font-semibold">Your Matched Homes</h2>
-            <p className="text-[#8c8580] text-sm">Properties matched to your profile — save the ones you want to revisit.</p>
+            <p className="text-[#8c8580] text-sm">Properties matched to your profile. Save the ones you want to revisit.</p>
           </div>
           {recommendations.length === 0 ? (
             <div className="bg-white border border-[#e8e4de] rounded-2xl p-10 text-center">
@@ -378,7 +378,7 @@ export default function BuyerPortalPage() {
           <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase mb-3">No Pressure</p>
           <h2 className="text-[#2c2825] font-semibold text-lg mb-3">Ready to connect with a professional?</h2>
           <p className="text-[#8c8580] text-sm leading-relaxed max-w-md mx-auto mb-6">
-            When you feel informed and ready, share your completed profile with a real estate professional. They'll have everything they need to hit the ground running — without any introductory back-and-forth.
+            When you feel informed and ready, share your completed profile with a real estate professional. They'll have everything they need to hit the ground running, no introductory back-and-forth needed.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
