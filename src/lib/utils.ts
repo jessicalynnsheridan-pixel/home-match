@@ -45,5 +45,7 @@ export function getStatusColor(status: string): string {
 }
 
 export function isOverdue(dueDate: string): boolean {
-  return new Date(dueDate) < new Date(new Date().toDateString());
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(dueDate) < today;
 }

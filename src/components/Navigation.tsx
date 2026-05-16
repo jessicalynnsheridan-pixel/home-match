@@ -96,6 +96,12 @@ export default function Navigation() {
             <Settings size={18} />
           </Link>
           <Link
+            href="/realtor-signup"
+            className="text-[#2c2825] border border-[#e8e4de] text-sm px-4 py-2.5 rounded-full hover:border-[#2c2825] transition-colors"
+          >
+            Realtor Sign Up
+          </Link>
+          <Link
             href="/questionnaire"
             className="bg-[#2c2825] text-white text-sm px-5 py-2.5 rounded-full hover:bg-[#1a1714] transition-colors"
           >
@@ -131,9 +137,16 @@ export default function Navigation() {
             Admin & Branding
           </Link>
           <Link
+            href="/realtor-signup"
+            onClick={() => setMobileOpen(false)}
+            className="border border-[#2c2825] text-[#2c2825] text-sm px-5 py-3 rounded-full text-center mt-3"
+          >
+            Realtor Sign Up
+          </Link>
+          <Link
             href="/questionnaire"
             onClick={() => setMobileOpen(false)}
-            className="bg-[#2c2825] text-white text-sm px-5 py-3 rounded-full text-center mt-3"
+            className="bg-[#2c2825] text-white text-sm px-5 py-3 rounded-full text-center mt-2"
           >
             Start Your Home Match
           </Link>

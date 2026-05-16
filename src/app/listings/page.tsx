@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { niagaraListings } from "@/data/niagaraListings";
-import { NiagaraCity, PropertyType, ListingStatus } from "@/types";
-import { Bed, Bath, Maximize2, Calendar, Tag, MapPin } from "lucide-react";
+import { NiagaraCity, PropertyType, ListingStatus, QuestionnaireAnswers } from "@/types";
+import { calcBuyerCompatibility } from "@/lib/buyerMatch";
+import { Bed, Bath, Maximize2, Calendar, Tag, MapPin, Sparkles, SlidersHorizontal } from "lucide-react";
 
 const ALL_CITIES: NiagaraCity[] = [
   "St. Catharines",
@@ -47,9 +48,27 @@ export default function ListingsPage() {
   const [minBeds, setMinBeds] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [statusFilter, setStatusFilter] = useState<ListingStatus | "">("");
+  const [buyerAnswers, setBuyerAnswers] = useState<Partial<QuestionnaireAnswers> | null>(null);
+  const [sortByMatch, setSortByMatch] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("homematch_answers");
+      if (raw) setBuyerAnswers(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, []);
+
+  const matchScores = useMemo(() => {
+    if (!buyerAnswers) return new Map<string, number>();
+    const map = new Map<string, number>();
+    niagaraListings.forEach((l) => {
+      map.set(l.id, calcBuyerCompatibility(l, buyerAnswers).overall);
+    });
+    return map;
+  }, [buyerAnswers]);
 
   const filtered = useMemo(() => {
-    return niagaraListings.filter((l) => {
+    const results = niagaraListings.filter((l) => {
       if (city && l.city !== city) return false;
       if (propType && l.propertyType !== propType) return false;
       if (minBeds && l.bedrooms < minBeds) return false;
@@ -57,7 +76,11 @@ export default function ListingsPage() {
       if (statusFilter && l.status !== statusFilter) return false;
       return true;
     });
-  }, [city, propType, minBeds, maxPrice, statusFilter]);
+    if (sortByMatch && buyerAnswers) {
+      results.sort((a, b) => (matchScores.get(b.id) ?? 0) - (matchScores.get(a.id) ?? 0));
+    }
+    return results;
+  }, [city, propType, minBeds, maxPrice, statusFilter, sortByMatch, buyerAnswers, matchScores]);
 
   const hasFilters = city || propType || minBeds || maxPrice || statusFilter;
 
@@ -77,6 +100,55 @@ export default function ListingsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+        {/* Buyer profile banner */}
+        {buyerAnswers ? (
+          <div className="bg-white border border-[#b8a88a]/40 rounded-2xl p-4 mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#f5f3f0] border border-[#e8e4de] flex items-center justify-center flex-shrink-0">
+                <Sparkles size={14} className="text-[#b8a88a]" />
+              </div>
+              <div>
+                <p className="text-[#2c2825] text-sm font-medium">Your buyer profile is active</p>
+                <p className="text-[#8c8580] text-xs">Each listing now shows your personal match score.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <button
+                onClick={() => setSortByMatch((v) => !v)}
+                className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
+                  sortByMatch
+                    ? "bg-[#2c2825] text-white border-[#2c2825]"
+                    : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"
+                }`}
+              >
+                <SlidersHorizontal size={11} />
+                Sort by match
+              </button>
+              <Link
+                href="/questionnaire"
+                className="text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors underline underline-offset-2"
+              >
+                Update profile
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#faf9f7] border border-dashed border-[#d4cfc9] rounded-2xl p-4 mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white border border-[#e8e4de] flex items-center justify-center flex-shrink-0">
+                <Sparkles size={14} className="text-[#b8a88a]" />
+              </div>
+              <p className="text-[#8c8580] text-sm">
+                See how well each home fits you.{" "}
+                <Link href="/questionnaire" className="text-[#2c2825] font-medium underline underline-offset-2 hover:text-[#b8a88a] transition-colors">
+                  Build your buyer profile
+                </Link>{" "}
+                to unlock match scores.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="bg-white border border-[#e8e4de] rounded-2xl p-5 mb-8 flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1 min-w-40">
@@ -218,6 +290,17 @@ export default function ListingsPage() {
                     <Calendar size={10} />
                     {listing.daysOnMarket}d
                   </span>
+                  {/* Match score badge */}
+                  {buyerAnswers && (() => {
+                    const score = matchScores.get(listing.id) ?? 0;
+                    const color = score >= 75 ? "bg-emerald-500" : score >= 50 ? "bg-[#b8a88a]" : "bg-[#8c8580]";
+                    return (
+                      <span className={`absolute bottom-3 right-3 ${color} text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1`}>
+                        <Sparkles size={9} />
+                        {score}% match
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 {/* Content */}

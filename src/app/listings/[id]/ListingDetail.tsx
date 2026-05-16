@@ -1,33 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Listing } from "@/types";
+import { Listing, QuestionnaireAnswers } from "@/types";
 import { mockLeads } from "@/data/mockLeads";
 import { matchListingToLead } from "@/data/niagaraListings";
+import { calcBuyerCompatibility, calcAffordabilitySnapshot } from "@/lib/buyerMatch";
+import { calcLifestyleLayer } from "@/lib/lifestyleLayer";
+import LifestyleLayerPanel from "@/components/listings/LifestyleLayer";
+import { formatCurrency } from "@/lib/utils";
 import {
-  Bed,
-  Bath,
-  Maximize2,
-  Calendar,
-  Tag,
-  MapPin,
-  ChevronLeft,
-  ChevronRight,
-  ExternalLink,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  Home,
-  Thermometer,
-  Car,
+  Bed, Bath, Maximize2, Calendar, Tag, MapPin,
+  ChevronLeft, ChevronRight, ExternalLink, TrendingUp,
+  AlertTriangle, CheckCircle2, Home, Thermometer, Car,
+  Sparkles, DollarSign, X,
 } from "lucide-react";
 
 function formatPrice(p: number) {
   return new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency: "CAD",
-    maximumFractionDigits: 0,
+    style: "currency", currency: "CAD", maximumFractionDigits: 0,
   }).format(p);
 }
 
@@ -38,30 +29,50 @@ const STATUS_COLORS: Record<string, string> = {
   Sold: "bg-[#e8e4de] text-[#8c8580] border-[#e8e4de]",
 };
 
+function scoreColor(s: number) {
+  if (s >= 80) return "text-emerald-600";
+  if (s >= 60) return "text-[#b8a88a]";
+  if (s >= 40) return "text-amber-600";
+  return "text-[#8c8580]";
+}
+
+function scoreBar(s: number) {
+  if (s >= 80) return "bg-emerald-500";
+  if (s >= 60) return "bg-[#b8a88a]";
+  if (s >= 40) return "bg-amber-400";
+  return "bg-[#e8e4de]";
+}
+
 export default function ListingDetail({ listing }: { listing: Listing }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [selectedLeadId, setSelectedLeadId] = useState("");
+  const [buyerAnswers, setBuyerAnswers] = useState<Partial<QuestionnaireAnswers> | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("homematch_answers");
+      if (raw) setBuyerAnswers(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, []);
 
   const selectedLead = selectedLeadId ? mockLeads.find((l) => l.id === selectedLeadId) : undefined;
   const matchResult = selectedLead ? matchListingToLead(listing, selectedLead.answers) : null;
 
-  function prevImg() {
-    setImgIndex((i) => (i === 0 ? listing.images.length - 1 : i - 1));
-  }
+  const lifestyleLayer = calcLifestyleLayer(listing);
+  const buyerMatch = buyerAnswers ? calcBuyerCompatibility(listing, buyerAnswers) : null;
+  const affordability = buyerAnswers
+    ? calcAffordabilitySnapshot(listing.price, buyerAnswers, listing.sqft)
+    : calcAffordabilitySnapshot(listing.price, {}, listing.sqft);
 
-  function nextImg() {
-    setImgIndex((i) => (i === listing.images.length - 1 ? 0 : i + 1));
-  }
+  function prevImg() { setImgIndex((i) => (i === 0 ? listing.images.length - 1 : i - 1)); }
+  function nextImg() { setImgIndex((i) => (i === listing.images.length - 1 ? 0 : i + 1)); }
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Back nav */}
       <div className="bg-white border-b border-[#e8e4de] px-6 py-3">
         <div className="max-w-7xl mx-auto">
-          <Link
-            href="/listings"
-            className="inline-flex items-center gap-1.5 text-sm text-[#8c8580] hover:text-[#2c2825] transition-colors"
-          >
+          <Link href="/listings" className="inline-flex items-center gap-1.5 text-sm text-[#8c8580] hover:text-[#2c2825] transition-colors">
             <ChevronLeft size={15} />
             Back to Listings
           </Link>
@@ -70,7 +81,8 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column: images + details */}
+
+          {/* ── Left column ──────────────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Image gallery */}
             <div className="relative rounded-2xl overflow-hidden bg-[#e8e4de] aspect-video">
@@ -81,39 +93,21 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
               />
               {listing.images.length > 1 && (
                 <>
-                  <button
-                    onClick={prevImg}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
-                  >
+                  <button onClick={prevImg} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors">
                     <ChevronLeft size={18} />
                   </button>
-                  <button
-                    onClick={nextImg}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
-                  >
+                  <button onClick={nextImg} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors">
                     <ChevronRight size={18} />
                   </button>
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                     {listing.images.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setImgIndex(i)}
-                        className={`w-2 h-2 rounded-full transition-colors ${
-                          i === imgIndex ? "bg-white" : "bg-white/50"
-                        }`}
-                      />
+                      <button key={i} onClick={() => setImgIndex(i)} className={`w-2 h-2 rounded-full transition-colors ${i === imgIndex ? "bg-white" : "bg-white/50"}`} />
                     ))}
                   </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                    <div className="h-full bg-white transition-all" style={{ width: `${((imgIndex + 1) / listing.images.length) * 100}%` }} />
+                  </div>
                 </>
-              )}
-              {/* Thumbnail strip */}
-              {listing.images.length > 1 && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-                  <div
-                    className="h-full bg-white transition-all"
-                    style={{ width: `${((imgIndex + 1) / listing.images.length) * 100}%` }}
-                  />
-                </div>
               )}
             </div>
 
@@ -121,13 +115,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
             {listing.images.length > 1 && (
               <div className="flex gap-2">
                 {listing.images.map((src, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setImgIndex(i)}
-                    className={`h-16 flex-1 rounded-lg overflow-hidden border-2 transition-colors ${
-                      i === imgIndex ? "border-[#2c2825]" : "border-transparent"
-                    }`}
-                  >
+                  <button key={i} onClick={() => setImgIndex(i)} className={`h-16 flex-1 rounded-lg overflow-hidden border-2 transition-colors ${i === imgIndex ? "border-[#2c2825]" : "border-transparent"}`}>
                     <img src={src} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -140,7 +128,133 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
               <p className="text-[#5c5550] leading-relaxed text-sm">{listing.description}</p>
             </div>
 
-            {/* Features */}
+            {/* ── Lifestyle Layer™ ───────────────────────────────────────── */}
+            <LifestyleLayerPanel layer={lifestyleLayer} />
+
+            {/* ── Buyer Match Panel ──────────────────────────────────────── */}
+            {buyerMatch ? (
+              <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
+                {/* Header */}
+                <div className="bg-[#2c2825] px-6 py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={15} className="text-[#b8a88a]" />
+                    <p className="text-white font-semibold text-sm">Your Compatibility Match</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-2xl font-bold ${buyerMatch.overall >= 70 ? "text-emerald-400" : buyerMatch.overall >= 50 ? "text-[#b8a88a]" : "text-amber-400"}`}>
+                      {buyerMatch.overall}%
+                    </span>
+                    <span className="text-[#e8e4de]/70 text-xs">{buyerMatch.label}</span>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  {/* Summary */}
+                  <p className="text-[#5c5550] text-sm leading-relaxed border-l-2 border-[#b8a88a] pl-4">
+                    {buyerMatch.summary}
+                  </p>
+
+                  {/* Match score bar */}
+                  <div>
+                    <div className="h-2 bg-[#f0ece6] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-700 ${scoreBar(buyerMatch.overall)}`}
+                        style={{ width: `${buyerMatch.overall}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Must-haves */}
+                    {(buyerMatch.mustHaveHits.length > 0 || buyerMatch.mustHaveMisses.length > 0) && (
+                      <div>
+                        <p className="text-xs font-semibold text-[#2c2825] uppercase tracking-wider mb-3">Must-Haves</p>
+                        <ul className="space-y-1.5">
+                          {buyerMatch.mustHaveHits.map((h) => (
+                            <li key={h} className="flex items-center gap-2 text-xs text-[#2c2825]">
+                              <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+                              {h}
+                            </li>
+                          ))}
+                          {buyerMatch.mustHaveMisses.map((m) => (
+                            <li key={m} className="flex items-center gap-2 text-xs text-[#8c8580]">
+                              <X size={13} className="text-[#c4bfb9] shrink-0" />
+                              {m}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Deal breakers */}
+                    {buyerMatch.dealBreakerFlags.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-[#2c2825] uppercase tracking-wider mb-3">Flagged Items</p>
+                        <ul className="space-y-1.5">
+                          {buyerMatch.dealBreakerFlags.map((f) => (
+                            <li key={f} className="flex items-center gap-2 text-xs text-amber-700">
+                              <AlertTriangle size={13} className="text-amber-500 shrink-0" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Lifestyle dimensions */}
+                  {buyerMatch.lifestyle.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-[#2c2825] uppercase tracking-wider mb-4">Lifestyle Fit</p>
+                      <div className="space-y-3">
+                        {buyerMatch.lifestyle.map((dim) => (
+                          <div key={dim.label}>
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dim.matched ? "bg-emerald-500" : "bg-[#c4bfb9]"}`} />
+                                <span className="text-xs font-medium text-[#2c2825]">{dim.label}</span>
+                              </div>
+                              <span className={`text-xs font-semibold ${scoreColor(dim.score)}`}>
+                                {dim.matched ? "Match" : "Gap"}
+                              </span>
+                            </div>
+                            <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden ml-3.5">
+                              <div
+                                className={`h-full rounded-full ${dim.matched ? "bg-emerald-400" : "bg-[#d4cfc9]"}`}
+                                style={{ width: `${dim.score}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-[#8c8580] ml-3.5 mt-0.5">{dim.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-[#b8a88a] pt-2 border-t border-[#f0ece6]">
+                    Based on your Home Match questionnaire profile.{" "}
+                    <Link href="/questionnaire" className="underline underline-offset-2 hover:text-[#8c8580]">Update your profile</Link>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /* No profile prompt */
+              <div className="bg-[#faf9f7] border border-dashed border-[#d4cfc9] rounded-2xl p-6 flex items-center gap-5">
+                <Sparkles size={22} className="text-[#b8a88a] shrink-0" />
+                <div className="flex-1">
+                  <p className="text-[#2c2825] font-medium text-sm mb-1">Get your personal compatibility score</p>
+                  <p className="text-[#8c8580] text-xs leading-relaxed">Complete your buyer profile to see how well this home fits your lifestyle, budget, and priorities.</p>
+                </div>
+                <Link
+                  href="/questionnaire"
+                  className="shrink-0 bg-[#2c2825] text-white text-xs font-medium px-4 py-2 rounded-full hover:bg-[#1a1714] transition-colors"
+                >
+                  Build Profile
+                </Link>
+              </div>
+            )}
+
+            {/* Key Features */}
             <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-[#2c2825] mb-4">Key Features</h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -153,7 +267,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
               </ul>
             </div>
 
-            {/* Property details grid */}
+            {/* Property Details */}
             <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-[#2c2825] mb-4">Property Details</h2>
               <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -169,10 +283,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                   { icon: <Thermometer size={14} />, label: "Heating", value: listing.heating },
                 ].map(({ icon, label, value }) => (
                   <div key={label} className="flex flex-col gap-0.5">
-                    <dt className="text-xs text-[#8c8580] flex items-center gap-1">
-                      {icon}
-                      {label}
-                    </dt>
+                    <dt className="text-xs text-[#8c8580] flex items-center gap-1">{icon}{label}</dt>
                     <dd className="text-sm font-medium text-[#2c2825]">{value}</dd>
                   </div>
                 ))}
@@ -180,101 +291,159 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
             </div>
           </div>
 
-          {/* Right column: price card + match tool */}
+          {/* ── Right column ──────────────────────────────────────────────── */}
           <div className="space-y-4">
-            {/* Price card */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 sticky top-20">
-              <div className="flex items-start justify-between mb-2">
-                <span
-                  className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
-                    STATUS_COLORS[listing.status]
-                  }`}
-                >
-                  {listing.status}
-                </span>
-                <span className="text-xs text-[#8c8580] flex items-center gap-1">
-                  <Calendar size={10} />
-                  {listing.daysOnMarket} days on market
-                </span>
+
+            {/* Buyer match score pill (compact, sticky with price card) */}
+            <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 sticky top-20 space-y-4">
+              {/* Price */}
+              <div>
+                <div className="flex items-start justify-between mb-2">
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${STATUS_COLORS[listing.status]}`}>
+                    {listing.status}
+                  </span>
+                  <span className="text-xs text-[#8c8580] flex items-center gap-1">
+                    <Calendar size={10} />
+                    {listing.daysOnMarket}d on market
+                  </span>
+                </div>
+
+                {listing.originalPrice ? (
+                  <div className="mb-1">
+                    <p className="text-3xl font-light text-[#2c2825]">{formatPrice(listing.price)}</p>
+                    <p className="text-sm text-[#8c8580] line-through">{formatPrice(listing.originalPrice)}</p>
+                    <p className="text-xs text-amber-600 font-medium">Reduced by {formatPrice(listing.originalPrice - listing.price)}</p>
+                  </div>
+                ) : (
+                  <p className="text-3xl font-light text-[#2c2825] mb-1">{formatPrice(listing.price)}</p>
+                )}
+
+                <p className="text-sm font-medium text-[#2c2825]">{listing.address}</p>
+                <p className="text-xs text-[#8c8580] flex items-center gap-1 mt-0.5">
+                  <MapPin size={10} />
+                  {listing.neighbourhood}, {listing.city} &middot; {listing.postalCode}
+                </p>
               </div>
 
-              {listing.originalPrice ? (
-                <div className="mb-1">
-                  <p className="text-3xl font-light text-[#2c2825]">
-                    {formatPrice(listing.price)}
-                  </p>
-                  <p className="text-sm text-[#8c8580] line-through">
-                    {formatPrice(listing.originalPrice)}
-                  </p>
-                  <p className="text-xs text-amber-600 font-medium">
-                    Reduced by {formatPrice(listing.originalPrice - listing.price)}
-                  </p>
+              {/* Buyer match score callout */}
+              {buyerMatch && (
+                <div className={`rounded-xl p-3 flex items-center justify-between ${
+                  buyerMatch.overall >= 70 ? "bg-emerald-50 border border-emerald-200"
+                  : buyerMatch.overall >= 50 ? "bg-[#faf9f7] border border-[#b8a88a]/30"
+                  : "bg-amber-50 border border-amber-200"
+                }`}>
+                  <div>
+                    <p className="text-xs text-[#8c8580]">Your Match</p>
+                    <p className={`text-lg font-bold ${scoreColor(buyerMatch.overall)}`}>{buyerMatch.overall}%</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-xs font-medium ${scoreColor(buyerMatch.overall)}`}>{buyerMatch.label}</p>
+                    <p className="text-xs text-[#8c8580]">{buyerMatch.mustHaveHits.length}/{(buyerAnswers?.mustHaves || []).length || "?"} must-haves</p>
+                  </div>
                 </div>
-              ) : (
-                <p className="text-3xl font-light text-[#2c2825] mb-1">
-                  {formatPrice(listing.price)}
-                </p>
               )}
 
-              <p className="text-sm font-medium text-[#2c2825]">{listing.address}</p>
-              <p className="text-xs text-[#8c8580] flex items-center gap-1 mt-0.5 mb-4">
-                <MapPin size={10} />
-                {listing.neighbourhood}, {listing.city} &middot; {listing.postalCode}
-              </p>
-
-              <div className="space-y-2 text-xs text-[#8c8580] border-t border-[#f0ece6] pt-4 mb-4">
+              {/* MLS + taxes */}
+              <div className="space-y-2 text-xs text-[#8c8580] border-t border-[#f0ece6] pt-4">
                 <div className="flex justify-between">
                   <span>MLS#</span>
-                  <span className="font-medium text-[#2c2825] flex items-center gap-1">
-                    <Tag size={10} />
-                    {listing.mlsNumber}
-                  </span>
+                  <span className="font-medium text-[#2c2825] flex items-center gap-1"><Tag size={10} />{listing.mlsNumber}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Annual taxes</span>
-                  <span className="font-medium text-[#2c2825]">
-                    {formatPrice(listing.taxes)}
-                  </span>
+                  <span className="font-medium text-[#2c2825]">{formatPrice(listing.taxes)}</span>
                 </div>
                 {listing.maintenanceFee && (
                   <div className="flex justify-between">
                     <span>Maintenance fee</span>
-                    <span className="font-medium text-[#2c2825]">
-                      {formatPrice(listing.maintenanceFee)}/mo
-                    </span>
+                    <span className="font-medium text-[#2c2825]">{formatPrice(listing.maintenanceFee)}/mo</span>
                   </div>
                 )}
               </div>
 
               {listing.virtualTourUrl && (
-                <a
-                  href={listing.virtualTourUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full border border-[#2c2825] text-[#2c2825] text-sm py-2.5 rounded-full hover:bg-[#2c2825] hover:text-white transition-colors mb-3"
-                >
+                <a href={listing.virtualTourUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full border border-[#2c2825] text-[#2c2825] text-sm py-2.5 rounded-full hover:bg-[#2c2825] hover:text-white transition-colors">
                   <ExternalLink size={14} />
                   Virtual Tour
                 </a>
               )}
-
-              <Link
-                href="/dashboard"
-                className="flex items-center justify-center w-full bg-[#2c2825] text-white text-sm py-2.5 rounded-full hover:bg-[#1a1714] transition-colors"
-              >
+              <Link href="/dashboard" className="flex items-center justify-center w-full bg-[#2c2825] text-white text-sm py-2.5 rounded-full hover:bg-[#1a1714] transition-colors">
                 View All Leads
               </Link>
             </div>
 
-            {/* Match to Lead */}
+            {/* ── Affordability Snapshot ─────────────────────────────────── */}
+            <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <DollarSign size={15} className="text-[#b8a88a]" />
+                <h3 className="text-sm font-semibold text-[#2c2825]">Affordability Snapshot</h3>
+              </div>
+
+              {buyerAnswers?.budgetMax && (
+                <div className={`text-xs font-medium px-3 py-1.5 rounded-full mb-4 inline-flex items-center gap-1.5 ${
+                  affordability.budgetComfort === "well within" || affordability.budgetComfort === "within"
+                    ? "bg-emerald-50 text-emerald-700"
+                    : affordability.budgetComfort === "at the top of"
+                    ? "bg-[#faf9f7] text-[#b8a88a]"
+                    : "bg-amber-50 text-amber-700"
+                }`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
+                  {affordability.budgetComfort === "well within" ? "Well within your budget"
+                   : affordability.budgetComfort === "within" ? "Within your budget range"
+                   : affordability.budgetComfort === "at the top of" ? "Near top of your budget"
+                   : affordability.budgetComfort === "slightly over" ? "Slightly over budget"
+                   : "Over your stated budget"}
+                </div>
+              )}
+
+              <p className="text-xs text-[#8c8580] mb-3 font-medium uppercase tracking-wider">Monthly costs</p>
+              <div className="space-y-2 mb-4">
+                {[
+                  { label: "Mortgage (20% down, 25yr)", value: formatCurrency(affordability.monthlyPayment) },
+                  { label: "Property tax (est.)", value: formatCurrency(affordability.propertyTaxMonthly) },
+                  { label: "Utilities (est.)", value: formatCurrency(affordability.utilityEstimate) },
+                ].map((r) => (
+                  <div key={r.label} className="flex justify-between text-xs">
+                    <span className="text-[#8c8580]">{r.label}</span>
+                    <span className="text-[#2c2825] font-medium">{r.value}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between text-sm font-semibold pt-2 border-t border-[#f0ece6]">
+                  <span className="text-[#2c2825]">Total monthly est.</span>
+                  <span className="text-[#2c2825]">{formatCurrency(affordability.totalMonthly)}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-[#8c8580] mb-3 font-medium uppercase tracking-wider">Cash needed at close</p>
+              <div className="space-y-2">
+                {[
+                  { label: "Down payment (20%)", value: formatCurrency(affordability.downPayment) },
+                  { label: "Ontario land transfer tax", value: formatCurrency(affordability.ltt) },
+                  { label: "Legal & closing costs", value: formatCurrency(affordability.closingCosts) },
+                ].map((r) => (
+                  <div key={r.label} className="flex justify-between text-xs">
+                    <span className="text-[#8c8580]">{r.label}</span>
+                    <span className="text-[#2c2825] font-medium">{r.value}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between text-sm font-semibold pt-2 border-t border-[#f0ece6]">
+                  <span className="text-[#2c2825]">Total cash required</span>
+                  <span className="text-[#2c2825]">{formatCurrency(affordability.totalCashAtClose)}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-[#b8a88a] mt-4 leading-relaxed">
+                Estimates based on 20% down, 5.5% rate, 25-year amortization. Actual costs vary.
+              </p>
+            </div>
+
+            {/* ── Match to Lead (realtor tool) ───────────────────────────── */}
             <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
               <h3 className="text-sm font-semibold text-[#2c2825] flex items-center gap-2 mb-3">
                 <TrendingUp size={15} className="text-[#b8a88a]" />
                 Match to Lead
               </h3>
-              <p className="text-xs text-[#8c8580] mb-3">
-                Select a lead to see how well this property fits their criteria.
-              </p>
+              <p className="text-xs text-[#8c8580] mb-3">Select a lead to see how this property fits their criteria.</p>
 
               <select
                 value={selectedLeadId}
@@ -291,37 +460,21 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
 
               {matchResult && (
                 <div className="space-y-3">
-                  {/* Score bar */}
                   <div>
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-xs text-[#8c8580]">Match score</span>
-                      <span
-                        className={`text-sm font-bold ${
-                          matchResult.score >= 70
-                            ? "text-emerald-600"
-                            : matchResult.score >= 40
-                            ? "text-amber-600"
-                            : "text-red-500"
-                        }`}
-                      >
+                      <span className={`text-sm font-bold ${matchResult.score >= 70 ? "text-emerald-600" : matchResult.score >= 40 ? "text-amber-600" : "text-red-500"}`}>
                         {matchResult.score}%
                       </span>
                     </div>
                     <div className="h-2 bg-[#f0ece6] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all ${
-                          matchResult.score >= 70
-                            ? "bg-emerald-500"
-                            : matchResult.score >= 40
-                            ? "bg-amber-400"
-                            : "bg-red-400"
-                        }`}
+                        className={`h-full rounded-full transition-all ${matchResult.score >= 70 ? "bg-emerald-500" : matchResult.score >= 40 ? "bg-amber-400" : "bg-red-400"}`}
                         style={{ width: `${matchResult.score}%` }}
                       />
                     </div>
                   </div>
 
-                  {/* Reasons */}
                   {matchResult.reasons.length > 0 && (
                     <div>
                       <p className="text-xs font-medium text-[#2c2825] mb-1.5">Why it fits</p>
@@ -336,7 +489,6 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                     </div>
                   )}
 
-                  {/* Warnings */}
                   {matchResult.warnings.length > 0 && (
                     <div>
                       <p className="text-xs font-medium text-[#2c2825] mb-1.5">Watch out</p>
@@ -351,10 +503,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                     </div>
                   )}
 
-                  <Link
-                    href={`/dashboard/${selectedLeadId}`}
-                    className="flex items-center justify-center gap-1 w-full border border-[#2c2825] text-[#2c2825] text-xs py-2 rounded-full hover:bg-[#2c2825] hover:text-white transition-colors mt-2"
-                  >
+                  <Link href={`/dashboard/${selectedLeadId}`} className="flex items-center justify-center gap-1 w-full border border-[#2c2825] text-[#2c2825] text-xs py-2 rounded-full hover:bg-[#2c2825] hover:text-white transition-colors mt-2">
                     View Lead Profile
                   </Link>
                 </div>

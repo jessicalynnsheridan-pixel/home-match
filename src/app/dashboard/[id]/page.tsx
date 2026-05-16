@@ -12,14 +12,17 @@ import DreamHomeProfile from "@/components/dashboard/DreamHomeProfile";
 import FollowUpReminders from "@/components/dashboard/FollowUpReminders";
 import EmailTemplates from "@/components/dashboard/EmailTemplates";
 import MortgageChecklist from "@/components/dashboard/MortgageChecklist";
-import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink } from "lucide-react";
+import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, TrendingUp, Info } from "lucide-react";
+import { calcBuyerReadiness } from "@/lib/buyerMatch";
+import { calcBuyerIntelligence } from "@/lib/buyerIntelligence";
+import BuyerIntelligencePanel from "@/components/dashboard/BuyerIntelligence";
 import Link from "next/link";
 
 const STATUS_OPTIONS: LeadStatus[] = [
   "New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed",
 ];
 
-type Tab = "profile" | "email" | "checklist";
+type Tab = "profile" | "intelligence" | "email" | "checklist";
 
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +47,8 @@ export default function LeadDetailPage() {
   }
 
   const { answers } = lead;
+  const readiness = calcBuyerReadiness(answers);
+  const intelligence = calcBuyerIntelligence(answers, { submittedAt: lead.submittedAt, status: lead.status });
 
   function updateStatus(status: LeadStatus) { setLead((p) => p && { ...p, status }); }
   function togglePriority() { setLead((p) => p && { ...p, isPriority: !p.isPriority }); }
@@ -68,8 +73,9 @@ export default function LeadDetailPage() {
     setLead((p) => p ? { ...p, answers: { ...p.answers, mortgageChecklist: items } } : p);
   }
 
-  const TABS: { id: Tab; label: string }[] = [
+  const TABS: { id: Tab; label: string; badge?: string }[] = [
     { id: "profile", label: "Full Profile" },
+    { id: "intelligence", label: "Buyer Intelligence", badge: intelligence.style.type },
     { id: "email", label: "Email Templates" },
     { id: "checklist", label: "Mortgage Checklist" },
   ];
@@ -98,8 +104,11 @@ export default function LeadDetailPage() {
                 {lead.status}
               </span>
             </div>
-            <p className="text-[#8c8580] text-sm">
-              {answers.email} · {answers.phone} · Submitted {formatDate(lead.submittedAt)}
+            <p className="text-[#8c8580] text-sm flex flex-wrap items-center gap-2">
+              <span>{answers.email} · {answers.phone} · Submitted {formatDate(lead.submittedAt)}</span>
+              <span className="text-xs bg-violet-100 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-full">
+                {intelligence.style.type} buyer
+              </span>
             </p>
           </div>
 
@@ -127,41 +136,76 @@ export default function LeadDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* ── Left: main content ────────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-5">
-            {/* Match score + dream home profile */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 flex gap-6 items-start">
-              <MatchScoreRing score={lead.matchScore} size="lg" />
-              <div className="flex-1">
-                <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-1">Buyer Readiness Score</p>
-                <p className="text-[#2c2825] font-semibold text-lg mb-2">{lead.matchScore} / 100</p>
-                <div className="h-2 bg-[#e8e4de] rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${lead.matchScore >= 80 ? "bg-rose-400" : lead.matchScore >= 50 ? "bg-amber-400" : "bg-slate-300"}`}
-                    style={{ width: `${lead.matchScore}%` }}
-                  />
+            {/* Buyer Readiness Score */}
+            <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+              <div className="flex items-start justify-between gap-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <MatchScoreRing score={readiness.overall} size="lg" />
+                  <div>
+                    <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-0.5">Buyer Readiness</p>
+                    <p className="text-[#2c2825] font-semibold text-lg">{readiness.overall} / 100</p>
+                    <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                      readiness.overall >= 80 ? "bg-emerald-50 text-emerald-700" :
+                      readiness.overall >= 60 ? "bg-[#f5f3f0] text-[#b8a88a]" :
+                      readiness.overall >= 40 ? "bg-amber-50 text-amber-700" :
+                      "bg-slate-50 text-slate-500"
+                    }`}>
+                      {readiness.label}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex gap-4 mt-3 text-xs text-[#8c8580]">
-                  <span>Pre-approval: <strong className="text-[#2c2825]">{answers.preApprovalStatus || "-"}</strong></span>
-                  <span>Timeline: <strong className="text-[#2c2825]">{answers.timeline || "-"}</strong></span>
+                <div className="text-right text-xs text-[#8c8580]">
+                  <p>Pre-approval: <strong className="text-[#2c2825]">{answers.preApprovalStatus || "-"}</strong></p>
+                  <p className="mt-0.5">Timeline: <strong className="text-[#2c2825]">{answers.timeline || "-"}</strong></p>
                 </div>
               </div>
+
+              <div className="space-y-3 mb-4">
+                {[readiness.financing, readiness.timeline, readiness.documentation, readiness.commitment].map((dim) => (
+                  <div key={dim.label}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-[#2c2825] font-medium">{dim.label}</span>
+                      <span className="text-[#8c8580]">{dim.detail}</span>
+                    </div>
+                    <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
+                        style={{ width: `${dim.score}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {readiness.tip && (
+                <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 flex gap-2.5 items-start">
+                  <Info size={13} className="text-[#b8a88a] shrink-0 mt-0.5" />
+                  <p className="text-xs text-[#5c5550]">{readiness.tip}</p>
+                </div>
+              )}
             </div>
 
             {/* Dream home profile */}
             <DreamHomeProfile answers={answers} />
 
             {/* Tab nav */}
-            <div className="flex gap-1 bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-1">
+            <div className="flex gap-1 bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-1 overflow-x-auto">
               {TABS.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setTab(t.id)}
-                  className={`flex-1 text-sm py-2 rounded-lg transition-all font-medium ${
+                  className={`flex-shrink-0 flex items-center gap-1.5 text-sm py-2 px-3 rounded-lg transition-all font-medium ${
                     tab === t.id
                       ? "bg-white text-[#2c2825] shadow-sm"
                       : "text-[#8c8580] hover:text-[#2c2825]"
                   }`}
                 >
                   {t.label}
+                  {t.badge && tab !== t.id && (
+                    <span className="text-xs bg-violet-100 text-violet-700 border border-violet-200 px-1.5 py-0 rounded-full hidden sm:inline">
+                      {t.badge}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -228,6 +272,11 @@ export default function LeadDetailPage() {
                   )}
                 </div>
               </>
+            )}
+
+            {/* Tab: Buyer Intelligence */}
+            {tab === "intelligence" && (
+              <BuyerIntelligencePanel intelligence={intelligence} />
             )}
 
             {/* Tab: Email Templates */}

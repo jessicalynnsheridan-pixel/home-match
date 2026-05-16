@@ -60,19 +60,19 @@ const testimonials = [
     quote:
       "Home Match completely changed how I handle new buyer inquiries. I know more about a lead before our first call than I used to know after three meetings.",
     name: "Sarah M.",
-    title: "Luxury Realtor, Toronto",
+    title: "Luxury Realtor, St. Catharines",
   },
   {
     quote:
       "My buyers actually comment on how professional the intake process feels. It's become a competitive advantage I didn't expect.",
     name: "Daniel R.",
-    title: "Top Producer, GTA",
+    title: "Top Producer, Niagara Region",
   },
   {
     quote:
       "I closed two deals last quarter from leads that came through Home Match profiles. The quality of information made a huge difference in how quickly I could match them.",
     name: "Priya T.",
-    title: "Boutique Realtor, Mississauga",
+    title: "Boutique Realtor, Niagara-on-the-Lake",
   },
 ];
 
@@ -140,17 +140,17 @@ export default function ForRealtorsPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/dashboard"
+              href="/realtor-signup"
               className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm font-medium px-8 py-4 rounded-full hover:bg-[#1a1714] transition-colors"
             >
-              View Demo Dashboard
+              Create Your Free Account
               <ArrowRight size={16} />
             </Link>
             <Link
-              href="/questionnaire"
+              href="/dashboard"
               className="inline-flex items-center justify-center gap-2 border border-[#e8e4de] text-[#2c2825] text-sm font-medium px-8 py-4 rounded-full hover:border-[#2c2825] transition-colors bg-white"
             >
-              Preview Buyer Experience
+              View Demo Dashboard
             </Link>
           </div>
         </div>
@@ -374,17 +374,17 @@ export default function ForRealtorsPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/dashboard"
+              href="/realtor-signup"
               className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-8 py-4 rounded-full hover:bg-[#c9b99b] transition-colors"
             >
-              Explore the Dashboard
+              Create Your Free Account
               <ArrowRight size={16} />
             </Link>
             <Link
-              href="/questionnaire"
+              href="/dashboard"
               className="inline-flex items-center justify-center gap-2 border border-white/20 text-white text-sm font-medium px-8 py-4 rounded-full hover:border-white/50 transition-colors"
             >
-              See the Buyer Experience
+              Explore the Dashboard
             </Link>
           </div>
         </div>

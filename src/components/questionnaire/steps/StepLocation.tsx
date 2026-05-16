@@ -9,9 +9,9 @@ const VIBE_OPTIONS = [
   "Tree-lined streets",
   "Near waterfront",
   "Family-friendly",
-  "Arts & culture scene",
-  "Private & gated",
-  "Prestigious address",
+  "Wine country character",
+  "Peaceful & private",
+  "Established neighbourhood",
 ];
 
 const PROXIMITY_OPTIONS = [
@@ -22,7 +22,7 @@ const PROXIMITY_OPTIONS = [
   "Near restaurants",
   "Dog-friendly parks",
   "Coffee shops & cafes",
-  "Arts venues",
+  "Wineries & tasting rooms",
   "Ample parking",
   "Large lot size",
 ];
@@ -51,7 +51,7 @@ export default function StepLocation({ answers, update, onNext, onBack, onSubmit
           <TextInput
             value={answers.preferredCity}
             onChange={(v) => update("preferredCity", v)}
-            placeholder="e.g. Toronto, Mississauga, Oakville..."
+            placeholder="e.g. St. Catharines, Niagara-on-the-Lake, Grimsby..."
           />
         </div>
 
@@ -60,7 +60,7 @@ export default function StepLocation({ answers, update, onNext, onBack, onSubmit
           <TextInput
             value={answers.preferredNeighbourhoods}
             onChange={(v) => update("preferredNeighbourhoods", v)}
-            placeholder="e.g. Rosedale, Forest Hill, Port Credit..."
+            placeholder="e.g. Port Dalhousie, Old Town NOTL, Lakeshore..."
           />
           <p className="text-[#8c8580] text-xs mt-1.5">Separate multiple neighbourhoods with a comma.</p>
         </div>

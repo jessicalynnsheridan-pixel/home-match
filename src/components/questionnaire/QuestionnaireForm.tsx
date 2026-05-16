@@ -73,9 +73,9 @@ export default function QuestionnaireForm() {
   }
 
   function submit() {
-    // Persist to sessionStorage so the results page can read it.
-    // In production, replace with an API call to Supabase / Firebase.
-    sessionStorage.setItem("homematch_answers", JSON.stringify(answers));
+    try {
+      sessionStorage.setItem("homematch_answers", JSON.stringify(answers));
+    } catch { /* ignore quota/private-mode errors */ }
     router.push("/results");
   }
 

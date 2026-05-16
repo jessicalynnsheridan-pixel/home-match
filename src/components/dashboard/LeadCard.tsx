@@ -2,6 +2,14 @@ import Link from "next/link";
 import { Lead } from "@/types";
 import { formatCurrency, formatDate, getScoreColor, getStatusColor, isOverdue } from "@/lib/utils";
 import { Star, Bell } from "lucide-react";
+import { calcBuyerIntelligence, CommunicationStyle } from "@/lib/buyerIntelligence";
+
+const STYLE_BADGE: Record<CommunicationStyle, string> = {
+  Analytical: "bg-blue-50 text-blue-700 border-blue-200",
+  Visionary:  "bg-violet-50 text-violet-700 border-violet-200",
+  Decisive:   "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Cautious:   "bg-amber-50 text-amber-700 border-amber-200",
+};
 
 interface LeadCardProps {
   lead: Lead;
@@ -9,6 +17,7 @@ interface LeadCardProps {
 
 export default function LeadCard({ lead }: LeadCardProps) {
   const { answers } = lead;
+  const { style } = calcBuyerIntelligence(answers);
 
   return (
     <Link
@@ -91,9 +100,14 @@ export default function LeadCard({ lead }: LeadCardProps) {
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-4 border-t border-[#e8e4de]">
-        <p className="text-[#8c8580] text-xs">
-          Submitted {formatDate(lead.submittedAt)}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-[#8c8580] text-xs">
+            Submitted {formatDate(lead.submittedAt)}
+          </p>
+          <span className={`text-xs px-2 py-0.5 rounded-full border ${STYLE_BADGE[style.type]}`}>
+            {style.type}
+          </span>
+        </div>
         <p className="text-[#2c2825] text-xs font-medium group-hover:underline">
           View full profile
         </p>

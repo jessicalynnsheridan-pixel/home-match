@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // Predefined suggestions the buyer can toggle on, or type their own
 const MUST_HAVE_SUGGESTIONS = [
-  "Chef's kitchen",
+  "Updated kitchen",
   "Home office",
   "Private backyard",
   "Double garage",
@@ -12,7 +12,7 @@ const MUST_HAVE_SUGGESTIONS = [
   "Open concept",
   "Finished basement",
   "Pool",
-  "Smart home",
+  "Large lot",
   "Wine cellar",
   "In-law suite",
   "High ceilings",
@@ -24,7 +24,7 @@ const MUST_HAVE_SUGGESTIONS = [
 const DEAL_BREAKER_SUGGESTIONS = [
   "Busy arterial road",
   "No parking",
-  "High HOA fees",
+  "High condo fees",
   "Leasehold",
   "Under power lines",
   "Backing onto highway",
@@ -40,11 +40,11 @@ const LIFESTYLE_SUGGESTIONS = [
   "Waterfront access",
   "Dog-friendly area",
   "Restaurants & cafes",
-  "Arts & culture scene",
+  "Wine country lifestyle",
   "Family-friendly",
   "Privacy",
-  "Prestige address",
-  "Young community",
+  "Investment potential",
+  "Commuter-friendly",
 ];
 
 function MultiChipField({

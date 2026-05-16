@@ -8,8 +8,9 @@ import { formatCurrency } from "@/lib/utils";
 import {
   Heart, BedDouble, Bath, Ruler, CheckCircle, Circle,
   Lightbulb, BookOpen, MapPin, ShieldCheck, ChevronDown,
-  ChevronUp, Info, ArrowRight,
+  ChevronUp, Info, ArrowRight, TrendingUp,
 } from "lucide-react";
+import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -95,6 +96,7 @@ export default function BuyerPortalPage() {
     });
   }
 
+  const readiness = calcBuyerReadiness(answers);
   const midPrice = (answers.budgetMin + answers.budgetMax) / 2;
   const downPayment = midPrice * 0.2;
   const monthlyPayment = calcMonthlyPayment(midPrice);
@@ -119,7 +121,7 @@ export default function BuyerPortalPage() {
             Your profile is active. Explore your tools, insights, and matched homes below, at your pace.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Stat label="Readiness Score" value={`${DEMO_LEAD.matchScore}/100`} />
+            <Stat label="Readiness Score" value={`${readiness.overall}/100`} />
             <Stat label="Budget" value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`} />
             <Stat label="Timeline" value={answers.timeline || "-"} />
             <Stat label="Saved Homes" value={String(savedIds.size)} />
@@ -138,6 +140,49 @@ export default function BuyerPortalPage() {
             </div>
           </div>
         )}
+
+        {/* ── Buyer Readiness Score ─────────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+          <div className="flex items-start justify-between gap-4 mb-5">
+            <div className="flex items-center gap-2">
+              <TrendingUp size={16} className="text-[#b8a88a]" />
+              <div>
+                <h2 className="text-[#2c2825] font-semibold">Buyer Readiness Score</h2>
+                <p className="text-[#8c8580] text-sm mt-0.5">How prepared you are to move on the right home.</p>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <p className={`text-2xl font-bold ${readiness.overall >= 80 ? "text-emerald-600" : readiness.overall >= 60 ? "text-[#b8a88a]" : readiness.overall >= 40 ? "text-amber-500" : "text-[#8c8580]"}`}>
+                {readiness.overall}<span className="text-sm font-normal text-[#8c8580]">/100</span>
+              </p>
+              <p className="text-xs text-[#8c8580] mt-0.5">{readiness.label}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4 mb-5">
+            {[readiness.financing, readiness.timeline, readiness.documentation, readiness.commitment].map((dim) => (
+              <div key={dim.label}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-[#2c2825] font-medium">{dim.label}</span>
+                  <span className="text-[#8c8580]">{dim.detail}</span>
+                </div>
+                <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
+                    style={{ width: `${dim.score}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {readiness.tip && (
+            <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 flex gap-3 items-start">
+              <Info size={14} className="text-[#b8a88a] shrink-0 mt-0.5" />
+              <p className="text-sm text-[#5c5550]">{readiness.tip}</p>
+            </div>
+          )}
+        </section>
 
         {/* ── Affordability insights ────────────────────────────────────────── */}
         <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
@@ -435,8 +480,15 @@ function PortalPropertyCard({ property: p, saved, onToggle }: { property: Proper
           <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-1">Why this matches you</p>
           <p className="text-[#2c2825] text-xs leading-relaxed">{p.matchReason}</p>
         </div>
-        <button className="w-full bg-[#2c2825] text-white text-sm font-medium py-2.5 rounded-full hover:bg-[#1a1714] transition-colors">
-          Save for Later
+        <button
+          onClick={onToggle}
+          className={`w-full text-sm font-medium py-2.5 rounded-full transition-colors ${
+            saved
+              ? "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
+              : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
+          }`}
+        >
+          {saved ? "Saved ✓" : "Save for Later"}
         </button>
       </div>
     </div>
