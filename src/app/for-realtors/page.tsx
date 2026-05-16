@@ -127,12 +127,8 @@ export default function ForRealtorsPage() {
           <p className="text-[#b8a88a] text-sm font-medium tracking-widest uppercase mb-5">
             For Realtors
           </p>
-          <h1 className="text-4xl sm:text-5xl font-semibold text-[#2c2825] tracking-tight leading-tight mb-6">
-            A luxury client intake and
-            <br />
-            home-matching tool for
-            <br />
-            modern realtors.
+          <h1 className="text-3xl sm:text-5xl font-semibold text-[#2c2825] tracking-tight leading-tight mb-6">
+            A luxury client intake and home-matching tool for modern realtors.
           </h1>
           <p className="text-[#8c8580] text-xl leading-relaxed mb-10 max-w-xl mx-auto">
             Stop collecting buyer information in emails, phone calls, and sticky

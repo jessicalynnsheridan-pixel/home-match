@@ -8,7 +8,7 @@ import { Menu, X, Settings } from "lucide-react";
 const buyerLinks = [
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Start Questionnaire", href: "/questionnaire" },
-  { label: "Buyer Portal", href: "/portal" },
+  { label: "My Home Hub", href: "/portal" },
 ];
 
 const realtorLinks = [

@@ -5,7 +5,7 @@ export default function StepContact({ answers, update, onNext, onBack, onSubmit 
     <div>
       <StepHeader
         title="Let's start with you."
-        subtitle="Your information is only shared with your realtor and never sold or distributed."
+        subtitle="Your information is private and secure — never sold, never shared without your permission."
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

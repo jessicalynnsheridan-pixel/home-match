@@ -33,11 +33,10 @@ export default function ResultsPage() {
             Profile Submitted
           </p>
           <h1 className="text-3xl sm:text-4xl font-semibold text-[#2c2825] mb-4">
-            Your Home Match Profile is Ready.
+            Your Home Profile is Ready.
           </h1>
           <p className="text-[#8c8580] text-lg leading-relaxed max-w-lg mx-auto">
-            Your realtor will review your preferences and send personalized home
-            recommendations — typically within 24–48 hours.
+            Your preferences are saved. Explore your affordability insights, matched homes, and buyer tools — or connect with a professional when you&apos;re ready.
           </p>
         </div>
 
@@ -141,15 +140,14 @@ export default function ResultsPage() {
               <Calendar size={18} className="text-[#b8a88a]" />
             </div>
             <div className="flex-1">
-              <p className="text-[#2c2825] font-medium mb-1">Book a discovery call</p>
+              <p className="text-[#2c2825] font-medium mb-1">Explore your buyer tools</p>
               <p className="text-[#8c8580] text-sm leading-relaxed">
-                Speak with your realtor to walk through your profile and answer any
-                follow-up questions.
+                See your affordability breakdown, hidden costs, neighbourhood lifestyle matches, and closing checklist — all in your portal.
               </p>
             </div>
-            <button className="text-sm text-[#2c2825] font-medium border border-[#e8e4de] px-4 py-2 rounded-full hover:border-[#2c2825] transition-colors whitespace-nowrap">
-              Book Call
-            </button>
+            <Link href="/portal" className="text-sm text-[#2c2825] font-medium border border-[#e8e4de] px-4 py-2 rounded-full hover:border-[#2c2825] transition-colors whitespace-nowrap">
+              Open Portal
+            </Link>
           </div>
 
           {/* Upload docs */}
@@ -171,17 +169,15 @@ export default function ResultsPage() {
 
           {/* Realtor message */}
           <div className="bg-[#2c2825] rounded-2xl p-6 text-center">
-            <p className="text-[#e8e4de] font-medium mb-2">What happens next</p>
+            <p className="text-[#e8e4de] font-medium mb-2">Ready to connect with a professional?</p>
             <p className="text-[#e8e4de]/70 text-sm leading-relaxed mb-5">
-              Your realtor will review your full profile and personally curate a shortlist
-              of homes that match your preferences. You&apos;ll receive their recommendations
-              directly — no generic listings, no noise.
+              When you feel informed and ready, a real estate professional can review your completed profile and hit the ground running — no introductory back-and-forth needed.
             </p>
             <Link
-              href="/"
+              href="/portal"
               className="inline-flex items-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-3 rounded-full hover:bg-[#c9b99b] transition-colors"
             >
-              Back to Home
+              Go to Your Home Hub
               <ArrowRight size={14} />
             </Link>
           </div>
