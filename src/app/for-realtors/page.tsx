@@ -11,7 +11,10 @@ import {
   TrendingUp,
   Clock,
   MessageSquare,
+  Mail,
+  Quote,
 } from "lucide-react";
+import RealtorEmailTemplates from "@/components/RealtorEmailTemplates";
 
 const features = [
   {
@@ -280,6 +283,76 @@ export default function ForRealtorsPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ─── How to explain it ───────────────────────────────────────────── */}
+      <section className="px-6 lg:px-8 py-28">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-[#b8a88a] text-sm font-medium tracking-widest uppercase mb-4">
+              The Pitch
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c2825] tracking-tight mb-4">
+              How to explain Home Match to a buyer
+            </h2>
+            <p className="text-[#8c8580] text-lg max-w-xl mx-auto">
+              Three ways to frame it — depending on the conversation.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                scenario: "In a first call or intro message",
+                prompt: "\"Before we start searching, I use a tool that helps me really understand what you're looking for — not just bedrooms and budget, but your lifestyle, priorities, and deal breakers. It takes about 8 minutes, and it means every home I send you will actually make sense for your life. I'll send you the link now.\"",
+                why: "Sets professional expectations immediately. Frames it as being for their benefit, not yours.",
+              },
+              {
+                scenario: "When a buyer asks what makes you different",
+                prompt: "\"Most realtors ask the same questions over and over — on calls, in emails, at every showing. I built a different process. My buyers complete one structured profile upfront, and I use that to curate everything from there. You tell me once, I remember it every time.\"",
+                why: "Positions you as organized, premium, and respectful of their time — all things buyers value.",
+              },
+              {
+                scenario: "When explaining it to a skeptical buyer",
+                prompt: "\"Think of it like a really well-designed intake form — except the results actually get used. It's not going into a database nobody reads. I review every answer personally before I reach out. It just means our first conversation can skip the basics and get straight to the good stuff.\"",
+                why: "Addresses the 'just another form' objection. Reassures them it's personal, not automated.",
+              },
+            ].map((item) => (
+              <div key={item.scenario} className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+                <p className="text-xs font-medium text-[#b8a88a] uppercase tracking-wider mb-3">{item.scenario}</p>
+                <div className="flex gap-3 mb-4">
+                  <Quote size={16} className="text-[#e8e4de] shrink-0 mt-0.5" />
+                  <p className="text-[#2c2825] text-sm leading-relaxed italic">{item.prompt}</p>
+                </div>
+                <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-2.5">
+                  <p className="text-[#8c8580] text-xs leading-relaxed"><span className="font-medium text-[#2c2825]">Why it works: </span>{item.why}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Email templates ──────────────────────────────────────────────── */}
+      <section className="bg-[#f5f3f0] border-y border-[#e8e4de] px-6 lg:px-8 py-28">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-[#b8a88a] text-sm font-medium tracking-widest uppercase mb-4">
+              Email Templates
+            </p>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Mail size={22} className="text-[#2c2825]" />
+              <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c2825] tracking-tight">
+                Ready-to-send follow-up emails
+              </h2>
+            </div>
+            <p className="text-[#8c8580] text-lg max-w-xl mx-auto">
+              Copy, personalise, and send. Every template is written to feel human — not like it came from a CRM.
+            </p>
+          </div>
+
+          <RealtorEmailTemplates />
         </div>
       </section>
 
