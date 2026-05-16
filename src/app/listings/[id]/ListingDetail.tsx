@@ -42,9 +42,8 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [selectedLeadId, setSelectedLeadId] = useState("");
 
-  const matchResult = selectedLeadId
-    ? matchListingToLead(listing, mockLeads.find((l) => l.id === selectedLeadId)!.answers)
-    : null;
+  const selectedLead = selectedLeadId ? mockLeads.find((l) => l.id === selectedLeadId) : undefined;
+  const matchResult = selectedLead ? matchListingToLead(listing, selectedLead.answers) : null;
 
   function prevImg() {
     setImgIndex((i) => (i === 0 ? listing.images.length - 1 : i - 1));

@@ -70,7 +70,7 @@ export default function PrintProfilePage() {
             </div>
 
             {/* Key stats */}
-            <div className="grid grid-cols-4 gap-4 mt-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
               {[
                 { label: "Budget", value: `${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}` },
                 { label: "Timeline", value: answers.timeline || "—" },

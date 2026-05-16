@@ -43,7 +43,7 @@ export default function Footer() {
                 { label: "Why Use Home Match", href: "/for-realtors" },
                 { label: "View Demo Leads", href: "/dashboard" },
               ].map((l) => (
-                <li key={l.href}>
+                <li key={l.label}>
                   <Link href={l.href} className="text-[#8c8580] hover:text-[#2c2825] text-sm transition-colors">
                     {l.label}
                   </Link>
