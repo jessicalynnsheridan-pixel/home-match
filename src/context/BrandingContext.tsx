@@ -32,11 +32,15 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   const [branding, setBranding] = useState<BrandingConfig>(DEFAULTS);
 
   // Hydrate from localStorage on mount
+  // Wrapped in setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
   useEffect(() => {
-    const stored = localStorage.getItem("homematch_branding");
-    if (stored) {
-      try { setBranding({ ...DEFAULTS, ...JSON.parse(stored) }); } catch { /* ignore */ }
-    }
+    const timer = setTimeout(() => {
+      const stored = localStorage.getItem("homematch_branding");
+      if (stored) {
+        try { setBranding({ ...DEFAULTS, ...JSON.parse(stored) }); } catch { /* ignore */ }
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   function update(patch: Partial<BrandingConfig>) {

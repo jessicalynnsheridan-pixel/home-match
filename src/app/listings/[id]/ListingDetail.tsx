@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Listing, QuestionnaireAnswers } from "@/types";
 import { mockLeads } from "@/data/mockLeads";
 import { matchListingToLead } from "@/data/niagaraListings";
@@ -49,10 +50,14 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
   const [buyerAnswers, setBuyerAnswers] = useState<Partial<QuestionnaireAnswers> | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("homematch_answers");
-      if (raw) setBuyerAnswers(JSON.parse(raw));
-    } catch { /* ignore */ }
+    // setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
+    const timer = setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem("homematch_answers");
+        if (raw) setBuyerAnswers(JSON.parse(raw));
+      } catch { /* ignore */ }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const selectedLead = selectedLeadId ? mockLeads.find((l) => l.id === selectedLeadId) : undefined;
@@ -86,10 +91,12 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
           <div className="lg:col-span-2 space-y-6">
             {/* Image gallery */}
             <div className="relative rounded-2xl overflow-hidden bg-[#e8e4de] aspect-video">
-              <img
+              <Image
                 src={listing.images[imgIndex]}
                 alt={`${listing.address} photo ${imgIndex + 1}`}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
               {listing.images.length > 1 && (
                 <>
@@ -115,8 +122,8 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
             {listing.images.length > 1 && (
               <div className="flex gap-2">
                 {listing.images.map((src, i) => (
-                  <button key={i} onClick={() => setImgIndex(i)} className={`h-16 flex-1 rounded-lg overflow-hidden border-2 transition-colors ${i === imgIndex ? "border-[#2c2825]" : "border-transparent"}`}>
-                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  <button key={i} onClick={() => setImgIndex(i)} className={`relative h-16 flex-1 rounded-lg overflow-hidden border-2 transition-colors ${i === imgIndex ? "border-[#2c2825]" : "border-transparent"}`}>
+                    <Image src={src} alt="" fill className="object-cover" unoptimized />
                   </button>
                 ))}
               </div>

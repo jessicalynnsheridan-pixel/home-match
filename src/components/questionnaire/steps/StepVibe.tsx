@@ -173,7 +173,7 @@ export default function StepVibe({ answers, update, onNext, onBack, onSubmit }: 
         <p className="text-sm font-medium text-[#2c2825] mb-1">
           What feeling should your home give you?
         </p>
-        <p className="text-xs text-[#8c8580] mb-4">Choose all that resonate. There's no wrong answer.</p>
+        <p className="text-xs text-[#8c8580] mb-4">Choose all that resonate. There&apos;s no wrong answer.</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {HOME_FEELINGS.map((item) => (
             <FeelingCard
@@ -252,7 +252,7 @@ export default function StepVibe({ answers, update, onNext, onBack, onSubmit }: 
           What frustrates you most about where you live now?
         </p>
         <p className="text-xs text-[#8c8580] mb-4">
-          This helps us filter out what you're trying to leave behind.
+          This helps us filter out what you&apos;re trying to leave behind.
         </p>
         <div className="flex flex-wrap gap-2">
           {FRUSTRATIONS.map((item) => (

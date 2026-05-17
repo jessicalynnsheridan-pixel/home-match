@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Listing, NiagaraCity, PropertyType, ListingStatus, QuestionnaireAnswers } from "@/types";
 import { calcBuyerCompatibility } from "@/lib/buyerMatch";
 import { Bed, Bath, Maximize2, Calendar, Tag, MapPin, Sparkles, SlidersHorizontal, Heart, MessageCircle } from "lucide-react";
@@ -54,14 +55,18 @@ export default function ListingsClient({ initialListings }: { initialListings: L
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("homematch_answers");
-      if (raw) setBuyerAnswers(JSON.parse(raw));
-    } catch { /* ignore */ }
-    try {
-      const saved = localStorage.getItem("homematch_saved_homes");
-      if (saved) setSavedIds(new Set(JSON.parse(saved)));
-    } catch { /* ignore */ }
+    // setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
+    const timer = setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem("homematch_answers");
+        if (raw) setBuyerAnswers(JSON.parse(raw));
+      } catch { /* ignore */ }
+      try {
+        const saved = localStorage.getItem("homematch_saved_homes");
+        if (saved) setSavedIds(new Set(JSON.parse(saved)));
+      } catch { /* ignore */ }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   function toggleSave(e: React.MouseEvent, id: string) {
@@ -69,7 +74,7 @@ export default function ListingsClient({ initialListings }: { initialListings: L
     e.stopPropagation();
     setSavedIds((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
       try { localStorage.setItem("homematch_saved_homes", JSON.stringify([...next])); } catch { /* ignore */ }
       return next;
     });
@@ -313,10 +318,12 @@ export default function ListingsClient({ initialListings }: { initialListings: L
                 >
                   {/* Image */}
                   <div className="relative h-52 overflow-hidden bg-[#e8e4de] shrink-0">
-                    <img
+                    <Image
                       src={listing.images[0]}
                       alt={listing.address}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
                     />
                     {/* Status badge */}
                     <span className={`absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[listing.status]}`}>

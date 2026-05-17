@@ -210,7 +210,7 @@ export default function HomePage() {
               <div>
                 <h3 className="text-white font-semibold text-xl mb-3">Why buyers love it</h3>
                 <p className="text-[#e8e4de]/70 text-sm leading-relaxed mb-6">
-                  Most buyers spend months repeating themselves and discovering costs they weren't prepared for. Home Match puts you in control from day one.
+                  Most buyers spend months repeating themselves and discovering costs they weren&apos;t prepared for. Home Match puts you in control from day one.
                 </p>
                 <Link
                   href="/questionnaire"

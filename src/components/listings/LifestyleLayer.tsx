@@ -45,7 +45,7 @@ export default function LifestyleLayerPanel({ layer }: Props) {
   function toggle(id: string) {
     setClaimed((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
       return next;
     });
   }
@@ -100,7 +100,7 @@ export default function LifestyleLayerPanel({ layer }: Props) {
           Sunday Morning Energy
         </p>
         <p className="text-[#e8e4de] text-base leading-[1.8] italic font-light relative z-10">
-          "{layer.sundayMorningEnergy}"
+          &ldquo;{layer.sundayMorningEnergy}&rdquo;
         </p>
       </div>
 
@@ -124,7 +124,7 @@ export default function LifestyleLayerPanel({ layer }: Props) {
         <div className="px-6 py-7 border-b border-[#f0ece6]">
           <p className="text-[#2c2825] font-semibold mb-1">Nearby Life</p>
           <p className="text-[#8c8580] text-sm mb-6">
-            What's around this home, and how close it actually is.
+            What&apos;s around this home, and how close it actually is.
           </p>
 
           <div className="space-y-5">
@@ -141,7 +141,7 @@ export default function LifestyleLayerPanel({ layer }: Props) {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-8">
                     {items.map((item) => {
-                      const { label: timeLabel, icon: isWalk } = travelTime(item);
+                      const { label: timeLabel } = travelTime(item);
                       return (
                         <div
                           key={item.name}
@@ -224,7 +224,7 @@ export default function LifestyleLayerPanel({ layer }: Props) {
             <div className="bg-[#2c2825] rounded-2xl px-5 py-5 text-center">
               <p className="text-[#b8a88a] text-xs font-semibold tracking-widest uppercase mb-2">You belong here</p>
               <p className="text-white text-sm leading-relaxed">
-                This isn't just a home that fits your criteria — it's a neighbourhood that fits your life. Buyers who feel this aligned rarely let these go.
+                This isn&apos;t just a home that fits your criteria &mdash; it&apos;s a neighbourhood that fits your life. Buyers who feel this aligned rarely let these go.
               </p>
             </div>
           )}

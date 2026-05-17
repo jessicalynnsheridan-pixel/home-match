@@ -83,7 +83,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
             </div>
             <div>
               <p className="text-amber-800 font-semibold text-sm">Inactive lead — time to re-engage</p>
-              <p className="text-amber-700 text-xs mt-0.5">This buyer has gone quiet. Here's a recovery message tailored to their communication style.</p>
+              <p className="text-amber-700 text-xs mt-0.5">This buyer has gone quiet. Here&apos;s a recovery message tailored to their communication style.</p>
             </div>
           </div>
           <div className="bg-white border border-amber-200 rounded-xl p-4">
@@ -91,7 +91,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
               <p className="text-xs font-medium text-[#8c8580] uppercase tracking-wider">Suggested subject</p>
               <CopyButton text={`Subject: ${recoveryPrompt.subject}\n\n${recoveryPrompt.message}`} />
             </div>
-            <p className="text-sm font-medium text-[#2c2825] mb-3 italic">"{recoveryPrompt.subject}"</p>
+            <p className="text-sm font-medium text-[#2c2825] mb-3 italic">&ldquo;{recoveryPrompt.subject}&rdquo;</p>
             <pre className="text-sm text-[#5c5550] whitespace-pre-wrap font-sans leading-relaxed">{recoveryPrompt.message}</pre>
           </div>
           <p className="text-xs text-amber-700 mt-3 flex items-start gap-1.5">
@@ -243,7 +243,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
             </div>
           </div>
           <div>
-            <p className="text-rose-600 text-xs font-semibold uppercase tracking-wider mb-2">Don't</p>
+            <p className="text-rose-600 text-xs font-semibold uppercase tracking-wider mb-2">Don&apos;t</p>
             <div className="space-y-1.5">
               {toneGuide.donts.map((d) => (
                 <div key={d} className="flex items-start gap-2 text-xs text-[#5c5550]">
@@ -262,7 +262,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
       <div>
         <div className="mb-3">
           <p className="text-[#2c2825] font-semibold text-sm">Personalized Follow-up Suggestions</p>
-          <p className="text-[#8c8580] text-xs mt-0.5">Ready-to-use messages tailored to this buyer's style and timing. Click any card to expand.</p>
+          <p className="text-[#8c8580] text-xs mt-0.5">Ready-to-use messages tailored to this buyer&apos;s style and timing. Click any card to expand.</p>
         </div>
         <div className="space-y-3">
           {followUpSuggestions.map((s) => {
@@ -289,7 +289,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
                         </span>
                       </div>
                       {s.subject && (
-                        <p className="text-[#8c8580] text-xs mt-0.5 italic">"{s.subject}"</p>
+                        <p className="text-[#8c8580] text-xs mt-0.5 italic">&ldquo;{s.subject}&rdquo;</p>
                       )}
                     </div>
                   </div>

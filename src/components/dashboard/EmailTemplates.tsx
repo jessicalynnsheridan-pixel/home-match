@@ -127,7 +127,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
   const template = TEMPLATES.find((t) => t.id === selected)!;
   const subject = template.subject(lead);
   const body = template.body(lead);
-  const fullEmail = `Subject: ${subject}\n\n${body}\n\n${lead.answers.firstName}'s Realtor\n   Home Match`;
+  // fullEmail kept for potential future "copy all" feature
 
   function copy(type: "subject" | "body") {
     navigator.clipboard.writeText(type === "subject" ? subject : `${body}\n\nYour Realtor\n   Home Match`);

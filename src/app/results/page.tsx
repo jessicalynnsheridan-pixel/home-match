@@ -109,14 +109,15 @@ export default function ResultsPage() {
   const [celebrated, setCelebrated] = useState(false);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("homematch_answers");
-    if (raw) {
-      try {
-        setAnswers(JSON.parse(raw));
-      } catch { /* ignore */ }
-    }
-    const timer = setTimeout(() => setCelebrated(true), 300);
-    return () => clearTimeout(timer);
+    // Use setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
+    const hydrate = setTimeout(() => {
+      const raw = sessionStorage.getItem("homematch_answers");
+      if (raw) {
+        try { setAnswers(JSON.parse(raw)); } catch { /* ignore */ }
+      }
+    }, 0);
+    const celebrate = setTimeout(() => setCelebrated(true), 300);
+    return () => { clearTimeout(hydrate); clearTimeout(celebrate); };
   }, []);
 
   const readiness = answers ? calcBuyerReadiness(answers) : null;

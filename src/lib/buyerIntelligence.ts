@@ -413,7 +413,7 @@ function deriveFollowUpSuggestions(
   a: QuestionnaireAnswers,
   style: CommunicationStyle,
   tier: MotivationTier,
-  daysSince: number,
+  _daysSince: number,
 ): FollowUpSuggestion[] {
   const { firstName, preferredCity, mustHaves, budgetMin, budgetMax, timeline, preApprovalStatus } = a;
 
@@ -595,9 +595,9 @@ function deriveRecoveryPrompt(a: QuestionnaireAnswers, style: CommunicationStyle
 function deriveSummaryLine(
   style: CommunicationStyle,
   motivation: MotivationProfile,
-  a: QuestionnaireAnswers,
+  _a: QuestionnaireAnswers,
 ): string {
-  const tierWord = motivation.tier === "High" ? "high-motivation" : motivation.tier === "Medium" ? "moderate-motivation" : "low-motivation";
+  const _tierWord = motivation.tier === "High" ? "high-motivation" : motivation.tier === "Medium" ? "moderate-motivation" : "low-motivation";
 
   const lines: Record<CommunicationStyle, Record<MotivationTier, string>> = {
     Analytical: {

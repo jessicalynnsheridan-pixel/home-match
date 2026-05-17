@@ -12,7 +12,7 @@ import DreamHomeProfile from "@/components/dashboard/DreamHomeProfile";
 import FollowUpReminders from "@/components/dashboard/FollowUpReminders";
 import EmailTemplates from "@/components/dashboard/EmailTemplates";
 import MortgageChecklist from "@/components/dashboard/MortgageChecklist";
-import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, TrendingUp, Info } from "lucide-react";
+import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, Info } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { calcBuyerIntelligence } from "@/lib/buyerIntelligence";
 import BuyerIntelligencePanel from "@/components/dashboard/BuyerIntelligence";

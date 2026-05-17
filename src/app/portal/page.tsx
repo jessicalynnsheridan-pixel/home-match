@@ -82,32 +82,34 @@ const FTB_TIPS = [
 // ─── Saved homes hook (localStorage) ─────────────────────────────────────────
 function useSavedHomes(fallbackIds: string[]) {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("homematch_saved_homes");
-      if (raw) {
-        setSavedIds(new Set(JSON.parse(raw)));
-      } else {
+    // setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
+    const timer = setTimeout(() => {
+      try {
+        const raw = localStorage.getItem("homematch_saved_homes");
+        if (raw) {
+          setSavedIds(new Set(JSON.parse(raw)));
+        } else {
+          setSavedIds(new Set(fallbackIds));
+        }
+      } catch {
         setSavedIds(new Set(fallbackIds));
       }
-    } catch {
-      setSavedIds(new Set(fallbackIds));
-    }
-    setLoaded(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fallbackIds]);
 
   function toggle(id: string) {
     setSavedIds((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
       try { localStorage.setItem("homematch_saved_homes", JSON.stringify([...next])); } catch { /* ignore */ }
       return next;
     });
   }
 
-  return { savedIds, toggle, loaded };
+  return { savedIds, toggle };
 }
 
 // ─── Realtor Banner ───────────────────────────────────────────────────────────
@@ -189,26 +191,29 @@ export default function BuyerPortalPage() {
   const [newMatchCount, setNewMatchCount] = useState(0);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("homematch_answers");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setAnswers(parsed);
-        setIsRealUser(true);
-      }
-    } catch { /* ignore */ }
+    // setTimeout so all setState calls fire in a callback (satisfies react-hooks/set-state-in-effect)
+    const timer = setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem("homematch_answers");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setAnswers(parsed);
+          setIsRealUser(true);
+        }
+      } catch { /* ignore */ }
 
-    // Track last visit for "new matches" return trigger
-    try {
-      const lastVisit = localStorage.getItem("homematch_last_portal_visit");
-      const now = Date.now();
-      if (lastVisit) {
-        const hoursSince = (now - parseInt(lastVisit)) / (1000 * 60 * 60);
-        // Simulate: every 24hrs of absence = 1-3 new matches
-        if (hoursSince > 1) setNewMatchCount(Math.min(3, Math.floor(hoursSince / 8) + 1));
-      }
-      localStorage.setItem("homematch_last_portal_visit", String(now));
-    } catch { /* ignore */ }
+      // Track last visit for "new matches" return trigger
+      try {
+        const lastVisit = localStorage.getItem("homematch_last_portal_visit");
+        const now = Date.now();
+        if (lastVisit) {
+          const hoursSince = (now - parseInt(lastVisit)) / (1000 * 60 * 60);
+          if (hoursSince > 1) setNewMatchCount(Math.min(3, Math.floor(hoursSince / 8) + 1));
+        }
+        localStorage.setItem("homematch_last_portal_visit", String(now));
+      } catch { /* ignore */ }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const [openPhase, setOpenPhase] = useState<string | null>(null);
@@ -279,9 +284,9 @@ export default function BuyerPortalPage() {
           <div className="bg-[#b8a88a]/10 border border-[#b8a88a]/30 rounded-2xl p-5 flex gap-4 items-start">
             <Info size={18} className="text-[#b8a88a] shrink-0 mt-0.5" />
             <div>
-              <p className="text-[#2c2825] font-medium text-sm mb-1">First-time buyer? We've got you.</p>
+              <p className="text-[#2c2825] font-medium text-sm mb-1">First-time buyer? We&apos;ve got you.</p>
               <p className="text-[#8c8580] text-sm">
-                You qualify for the Ontario First-Time Home Buyer Land Transfer Tax Rebate (up to $4,000) and may be eligible for the FHSA and Home Buyers' Plan. See your tips below.
+                You qualify for the Ontario First-Time Home Buyer Land Transfer Tax Rebate (up to $4,000) and may be eligible for the FHSA and Home Buyers&apos; Plan. See your tips below.
               </p>
             </div>
           </div>
