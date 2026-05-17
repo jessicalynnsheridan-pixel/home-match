@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, Settings } from "lucide-react";
+import { useBranding } from "@/context/BrandingContext";
 
 const buyerLinks = [
   { label: "How It Works", href: "/#how-it-works" },
@@ -20,8 +21,13 @@ const realtorLinks = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { branding } = useBranding();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<"buyers" | "realtors" | null>(null);
+
+  // Show the realtor identity pill on buyer-facing pages
+  const buyerPages = ["/portal", "/listings", "/questionnaire", "/results"];
+  const showRealtorPill = buyerPages.some((p) => pathname.startsWith(p));
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
@@ -88,6 +94,16 @@ export default function Navigation() {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Realtor identity pill — shown on buyer pages */}
+          {showRealtorPill && (
+            <div className="flex items-center gap-2 bg-[#f5f3f0] border border-[#e8e4de] rounded-full px-3 py-1.5">
+              <div className="w-5 h-5 rounded-full bg-[#2c2825] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                {branding.realtorName.charAt(0)}
+              </div>
+              <span className="text-[#2c2825] text-xs font-medium">{branding.realtorName.split(" ")[0]}</span>
+              <span className="text-[#8c8580] text-xs">· Your Advisor</span>
+            </div>
+          )}
           <Link
             href="/admin"
             className="text-[#8c8580] hover:text-[#2c2825] transition-colors"

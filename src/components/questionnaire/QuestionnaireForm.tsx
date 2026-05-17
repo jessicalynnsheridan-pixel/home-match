@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuestionnaireAnswers } from "@/types";
+import StepVibe from "./steps/StepVibe";
 import StepContact from "./steps/StepContact";
 import StepTimeline from "./steps/StepTimeline";
 import StepLocation from "./steps/StepLocation";
@@ -13,6 +14,13 @@ import StepNotes from "./steps/StepNotes";
 
 // Initial empty state for the form
 const INITIAL: QuestionnaireAnswers = {
+  // Vibe (step 0 — emotional onboarding)
+  homeFeeling: [],
+  sundayMorning: "",
+  currentFrustration: [],
+  hostingVsPrivacy: "",
+  modernVsCozy: "",
+  // Contact
   firstName: "",
   lastName: "",
   email: "",
@@ -40,6 +48,7 @@ const INITIAL: QuestionnaireAnswers = {
 };
 
 const STEP_LABELS = [
+  "Your Vibe",
   "Contact",
   "Timeline",
   "Location",
@@ -82,6 +91,7 @@ export default function QuestionnaireForm() {
   const stepProps = { answers, update, onNext: next, onBack: back, onSubmit: submit };
 
   const StepComponent = [
+    StepVibe,
     StepContact,
     StepTimeline,
     StepLocation,
@@ -91,39 +101,39 @@ export default function QuestionnaireForm() {
     StepNotes,
   ][step];
 
+  const STEP_EMOJIS = ["✨", "👋", "⏱️", "📍", "🏠", "🌿", "💰", "📝"];
+
   return (
     <div className="w-full">
       {/* Progress bar */}
       <div className="mb-10">
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-[#8c8580] text-sm">
-            Step {step + 1} of {totalSteps} &mdash; {STEP_LABELS[step]}
-          </p>
-          <p className="text-[#8c8580] text-sm">{progress}%</p>
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-base">{STEP_EMOJIS[step]}</span>
+            <p className="text-[#2c2825] text-sm font-medium">{STEP_LABELS[step]}</p>
+          </div>
+          <p className="text-[#b8a88a] text-xs font-medium">{progress}% complete</p>
         </div>
         <div className="h-1.5 bg-[#e8e4de] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#2c2825] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#b8a88a] to-[#2c2825] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
 
         {/* Step dots */}
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-between mt-3">
           {STEP_LABELS.map((label, i) => (
-            <div key={label} className="flex flex-col items-center gap-1.5">
+            <div key={label} className="flex flex-col items-center gap-1">
               <div
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  i <= step ? "bg-[#2c2825]" : "bg-[#e8e4de]"
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  i < step
+                    ? "bg-[#b8a88a] scale-100"
+                    : i === step
+                    ? "bg-[#2c2825] scale-125"
+                    : "bg-[#e8e4de]"
                 }`}
               />
-              <p
-                className={`text-[10px] hidden sm:block transition-colors ${
-                  i === step ? "text-[#2c2825] font-medium" : "text-[#8c8580]"
-                }`}
-              >
-                {label}
-              </p>
             </div>
           ))}
         </div>

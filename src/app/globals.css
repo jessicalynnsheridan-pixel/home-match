@@ -65,3 +65,21 @@ input[type="range"]::-moz-range-thumb {
   to   { opacity: 1; }
 }
 .animate-fade-in { animation: fadeIn 0.35s ease-out both; }
+
+@keyframes confetti {
+  0%   { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) rotate(360deg) scale(0.5); }
+}
+.animate-confetti { animation: confetti 1.2s ease-out both; }
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }

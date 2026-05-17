@@ -80,6 +80,13 @@ export interface QuestionnaireAnswers {
   bedrooms: number;
   bathrooms: number;
 
+  // Step 0 – Emotional Vibe (new — shown before contact info)
+  homeFeeling: string[];          // e.g. "Peaceful retreat", "Social hub"
+  sundayMorning: string;          // e.g. "Coffee in a sunny kitchen"
+  currentFrustration: string[];   // e.g. "No outdoor space"
+  hostingVsPrivacy: "Hosting haven" | "Private sanctuary" | "Balance of both" | "";
+  modernVsCozy: "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique" | "";
+
   // Step 5 – Lifestyle
   mustHaves: string[];
   dealBreakers: string[];

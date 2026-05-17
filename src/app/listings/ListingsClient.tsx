@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Listing, NiagaraCity, PropertyType, ListingStatus, QuestionnaireAnswers } from "@/types";
 import { calcBuyerCompatibility } from "@/lib/buyerMatch";
-import { Bed, Bath, Maximize2, Calendar, Tag, MapPin, Sparkles, SlidersHorizontal } from "lucide-react";
+import { Bed, Bath, Maximize2, Calendar, Tag, MapPin, Sparkles, SlidersHorizontal, Heart, MessageCircle } from "lucide-react";
+import { useBranding } from "@/context/BrandingContext";
 
 const ALL_CITIES: NiagaraCity[] = [
   "St. Catharines",
@@ -42,6 +43,7 @@ function formatPrice(p: number) {
 }
 
 export default function ListingsClient({ initialListings }: { initialListings: Listing[] }) {
+  const { branding } = useBranding();
   const [city, setCity] = useState<NiagaraCity | "">("");
   const [propType, setPropType] = useState<PropertyType | "">("");
   const [minBeds, setMinBeds] = useState(0);
@@ -49,13 +51,29 @@ export default function ListingsClient({ initialListings }: { initialListings: L
   const [statusFilter, setStatusFilter] = useState<ListingStatus | "">("");
   const [buyerAnswers, setBuyerAnswers] = useState<Partial<QuestionnaireAnswers> | null>(null);
   const [sortByMatch, setSortByMatch] = useState(false);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem("homematch_answers");
       if (raw) setBuyerAnswers(JSON.parse(raw));
     } catch { /* ignore */ }
+    try {
+      const saved = localStorage.getItem("homematch_saved_homes");
+      if (saved) setSavedIds(new Set(JSON.parse(saved)));
+    } catch { /* ignore */ }
   }, []);
+
+  function toggleSave(e: React.MouseEvent, id: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      try { localStorage.setItem("homematch_saved_homes", JSON.stringify([...next])); } catch { /* ignore */ }
+      return next;
+    });
+  }
 
   const matchScores = useMemo(() => {
     if (!buyerAnswers) return new Map<string, number>();
@@ -109,34 +127,50 @@ export default function ListingsClient({ initialListings }: { initialListings: L
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
         {/* Buyer profile banner */}
         {buyerAnswers ? (
-          <div className="bg-white border border-[#b8a88a]/40 rounded-2xl p-4 mb-6 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#f5f3f0] border border-[#e8e4de] flex items-center justify-center flex-shrink-0">
-                <Sparkles size={14} className="text-[#b8a88a]" />
+          <div className="space-y-3 mb-6">
+            {/* Realtor message */}
+            <div className="bg-[#2c2825] rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#b8a88a] flex items-center justify-center shrink-0 text-[#2c2825] font-bold text-sm">
+                {branding.realtorName.charAt(0)}
               </div>
-              <div>
-                <p className="text-[#2c2825] text-sm font-medium">Your buyer profile is active</p>
-                <p className="text-[#8c8580] text-xs">Each listing now shows your personal match score.</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-white text-sm font-medium">{branding.realtorName}</p>
+                <p className="text-[#e8e4de]/70 text-xs truncate">
+                  Showing all {initialListings.length} listings matched to your profile.
+                </p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <button
-                onClick={() => setSortByMatch((v) => !v)}
-                className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
-                  sortByMatch
-                    ? "bg-[#2c2825] text-white border-[#2c2825]"
-                    : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"
-                }`}
-              >
-                <SlidersHorizontal size={11} />
-                Sort by match
+              <button className="shrink-0 flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-full transition-colors">
+                <MessageCircle size={11} />
+                Message
               </button>
-              <Link
-                href="/questionnaire"
-                className="text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors underline underline-offset-2"
-              >
-                Update profile
-              </Link>
+            </div>
+            {/* Profile active + sort */}
+            <div className="bg-white border border-[#b8a88a]/40 rounded-2xl p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#f5f3f0] border border-[#e8e4de] flex items-center justify-center flex-shrink-0">
+                  <Sparkles size={14} className="text-[#b8a88a]" />
+                </div>
+                <div>
+                  <p className="text-[#2c2825] text-sm font-medium">Your buyer profile is active</p>
+                  <p className="text-[#8c8580] text-xs">Match scores are shown on every listing. Save homes with the {"♥"} button.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <button
+                  onClick={() => setSortByMatch((v) => !v)}
+                  className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
+                    sortByMatch
+                      ? "bg-[#2c2825] text-white border-[#2c2825]"
+                      : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"
+                  }`}
+                >
+                  <SlidersHorizontal size={11} />
+                  Sort by match
+                </button>
+                <Link href="/questionnaire" className="text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors underline underline-offset-2">
+                  Update profile
+                </Link>
+              </div>
             </div>
           </div>
         ) : (
@@ -261,85 +295,87 @@ export default function ListingsClient({ initialListings }: { initialListings: L
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((listing) => (
-              <Link
-                key={listing.id}
-                href={`/listings/${listing.id}`}
-                className="group bg-white border border-[#e8e4de] rounded-2xl overflow-hidden hover:shadow-lg hover:border-[#b8a88a] transition-all duration-300"
-              >
-                {/* Image */}
-                <div className="relative h-52 overflow-hidden bg-[#e8e4de]">
-                  <img
-                    src={listing.images[0]}
-                    alt={listing.address}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span
-                    className={`absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[listing.status]}`}
-                  >
-                    {listing.status}
-                  </span>
-                  <span className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
-                    <Calendar size={10} />
-                    {listing.daysOnMarket}d
-                  </span>
-                  {buyerAnswers && (() => {
-                    const score = matchScores.get(listing.id) ?? 0;
-                    const color = score >= 75 ? "bg-emerald-500" : score >= 50 ? "bg-[#b8a88a]" : "bg-[#8c8580]";
-                    return (
-                      <span className={`absolute bottom-3 right-3 ${color} text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1`}>
-                        <Sparkles size={9} />
-                        {score}% match
-                      </span>
-                    );
-                  })()}
-                </div>
+            {filtered.map((listing) => {
+              const score = buyerAnswers ? (matchScores.get(listing.id) ?? 0) : null;
+              const isSaved = savedIds.has(listing.id);
+              const scoreColor = score !== null
+                ? score >= 75 ? "bg-emerald-500" : score >= 50 ? "bg-[#b8a88a]" : "bg-[#8c8580]"
+                : "";
+              const scoreLabel = score !== null
+                ? score >= 85 ? "Exceptional" : score >= 70 ? "Strong match" : score >= 50 ? "Good match" : "Partial match"
+                : "";
 
-                {/* Content */}
-                <div className="p-5">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    {listing.originalPrice ? (
-                      <>
-                        <span className="text-xl font-semibold text-[#2c2825]">
-                          {formatPrice(listing.price)}
-                        </span>
-                        <span className="text-sm text-[#8c8580] line-through">
-                          {formatPrice(listing.originalPrice)}
-                        </span>
-                        <span className="text-xs text-amber-600 font-medium">Price Reduced</span>
-                      </>
-                    ) : (
-                      <span className="text-xl font-semibold text-[#2c2825]">
-                        {formatPrice(listing.price)}
-                      </span>
+              return (
+                <Link
+                  key={listing.id}
+                  href={`/listings/${listing.id}`}
+                  className="group bg-white border border-[#e8e4de] rounded-2xl overflow-hidden hover:shadow-lg hover:border-[#b8a88a] transition-all duration-300 flex flex-col"
+                >
+                  {/* Image */}
+                  <div className="relative h-52 overflow-hidden bg-[#e8e4de] shrink-0">
+                    <img
+                      src={listing.images[0]}
+                      alt={listing.address}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    {/* Status badge */}
+                    <span className={`absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[listing.status]}`}>
+                      {listing.status}
+                    </span>
+                    {/* Days on market */}
+                    <span className="absolute top-3 right-12 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
+                      <Calendar size={10} />
+                      {listing.daysOnMarket}d
+                    </span>
+                    {/* Save heart */}
+                    <button
+                      onClick={(e) => toggleSave(e, listing.id)}
+                      className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow transition-all hover:scale-110 active:scale-95 ${
+                        isSaved ? "bg-rose-500" : "bg-white/90 backdrop-blur"
+                      }`}
+                    >
+                      <Heart size={14} className={isSaved ? "fill-white text-white" : "text-[#8c8580]"} />
+                    </button>
+                    {/* Match score — hero placement */}
+                    {score !== null && (
+                      <div className={`absolute bottom-3 left-3 ${scoreColor} text-white px-3 py-1.5 rounded-xl flex items-center gap-2`}>
+                        <Sparkles size={11} />
+                        <div>
+                          <span className="font-bold text-sm">{score}%</span>
+                          <span className="text-white/80 text-xs ml-1">{scoreLabel}</span>
+                        </div>
+                      </div>
                     )}
                   </div>
-                  <p className="text-[#2c2825] font-medium text-sm">{listing.address}</p>
-                  <p className="text-[#8c8580] text-xs flex items-center gap-1 mt-0.5 mb-3">
-                    <MapPin size={10} />
-                    {listing.neighbourhood}, {listing.city}
-                  </p>
-                  <div className="flex items-center gap-4 text-xs text-[#8c8580] border-t border-[#f0ece6] pt-3">
-                    <span className="flex items-center gap-1">
-                      <Bed size={12} />
-                      {listing.bedrooms} bd
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Bath size={12} />
-                      {listing.bathrooms} ba
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Maximize2 size={12} />
-                      {listing.sqft.toLocaleString()} sqft
-                    </span>
-                    <span className="flex items-center gap-1 ml-auto">
-                      <Tag size={12} />
-                      {listing.mlsNumber}
-                    </span>
+
+                  {/* Content */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      {listing.originalPrice ? (
+                        <>
+                          <span className="text-xl font-semibold text-[#2c2825]">{formatPrice(listing.price)}</span>
+                          <span className="text-sm text-[#8c8580] line-through">{formatPrice(listing.originalPrice)}</span>
+                          <span className="text-xs text-amber-600 font-medium">Price Drop</span>
+                        </>
+                      ) : (
+                        <span className="text-xl font-semibold text-[#2c2825]">{formatPrice(listing.price)}</span>
+                      )}
+                    </div>
+                    <p className="text-[#2c2825] font-medium text-sm">{listing.address}</p>
+                    <p className="text-[#8c8580] text-xs flex items-center gap-1 mt-0.5 mb-3">
+                      <MapPin size={10} />
+                      {listing.neighbourhood || listing.city}, {listing.city}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-[#8c8580] border-t border-[#f0ece6] pt-3 mt-auto">
+                      <span className="flex items-center gap-1"><Bed size={12} />{listing.bedrooms} bd</span>
+                      <span className="flex items-center gap-1"><Bath size={12} />{listing.bathrooms} ba</span>
+                      <span className="flex items-center gap-1"><Maximize2 size={12} />{listing.sqft.toLocaleString()} sqft</span>
+                      <span className="flex items-center gap-1 ml-auto"><Tag size={12} />{listing.mlsNumber}</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
