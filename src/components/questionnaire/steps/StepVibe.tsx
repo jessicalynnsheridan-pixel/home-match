@@ -7,12 +7,12 @@ import { ArrowRight } from "lucide-react";
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const HOME_FEELINGS = [
-  { label: "Peaceful retreat",      emoji: "🌿", bg: "#4a7c59" },
-  { label: "Social hub",            emoji: "🥂", bg: "#c87941" },
-  { label: "Creative sanctuary",    emoji: "🎨", bg: "#4a6f9c" },
-  { label: "Family nest",           emoji: "🏡", bg: "#b89040" },
-  { label: "Modern haven",          emoji: "✨", bg: "#4a4540" },
-  { label: "Adventure base",        emoji: "🌲", bg: "#3d6b4a" },
+  { label: "Peaceful",   emoji: "🌿", bg: "#4a7c59" },
+  { label: "Social",     emoji: "🥂", bg: "#c87941" },
+  { label: "Creative",   emoji: "🎨", bg: "#4a6f9c" },
+  { label: "Family",     emoji: "🏡", bg: "#b89040" },
+  { label: "Modern",     emoji: "✨", bg: "#4a4540" },
+  { label: "Adventure",  emoji: "🌲", bg: "#3d6b4a" },
 ];
 
 const SUNDAY_MOODS = [
