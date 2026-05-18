@@ -233,9 +233,6 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
           {availabilityHints.map((h) => (
             <span key={h} className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "#c4b5fd", color: "#3b0764" }}>{h}</span>
           ))}
-          {["Morning", "Afternoon", "Evening"].map((slot) => (
-            <span key={slot} className="text-xs font-medium px-3 py-1 rounded-full" style={{ background: "white", color: "#7c3aed", border: "1px solid #c4b5fd" }}>{slot}</span>
-          ))}
         </div>
       </div>
 
@@ -261,7 +258,7 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
             <div style={{ background: "#ffe4e6", border: "1px solid #fda4af", borderRadius: "16px", padding: "16px" }}>
               <div className="flex items-center gap-1.5 mb-2.5">
                 <XIcon size={12} style={{ color: "#e11d48" }} />
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#9f1239" }}>Deal Breakers</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#9f1239" }}>Do Not Want</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.dealBreakers.map((item) => (
