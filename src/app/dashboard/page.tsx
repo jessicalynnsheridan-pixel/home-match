@@ -700,7 +700,7 @@ export default function DashboardPage() {
       {/* ── Warm ivory header ────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-[#faf7f3] via-[#f5f0e8] to-[#ede8df] px-5 lg:px-8 pt-10 pb-16 border-b border-[#e8e2d8]">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles size={13} className="text-[#b8a88a]" />
@@ -713,12 +713,38 @@ export default function DashboardPage() {
                   : "You're all caught up. Great work!"}
               </p>
             </div>
-            <button
-              onClick={() => exportLeads(filtered)}
-              className="flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60"
-            >
-              <Download size={12} /> Export
-            </button>
+
+            {/* Pipeline commission — motivating number */}
+            <div className="shrink-0 text-right">
+              {(() => {
+                const active = allLeads.filter(l => l.status !== "Closed");
+                const commission = active.reduce((sum, l) => {
+                  const avg = ((l.answers.budgetMin || 0) + (l.answers.budgetMax || 0)) / 2;
+                  return sum + avg * 0.025;
+                }, 0);
+                const fmt = (n: number) => n >= 1000000 ? `$${(n/1000000).toFixed(1)}M` : n >= 1000 ? `$${Math.round(n/1000)}K` : `$${Math.round(n)}`;
+                return commission > 0 ? (
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a] mb-0.5">Est. Commission</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-[#2c2825] leading-none">{fmt(commission)}</p>
+                    <p className="text-[10px] text-[#b8b4b0] mt-1">{active.length} active lead{active.length !== 1 ? "s" : ""} · 2.5%</p>
+                    <button
+                      onClick={() => exportLeads(filtered)}
+                      className="mt-2 flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-3 py-1.5 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60 ml-auto"
+                    >
+                      <Download size={11} /> Export
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => exportLeads(filtered)}
+                    className="flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60"
+                  >
+                    <Download size={12} /> Export
+                  </button>
+                );
+              })()}
+            </div>
           </div>
 
           {/* Stat pills — 2×2 on mobile, row on desktop */}
