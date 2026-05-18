@@ -66,7 +66,7 @@ function emailDay1Buyer(realtorName: string, lead: LeadRow) {
       </div>
       <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
         <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
-        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 20px">Thanks for submitting your profile — I've received everything and I'm already reviewing your search criteria. Here's what I have on file for you:</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 20px">Thanks for submitting your profile - I've received everything and I'm already reviewing your search criteria. Here's what I have on file for you:</p>
         <div style="background:#faf9f7;border-radius:12px;padding:18px 20px;margin-bottom:24px;border:1px solid #f0ece6">
           <table style="width:100%;border-collapse:collapse">
             <tr><td style="padding:8px 0;border-bottom:1px solid #ede9e3;color:#8c8580;font-size:12px;width:40%;vertical-align:top">Looking in</td><td style="padding:8px 0;border-bottom:1px solid #ede9e3;font-size:13px;font-weight:600">${city}</td></tr>
@@ -95,7 +95,7 @@ function emailDay3Buyer(realtorName: string, lead: LeadRow) {
       <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
         <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
         <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">I wanted to check in and see how you're feeling about your home search in ${city}. Do you have any questions since submitting your profile?</p>
-        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Whether you're ready to start viewing properties or just want to talk through your options, I'm here. No rush — just want to make sure you feel supported every step of the way.</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Whether you're ready to start viewing properties or just want to talk through your options, I'm here. No rush - just want to make sure you feel supported every step of the way.</p>
         <p style="font-size:14px;color:#5c5550;margin:0 0 4px">Looking forward to connecting,</p>
         <p style="font-size:14px;font-weight:700;color:#2c2825;margin:0">${realtorName}</p>
         <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent via HomeMatch · Reply directly to reach ${realtorName}</p>
@@ -115,7 +115,7 @@ function emailDay7Buyer(realtorName: string, lead: LeadRow) {
       <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
         <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
         <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">It's been a little while since you submitted your profile and I want to make sure you're getting the support you need.</p>
-        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">The market in ${city} moves quickly — but that doesn't mean you have to rush. Even a quick 15-minute call can help clarify what's out there and what fits your situation best.</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">The market in ${city} moves quickly - but that doesn't mean you have to rush. Even a quick 15-minute call can help clarify what's out there and what fits your situation best.</p>
         <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Feel free to reply here or give me a call whenever works for you. I'm happy to go at whatever pace feels right.</p>
         <p style="font-size:14px;color:#5c5550;margin:0 0 4px">Here whenever you're ready,</p>
         <p style="font-size:14px;font-weight:700;color:#2c2825;margin:0">${realtorName}</p>
@@ -133,7 +133,7 @@ function emailInactivityRealtor(realtorName: string, lead: LeadRow, daysIdle: nu
     <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
         <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch · Inactivity Alert</p>
-        <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">${scoreEmoji} ${buyer} — ${Math.floor(daysIdle)} days with no contact</h1>
+        <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">${scoreEmoji} ${buyer} - ${Math.floor(daysIdle)} days with no contact</h1>
       </div>
       <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
         <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${realtorName},</p>
@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ran: new Date().toISOString(), sent: 0, message: "No active leads found" });
   }
 
-  // Fetch sent automation logs — gracefully handle missing table
+  // Fetch sent automation logs - gracefully handle missing table
   const leadIds = (leads as LeadRow[]).map((l) => l.id);
   const { data: logs } = await admin
     .from("automation_log")
@@ -216,7 +216,7 @@ export async function GET(request: NextRequest) {
     async function tryLog(type: AutomationType, subject: string, html: string, to: string) {
       if (sent.has(`${lead.id}:${type}`)) return; // already sent
       await sendEmail(resendKey!, to, subject, html);
-      // Insert log — silently ignore if table doesn't exist yet
+      // Insert log - silently ignore if table doesn't exist yet
       try {
         await admin.from("automation_log").insert({
           lead_id: lead.id,
@@ -230,22 +230,22 @@ export async function GET(request: NextRequest) {
       sent.add(`${lead.id}:${type}`); // prevent double-send within same run
     }
 
-    // Day 1 — welcome email to buyer (first 36 hours)
+    // Day 1 - welcome email to buyer (first 36 hours)
     if (age >= 0 && age < 1.5 && buyerEmail) {
       await tryLog("day1", `Your home search is officially on, ${lead.answers.firstName ?? buyer} 🏡`, emailDay1Buyer(realtorName, lead), buyerEmail);
     }
 
-    // Day 3 — check-in email to buyer
+    // Day 3 - check-in email to buyer
     if (age >= 3 && age < 4 && ["New Lead", "Qualified"].includes(lead.status) && buyerEmail) {
       await tryLog("day3", `Just checking in on your search, ${lead.answers.firstName ?? buyer} 👋`, emailDay3Buyer(realtorName, lead), buyerEmail);
     }
 
-    // Day 7 — gentle nudge to buyer
+    // Day 7 - gentle nudge to buyer
     if (age >= 7 && age < 8 && ["New Lead", "Qualified"].includes(lead.status) && buyerEmail) {
       await tryLog("day7", `Still thinking about buying in ${lead.answers.preferredCity ?? "your area"}?`, emailDay7Buyer(realtorName, lead), buyerEmail);
     }
 
-    // Inactivity — Hot/Warm leads idle 5+ days, re-alerts every 7 days
+    // Inactivity - Hot/Warm leads idle 5+ days, re-alerts every 7 days
     if (age >= 5 && (lead.score === "Hot" || lead.score === "Warm")) {
       let lastAlert: { sent_at: string } | null = null;
       try {
