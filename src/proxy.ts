@@ -25,17 +25,23 @@ export async function proxy(request: NextRequest) {
     }
   );
 
+  // Refresh session on every request — required for Supabase SSR auth
   const { data: { user } } = await supabase.auth.getUser();
 
-  const isProtected = PROTECTED.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
+  const path = request.nextUrl.pathname;
+  const isProtected = PROTECTED.some((p) => path.startsWith(p));
 
+  // Not logged in + protected route → redirect to login
   if (isProtected && !user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
-    loginUrl.searchParams.set("next", request.nextUrl.pathname);
+    loginUrl.searchParams.set("next", path);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Already logged in + hitting login page → send to dashboard
+  if (user && path === "/login") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return supabaseResponse;
