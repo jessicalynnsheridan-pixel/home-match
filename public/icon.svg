@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Background -->
+  <rect width="48" height="48" rx="10" fill="#2c2825"/>
+
+  <!-- Arch mark in gold — centred -->
+  <!-- Left pillar -->
+  <rect x="10" y="22" width="5" height="18" rx="1.5" fill="#b8a88a"/>
+  <!-- Right pillar -->
+  <rect x="33" y="22" width="5" height="18" rx="1.5" fill="#b8a88a"/>
+  <!-- Arch roof -->
+  <path d="M10 24 Q24 8 38 24" stroke="#b8a88a" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Door -->
+  <rect x="19.5" y="31" width="9" height="9" rx="2" fill="#b8a88a" opacity="0.5"/>
+</svg>

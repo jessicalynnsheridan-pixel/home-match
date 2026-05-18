@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none">
+  <!-- Mark: minimal arch/home glyph -->
+  <g>
+    <!-- Left pillar -->
+    <rect x="4" y="18" width="4" height="22" rx="1" fill="#b8a88a"/>
+    <!-- Right pillar -->
+    <rect x="22" y="18" width="4" height="22" rx="1" fill="#b8a88a"/>
+    <!-- Arch (roof line) -->
+    <path d="M4 20 Q15 6 26 20" stroke="#b8a88a" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <!-- Door/threshold -->
+    <rect x="11" y="30" width="8" height="10" rx="1.5" fill="#b8a88a" opacity="0.55"/>
+  </g>
+
+  <!-- Wordmark -->
+  <!-- "Home" — light weight -->
+  <text x="40" y="34"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-weight="400"
+    letter-spacing="0.5"
+    fill="#2c2825">Home</text>
+
+  <!-- "Match" — slightly bolder, gold accent on M -->
+  <text x="103" y="34"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-weight="700"
+    letter-spacing="0.5"
+    fill="#2c2825">Match</text>
+
+  <!-- Thin gold rule under wordmark -->
+  <rect x="40" y="38" width="170" height="1.5" rx="1" fill="#b8a88a" opacity="0.5"/>
+</svg>
