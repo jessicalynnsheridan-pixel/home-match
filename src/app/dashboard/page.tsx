@@ -379,17 +379,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#f5f3f0]">
 
-      {/* ── Rich dark header ─────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-[#2c2825] via-[#221f1c] to-[#1a1714] px-5 lg:px-8 pt-10 pb-16">
+      {/* ── Warm ivory header ────────────────────────────────────────── */}
+      <div className="bg-gradient-to-br from-[#faf7f3] via-[#f5f0e8] to-[#ede8df] px-5 lg:px-8 pt-10 pb-16 border-b border-[#e8e2d8]">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles size={14} className="text-[#b8a88a]" />
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles size={13} className="text-[#b8a88a]" />
                 <span className="text-[#b8a88a] text-xs font-medium tracking-wide">{formatDate()}</span>
               </div>
-              <h1 className="text-3xl font-bold text-white mb-1">{getGreeting(realtorName)}</h1>
-              <p className="text-[#9c9590] text-sm">
+              <h1 className="text-3xl font-bold text-[#1a1714] mb-1">{getGreeting(realtorName)}</h1>
+              <p className="text-[#8c8580] text-sm">
                 {activeItems.length > 0
                   ? `You have ${activeItems.length} priority action${activeItems.length !== 1 ? "s" : ""} today`
                   : "You're all caught up — great work!"}
@@ -397,7 +397,7 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => exportLeads(filtered)}
-              className="flex items-center gap-1.5 border border-white/20 text-white/70 text-xs px-4 py-2 rounded-full hover:border-white/50 hover:text-white transition-colors bg-white/5 backdrop-blur-sm"
+              className="flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60"
             >
               <Download size={12} /> Export
             </button>
@@ -406,12 +406,12 @@ export default function DashboardPage() {
           {/* Stat pills */}
           <div className="flex gap-3 mt-8 flex-wrap">
             {[
-              { label: "Total Leads", value: allLeads.length, bg: "bg-white/10", text: "text-white", sub: "text-white/50", icon: <Users size={14} /> },
-              { label: "Hot", value: hot, bg: "bg-rose-500/20 border border-rose-400/30", text: "text-rose-300", sub: "text-rose-400/70", icon: <Flame size={14} className="text-rose-400" /> },
-              { label: "Warm", value: warm, bg: "bg-amber-500/20 border border-amber-400/30", text: "text-amber-300", sub: "text-amber-400/70", icon: <Zap size={14} className="text-amber-400" /> },
-              { label: "New", value: newLeads, bg: "bg-blue-500/20 border border-blue-400/30", text: "text-blue-300", sub: "text-blue-400/70", icon: <TrendingUp size={14} className="text-blue-400" /> },
+              { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Users size={14} className="text-[#b8a88a]" /> },
+              { label: "Hot", value: hot, bg: "bg-rose-50 border border-rose-200", text: "text-rose-700", sub: "text-rose-400", icon: <Flame size={14} className="text-rose-500" /> },
+              { label: "Warm", value: warm, bg: "bg-amber-50 border border-amber-200", text: "text-amber-700", sub: "text-amber-400", icon: <Zap size={14} className="text-amber-500" /> },
+              { label: "New", value: newLeads, bg: "bg-sky-50 border border-sky-200", text: "text-sky-700", sub: "text-sky-400", icon: <TrendingUp size={14} className="text-sky-500" /> },
             ].map((stat) => (
-              <div key={stat.label} className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${stat.bg}`}>
+              <div key={stat.label} className={`flex items-center gap-3 px-4 py-3 rounded-2xl shadow-sm ${stat.bg}`}>
                 {stat.icon}
                 <div>
                   <p className={`text-xl font-bold leading-none ${stat.text}`}>{stat.value}</p>
@@ -572,58 +572,60 @@ export default function DashboardPage() {
           {/* ── RIGHT: Sidebar ─────────────────────────────────────────── */}
           <div className="space-y-4">
 
-            {/* Buyer link — hero card */}
-            <div className="bg-gradient-to-br from-[#2c2825] to-[#3d3630] rounded-2xl p-5 shadow-lg">
+            {/* Buyer link card */}
+            <div className="bg-gradient-to-br from-[#f5f0e8] to-[#ede6d8] border border-[#ddd6c8] rounded-2xl p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-1">
                 <Link2 size={13} className="text-[#b8a88a]" />
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
               </div>
-              <p className="text-white/70 text-xs mb-4 leading-relaxed">
+              <p className="text-[#6b6560] text-xs mb-4 leading-relaxed">
                 Share this link — buyers fill out the questionnaire and land directly in your dashboard.
               </p>
               {shareableLink ? (
                 <>
-                  <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 mb-3">
-                    <p className="text-[10px] text-white/60 truncate">{shareableLink}</p>
+                  <div className="bg-white/80 border border-[#ddd6c8] rounded-xl px-3 py-2.5 mb-3">
+                    <p className="text-[10px] text-[#8c8580] truncate">{shareableLink}</p>
                   </div>
                   <button
                     onClick={copyLink}
                     className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-xl transition-all ${
                       copied
                         ? "bg-emerald-500 text-white"
-                        : "bg-[#b8a88a] text-[#2c2825] hover:bg-[#c9b99b]"
+                        : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
                     }`}
                   >
                     {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
                   </button>
                 </>
               ) : (
-                <div className="bg-white/10 rounded-xl px-3 py-2.5">
-                  <p className="text-[10px] text-white/50">Sign in to get your link</p>
+                <div className="bg-white/60 rounded-xl px-3 py-2.5">
+                  <p className="text-[10px] text-[#8c8580]">Sign in to get your link</p>
                 </div>
               )}
             </div>
 
             {/* Hot leads callout */}
             {hot > 0 && (
-              <div className="bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl p-4 shadow-md">
-                <div className="flex items-center gap-2 mb-1">
-                  <Flame size={14} className="text-rose-200" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-rose-200">Hot Pipeline</p>
+              <div className="bg-white border border-rose-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-7 h-7 rounded-xl bg-rose-100 flex items-center justify-center">
+                    <Flame size={14} className="text-rose-500" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Hot Pipeline</p>
                 </div>
-                <p className="text-3xl font-bold text-white">{hot}</p>
-                <p className="text-rose-200 text-xs mt-0.5">
+                <p className="text-4xl font-bold text-[#2c2825]">{hot}</p>
+                <p className="text-[#8c8580] text-xs mt-1">
                   {hot === 1 ? "lead" : "leads"} ready to move — act fast
                 </p>
                 {allLeads.length > 0 && (
                   <div className="mt-3">
-                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-rose-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-white/80"
+                        className="h-full rounded-full bg-rose-400"
                         style={{ width: `${Math.min(100, (hot / allLeads.length) * 100)}%` }}
                       />
                     </div>
-                    <p className="text-[10px] text-rose-200/80 mt-1">
+                    <p className="text-[10px] text-[#b8b4b0] mt-1">
                       {Math.round((hot / allLeads.length) * 100)}% of your pipeline is hot
                     </p>
                   </div>
@@ -633,13 +635,15 @@ export default function DashboardPage() {
 
             {/* Warm leads card */}
             {warm > 0 && (
-              <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-4 shadow-md">
-                <div className="flex items-center gap-2 mb-1">
-                  <Zap size={14} className="text-amber-100" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-100">Warm Pipeline</p>
+              <div className="bg-white border border-amber-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-7 h-7 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <Zap size={14} className="text-amber-500" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Warm Pipeline</p>
                 </div>
-                <p className="text-3xl font-bold text-white">{warm}</p>
-                <p className="text-amber-100 text-xs mt-0.5">nurture before they go cold</p>
+                <p className="text-4xl font-bold text-[#2c2825]">{warm}</p>
+                <p className="text-[#8c8580] text-xs mt-1">nurture before they go cold</p>
               </div>
             )}
 
