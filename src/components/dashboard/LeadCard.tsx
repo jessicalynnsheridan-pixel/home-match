@@ -31,15 +31,22 @@ function getPlaybook(lead: Lead): Playbook {
   };
 }
 
-export default function LeadCard({ lead }: { lead: Lead }) {
+export default function LeadCard({ lead, isDemo }: { lead: Lead; isDemo?: boolean }) {
   const { answers } = lead;
   const pb = getPlaybook(lead);
 
   return (
     <Link
       href={`/dashboard/${lead.id}`}
-      className="flex items-stretch bg-white border border-[#e8e4de] rounded-2xl overflow-hidden hover:border-[#2c2825] hover:shadow-md transition-all group"
+      className="flex items-stretch bg-white border border-[#e8e4de] rounded-2xl overflow-hidden hover:border-[#2c2825] hover:shadow-md transition-all group relative"
     >
+      {/* Demo badge */}
+      {isDemo && (
+        <span className="absolute top-2 right-2 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 z-10">
+          Demo
+        </span>
+      )}
+
       {/* Colored left accent based on score */}
       <div className="w-1 shrink-0" style={{
         background: lead.score === "Hot" ? "#ef4444" : lead.score === "Warm" ? "#f59e0b" : "#d1d5db"

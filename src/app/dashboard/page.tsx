@@ -1,13 +1,11 @@
 "use client";
 
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle, LogOut } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, LogOut, Copy, Check, Link2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const SCORE_FILTERS: (LeadScore | "All")[] = ["All", "Hot", "Warm", "Browsing"];
@@ -64,8 +62,74 @@ function exportLeads(leads: Lead[]) {
   URL.revokeObjectURL(url);
 }
 
+// Map a Supabase leads row to the Lead shape expected by LeadCard
+function mapSupabaseLead(row: Record<string, unknown>): Lead {
+  return {
+    id: row.id as string,
+    score: (row.score as Lead["score"]) ?? "Browsing",
+    matchScore: (row.match_score as number) ?? 0,
+    status: (row.status as Lead["status"]) ?? "New Lead",
+    isPriority: (row.is_priority as boolean) ?? false,
+    submittedAt: row.submitted_at as string,
+    realtorNotes: [],
+    reminders: [],
+    savedHomeIds: [],
+    answers: row.answers as Lead["answers"],
+  };
+}
+
 export default function DashboardPage() {
   const router = useRouter();
+
+  const [scoreFilter, setScoreFilter] = useState<LeadScore | "All">("All");
+  const [statusFilter, setStatusFilter] = useState<LeadStatus | "All">("All");
+  const [search, setSearch] = useState("");
+  const [priorityOnly, setPriorityOnly] = useState(false);
+  const [realLeads, setRealLeads] = useState<Lead[]>([]);
+  const [realtorName, setRealtorName] = useState<string>("");
+  const [realtorId, setRealtorId] = useState<string>("");
+  const [copied, setCopied] = useState(false);
+
+  // Demo leads (mock) — always shown with isDemo flag
+  const demoLeads = mockLeads;
+
+  // Combined leads: real first, then demo
+  const allLeads = [...realLeads, ...demoLeads];
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      setRealtorId(user.id);
+      const firstName = (user.user_metadata?.first_name as string) ?? "";
+      setRealtorName(firstName);
+
+      const { data } = await supabase
+        .from("leads")
+        .select("*")
+        .eq("realtor_id", user.id)
+        .order("submitted_at", { ascending: false });
+
+      if (data) setRealLeads(data.map(mapSupabaseLead));
+    }
+
+    load();
+  }, []);
+
+  const shareableLink = realtorId
+    ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app"}/?r=${realtorId}`
+    : "";
+
+  function copyLink() {
+    if (!shareableLink) return;
+    navigator.clipboard.writeText(shareableLink).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   async function signOut() {
     const supabase = createClient();
@@ -73,12 +137,8 @@ export default function DashboardPage() {
     router.push("/login");
     router.refresh();
   }
-  const [scoreFilter, setScoreFilter] = useState<LeadScore | "All">("All");
-  const [statusFilter, setStatusFilter] = useState<LeadStatus | "All">("All");
-  const [search, setSearch] = useState("");
-  const [priorityOnly, setPriorityOnly] = useState(false);
 
-  const filtered = mockLeads.filter((lead) => {
+  function filterLead(lead: Lead): boolean {
     if (scoreFilter !== "All" && lead.score !== scoreFilter) return false;
     if (statusFilter !== "All" && lead.status !== statusFilter) return false;
     if (priorityOnly && !lead.isPriority) return false;
@@ -93,12 +153,16 @@ export default function DashboardPage() {
         return false;
     }
     return true;
-  });
+  }
 
-  // Summary stats from all leads
-  const hot = mockLeads.filter((l) => l.score === "Hot").length;
-  const warm = mockLeads.filter((l) => l.score === "Warm").length;
-  const newLeads = mockLeads.filter((l) => l.status === "New Lead").length;
+  const filteredReal = realLeads.filter(filterLead);
+  const filteredDemo = demoLeads.filter(filterLead);
+  const filtered = [...filteredReal, ...filteredDemo];
+
+  // Summary stats from combined leads
+  const hot = allLeads.filter((l) => l.score === "Hot").length;
+  const warm = allLeads.filter((l) => l.score === "Warm").length;
+  const newLeads = allLeads.filter((l) => l.status === "New Lead").length;
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
@@ -106,7 +170,9 @@ export default function DashboardPage() {
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-[#2c2825]">Leads</h1>
+          <h1 className="text-xl font-semibold text-[#2c2825]">
+            {realtorName ? `${realtorName}'s Leads` : "Leads"}
+          </h1>
           <div className="flex items-center gap-2">
             <button
               onClick={() => exportLeads(filtered)}
@@ -124,10 +190,28 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* ── Shareable link ──────────────────────────────────────────────── */}
+        {shareableLink && (
+          <div className="flex items-center gap-2 bg-white border border-[#e8e4de] rounded-xl px-4 py-3 mb-6">
+            <Link2 size={13} className="text-[#b8a88a] shrink-0" />
+            <p className="text-xs text-[#8c8580] truncate flex-1">
+              <span className="text-[#2c2825] font-medium">Your link: </span>
+              {shareableLink}
+            </p>
+            <button
+              onClick={copyLink}
+              className="flex items-center gap-1 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors shrink-0 border border-[#e8e4de] rounded-lg px-2.5 py-1 hover:border-[#2c2825]"
+            >
+              {copied ? <Check size={11} className="text-green-500" /> : <Copy size={11} />}
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        )}
+
         {/* ── Stats strip ────────────────────────────────────────────────── */}
         <div className="grid grid-cols-4 gap-3 mb-6">
           {[
-            { label: "Total", value: mockLeads.length, icon: <Eye size={13} />, color: "text-[#8c8580]" },
+            { label: "Total", value: allLeads.length, icon: <Eye size={13} />, color: "text-[#8c8580]" },
             { label: "Hot", value: hot, icon: <Flame size={13} />, color: "text-rose-500" },
             { label: "Warm", value: warm, icon: <Zap size={13} />, color: "text-amber-500" },
             { label: "New", value: newLeads, icon: <AlertCircle size={13} />, color: "text-blue-500" },
@@ -195,14 +279,17 @@ export default function DashboardPage() {
 
         {/* ── Lead count ─────────────────────────────────────────────────── */}
         <p className="text-[#b8b4b0] text-xs mb-4">
-          {filtered.length} of {mockLeads.length} leads
+          {filtered.length} of {allLeads.length} leads
         </p>
 
         {/* ── Lead list ──────────────────────────────────────────────────── */}
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {filtered.map((lead) => (
+            {filteredReal.map((lead) => (
               <LeadCard key={lead.id} lead={lead} />
+            ))}
+            {filteredDemo.map((lead) => (
+              <LeadCard key={lead.id} lead={lead} isDemo />
             ))}
           </div>
         ) : (

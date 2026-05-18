@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { QuestionnaireAnswers } from "@/types";
+import { useRouter, useSearchParams } from "next/navigation";
+import { QuestionnaireAnswers, LeadScore } from "@/types";
+import { createClient } from "@/lib/supabase/client";
 import StepVibe from "./steps/StepVibe";
 import StepContact from "./steps/StepContact";
 import StepTradeoffs from "./steps/StepTradeoffs";
@@ -72,8 +73,36 @@ const STEP_COMPONENTS = [
   StepLocation, StepProperty, StepFinancials, StepNotes,
 ];
 
+function scoreAnswers(answers: QuestionnaireAnswers): LeadScore {
+  const timeline = answers.timeline;
+  const approval = answers.preApprovalStatus;
+
+  const isUrgent = timeline === "ASAP" || timeline === "1–3 months";
+  const isFinanced = approval === "Yes, fully approved" || approval === "Paying cash";
+  const isInProgress = approval === "In progress";
+  const isMidTerm = timeline === "3–6 months";
+
+  if (isUrgent && isFinanced) return "Hot";
+  if ((isUrgent && isInProgress) || (isMidTerm && isFinanced)) return "Warm";
+  return "Browsing";
+}
+
+function calcMatchScore(answers: QuestionnaireAnswers, score: LeadScore): number {
+  // Base by score
+  const base = score === "Hot" ? 75 : score === "Warm" ? 60 : 50;
+  // Bonus for completeness
+  let bonus = 0;
+  if (answers.preferredCity) bonus += 5;
+  if (answers.propertyType) bonus += 5;
+  if (answers.budgetMax > answers.budgetMin) bonus += 5;
+  if (answers.mustHaves.length > 0) bonus += 5;
+  if (answers.preApprovalStatus) bonus += 5;
+  return Math.min(95, base + bonus);
+}
+
 export default function QuestionnaireForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(INITIAL);
   const [showMoment, setShowMoment] = useState(false);
@@ -107,10 +136,28 @@ export default function QuestionnaireForm() {
     if (step > 0) setStep((s) => s - 1);
   }
 
-  function submit() {
+  async function submit() {
     try {
       sessionStorage.setItem("homematch_answers", JSON.stringify(answers));
     } catch { /* ignore */ }
+
+    const realtorId = searchParams.get("r");
+    if (realtorId) {
+      try {
+        const score = scoreAnswers(answers);
+        const matchScore = calcMatchScore(answers, score);
+        const supabase = createClient();
+        await supabase.from("leads").insert({
+          realtor_id: realtorId,
+          answers,
+          score,
+          status: "New Lead",
+          is_priority: score === "Hot",
+          match_score: matchScore,
+        });
+      } catch { /* non-blocking — still redirect */ }
+    }
+
     router.push("/results");
   }
 
