@@ -1,86 +1,114 @@
 import { BuyingTimeline } from "@/types";
-import { StepProps, StepHeader, NavButtons, FieldLabel, ToggleChip } from "./shared";
+import { StepProps } from "./shared";
 import { formatCurrency } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
-const TIMELINES: BuyingTimeline[] = ["ASAP", "1–3 months", "3–6 months", "6–12 months", "Just exploring"];
+const TIMELINES: { value: BuyingTimeline; emoji: string; sub: string }[] = [
+  { value: "ASAP",           emoji: "🔥", sub: "I'm actively searching now" },
+  { value: "1–3 months",     emoji: "⚡", sub: "Getting serious soon" },
+  { value: "3–6 months",     emoji: "📅", sub: "Doing my research" },
+  { value: "6–12 months",    emoji: "🌱", sub: "Planning ahead" },
+  { value: "Just exploring", emoji: "🧭", sub: "No pressure, just curious" },
+];
 
-export default function StepTimeline({ answers, update, onNext, onBack, onSubmit }: StepProps) {
+export default function StepTimeline({ answers, update, onNext }: StepProps) {
   return (
     <div>
-      <StepHeader
-        title="Timeline & budget."
-        subtitle="When are you looking to move, and what is your comfortable price range?"
-      />
+      <div className="mb-10">
+        <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
+          <span className="text-[#2c2825]">When does this happen</span><br />
+          <span className="text-gradient-gold">for you?</span>
+        </h2>
+        <p className="text-[#8c8580] text-sm">This shapes which homes we surface for you.</p>
+      </div>
 
-      {/* Timeline chips */}
-      <div className="mb-8">
-        <FieldLabel>When are you hoping to buy?</FieldLabel>
-        <div className="flex flex-wrap gap-3 mt-1">
-          {TIMELINES.map((t) => (
-            <ToggleChip
-              key={t}
-              label={t}
-              selected={answers.timeline === t}
-              onClick={() => update("timeline", t)}
+      {/* Timeline tiles */}
+      <div className="space-y-2.5 mb-10">
+        {TIMELINES.map((t) => {
+          const selected = answers.timeline === t.value;
+          return (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => update("timeline", t.value)}
+              className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-150 btn-press"
+              style={{
+                background: selected
+                  ? "linear-gradient(135deg, #b8956a 0%, #8a6840 100%)"
+                  : "#ffffff",
+                border: selected
+                  ? "2px solid rgba(184,168,138,0.7)"
+                  : "2px solid #e0dbd4",
+                boxShadow: selected ? "0 6px 24px rgba(184,168,138,0.20)" : "0 1px 3px rgba(0,0,0,0.05)",
+              }}
+            >
+              <span className="text-2xl shrink-0">{t.emoji}</span>
+              <div className="flex-1">
+                <p className={`font-semibold text-sm ${selected ? "text-white" : "text-[#2c2825]"}`}>{t.value}</p>
+                <p className={`text-xs mt-0.5 ${selected ? "text-white/75" : "text-[#8c8580]"}`}>{t.sub}</p>
+              </div>
+              {selected && (
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 animate-scale-in">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Budget */}
+      <div className="rounded-2xl p-6 mb-8" style={{ background: "#ffffff", border: "1px solid #e0dbd4", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+        <p className="text-sm font-semibold text-[#2c2825] mb-1">What&apos;s your budget?</p>
+        <p className="text-[#8c8580] text-xs mb-6">Drag the sliders, don&apos;t stress the exact number.</p>
+
+        <div className="flex justify-between items-baseline mb-6">
+          <div>
+            <p className="text-[#8c8580] text-xs mb-0.5">Min</p>
+            <p className="text-[#2c2825] font-bold text-xl">{formatCurrency(answers.budgetMin)}</p>
+          </div>
+          <div className="text-[#b8b4b0] text-lg font-light">—</div>
+          <div className="text-right">
+            <p className="text-[#8c8580] text-xs mb-0.5">Max</p>
+            <p className="text-[#2c2825] font-bold text-xl">{formatCurrency(answers.budgetMax)}</p>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div>
+            <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-2">Minimum</p>
+            <input type="range" min={200000} max={5000000} step={25000}
+              value={answers.budgetMin}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                update("budgetMin", Math.min(val, answers.budgetMax - 100000));
+              }}
+              className="w-full"
             />
-          ))}
+          </div>
+          <div>
+            <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-2">Maximum</p>
+            <input type="range" min={200000} max={5000000} step={25000}
+              value={answers.budgetMax}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                update("budgetMax", Math.max(val, answers.budgetMin + 100000));
+              }}
+              className="w-full"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Budget slider */}
-      <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
-        <FieldLabel>Budget range</FieldLabel>
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-[#2c2825] font-semibold text-lg">
-            {formatCurrency(answers.budgetMin)}
-          </span>
-          <span className="text-[#8c8580] text-sm">to</span>
-          <span className="text-[#2c2825] font-semibold text-lg">
-            {formatCurrency(answers.budgetMax)}
-          </span>
-        </div>
-
-        {/* Min slider */}
-        <div className="mb-4">
-          <p className="text-[#8c8580] text-xs mb-2">Minimum</p>
-          <input
-            type="range"
-            min={200000}
-            max={5000000}
-            step={25000}
-            value={answers.budgetMin}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              update("budgetMin", Math.min(val, answers.budgetMax - 100000));
-            }}
-            className="w-full"
-          />
-        </div>
-
-        {/* Max slider */}
-        <div>
-          <p className="text-[#8c8580] text-xs mb-2">Maximum</p>
-          <input
-            type="range"
-            min={200000}
-            max={5000000}
-            step={25000}
-            value={answers.budgetMax}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              update("budgetMax", Math.max(val, answers.budgetMin + 100000));
-            }}
-            className="w-full"
-          />
-        </div>
-
-        <div className="flex justify-between mt-3">
-          <span className="text-[#8c8580] text-xs">{formatCurrency(200000)}</span>
-          <span className="text-[#8c8580] text-xs">{formatCurrency(5000000)}+</span>
-        </div>
-      </div>
-
-      <NavButtons onBack={onBack} onNext={onNext} onSubmit={onSubmit} isFirst={false} isLast={false} />
+      <button
+        onClick={onNext}
+        className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
+        style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
+      >
+        Continue <ArrowRight size={15} />
+      </button>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { StepProps } from "./shared";
 import { ArrowRight } from "lucide-react";
 
-function DarkField({
+function Field({
   label, value, onChange, placeholder, type = "text", optional = false,
 }: {
   label: string; value: string;
@@ -11,15 +11,15 @@ function DarkField({
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
-        <label className="text-sm font-medium text-white/80">{label}</label>
-        {optional && <span className="text-[10px] text-white/25 uppercase tracking-wider">optional</span>}
+        <label className="text-sm font-medium text-[#6b6560]">{label}</label>
+        {optional && <span className="text-[10px] text-[#b8b4b0] uppercase tracking-wider">optional</span>}
       </div>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-white/8 border border-white/12 rounded-xl px-4 py-4 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#b8a88a] focus:bg-white/12 transition-all"
+        className="w-full bg-white border border-[#e0dbd4] rounded-xl px-4 py-4 text-sm text-[#2c2825] placeholder:text-[#b8b4b0] focus:outline-none focus:border-[#b8a88a] focus:bg-white transition-all"
       />
     </div>
   );
@@ -32,23 +32,23 @@ export default function StepContact({ answers, update, onNext }: StepProps) {
     <div>
       <div className="mb-10">
         <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
-          <span className="text-white">Now let&apos;s put a name</span><br />
+          <span className="text-[#2c2825]">Now let&apos;s put a name</span><br />
           <span className="text-gradient-gold">to that vibe.</span>
         </h2>
-        <p className="text-white/45 text-sm leading-relaxed">
+        <p className="text-[#8c8580] text-sm leading-relaxed">
           Your realtor shared this link with you. Your profile goes directly to them, no one else.
         </p>
       </div>
 
       <div className="space-y-4 mb-8">
-        <DarkField label="First name" value={answers.firstName}
+        <Field label="First name" value={answers.firstName}
           onChange={(v) => update("firstName", v)} placeholder="Alexandra" />
-        <DarkField label="Email address" value={answers.email}
+        <Field label="Email address" value={answers.email}
           onChange={(v) => update("email", v)} placeholder="you@email.com" type="email" />
         <div className="grid grid-cols-2 gap-4 pt-1">
-          <DarkField label="Last name" value={answers.lastName}
+          <Field label="Last name" value={answers.lastName}
             onChange={(v) => update("lastName", v)} placeholder="Chen" optional />
-          <DarkField label="Phone" value={answers.phone}
+          <Field label="Phone" value={answers.phone}
             onChange={(v) => update("phone", v)} placeholder="(416) 555-0100" type="tel" optional />
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function StepContact({ answers, update, onNext }: StepProps) {
         Continue <ArrowRight size={15} />
       </button>
 
-      <p className="text-center text-white/20 text-xs mt-4">No spam. No cold calls. Ever.</p>
+      <p className="text-center text-[#b8b4b0] text-xs mt-4">No spam. No cold calls. Ever.</p>
     </div>
   );
 }

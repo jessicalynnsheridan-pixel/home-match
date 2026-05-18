@@ -121,7 +121,7 @@ export default function QuestionnaireForm() {
     <div className="w-full">
 
       {/* ─── Slim gold progress line ─────────────────────────────────────────── */}
-      <div className="h-[3px] bg-white/8 rounded-full mb-8 overflow-hidden">
+      <div className="h-[3px] bg-[#e8e4de] rounded-full mb-8 overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
           style={{ width: `${progress}%`, background: "linear-gradient(90deg, #b8956a 0%, #e8c870 50%, #c9a870 100%)", boxShadow: progress > 0 ? "0 0 14px rgba(201,168,112,0.75), 0 0 6px rgba(201,168,112,0.45)" : "none" }}
@@ -133,7 +133,7 @@ export default function QuestionnaireForm() {
         {step > 0 ? (
           <button
             onClick={back}
-            className="flex items-center gap-1.5 text-white/40 hover:text-white/80 transition-colors text-sm"
+            className="flex items-center gap-1.5 text-[#8c8580] hover:text-[#2c2825] transition-colors text-sm"
           >
             <ArrowLeft size={14} />
             Back
@@ -144,16 +144,16 @@ export default function QuestionnaireForm() {
         <span className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase">
           {STEP_LABELS[step]}
         </span>
-        <span className="text-white/25 text-xs">
+        <span className="text-[#b8b4b0] text-xs">
           {step + 1} / {totalSteps}
         </span>
       </div>
 
       {/* ─── Fullscreen motivational overlay ─────────────────────────────────── */}
       {showMoment && (
-        <div className="fixed inset-0 z-50 gradient-dark-animated flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f8f5f0 0%, #faf9f7 60%, #f5f2ec 100%)" }}>
           <div className="text-center px-8">
-            <p className="text-white text-2xl sm:text-3xl font-semibold animate-scale-in leading-tight max-w-xs mx-auto">
+            <p className="text-[#2c2825] text-2xl sm:text-3xl font-semibold animate-scale-in leading-tight max-w-xs mx-auto">
               {momentText}
             </p>
             <div className="flex justify-center gap-1.5 mt-8">
@@ -161,7 +161,7 @@ export default function QuestionnaireForm() {
                 <div
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                    i <= step ? "bg-[#b8a88a]" : "bg-white/20"
+                    i <= step ? "bg-[#b8a88a]" : "bg-[#e0dbd4]"
                   }`}
                 />
               ))}

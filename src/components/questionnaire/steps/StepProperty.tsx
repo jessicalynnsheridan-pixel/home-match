@@ -17,8 +17,8 @@ export default function StepProperty({ answers, update, onNext, onBack, onSubmit
   return (
     <div>
       <StepHeader
-        title="What kind of property?"
-        subtitle="Select the property type and size that fits your needs."
+        title="What does home look like to you?"
+        subtitle="The structure matters as much as the street. Tell us what kind of space you actually want to live in."
       />
 
       <div className="space-y-7">
@@ -48,8 +48,8 @@ export default function StepProperty({ answers, update, onNext, onBack, onSubmit
                 onClick={() => update("bedrooms", n)}
                 className={`w-12 h-12 rounded-xl border text-sm font-medium transition-all ${
                   answers.bedrooms === n
-                    ? "bg-[#2c2825] text-white border-[#2c2825]"
-                    : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
+                    ? "bg-[#b8a88a] text-[#1a1512] border-[#b8a88a]"
+                    : "bg-white text-[#6b6560] border-[#e0dbd4] hover:border-[#b8a88a]"
                 }`}
               >
                 {n}+
@@ -69,8 +69,8 @@ export default function StepProperty({ answers, update, onNext, onBack, onSubmit
                 onClick={() => update("bathrooms", n)}
                 className={`w-14 h-12 rounded-xl border text-sm font-medium transition-all ${
                   answers.bathrooms === n
-                    ? "bg-[#2c2825] text-white border-[#2c2825]"
-                    : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
+                    ? "bg-[#b8a88a] text-[#1a1512] border-[#b8a88a]"
+                    : "bg-white text-[#6b6560] border-[#e0dbd4] hover:border-[#b8a88a]"
                 }`}
               >
                 {n}+

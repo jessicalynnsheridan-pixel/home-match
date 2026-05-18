@@ -4,8 +4,8 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit }:
   return (
     <div>
       <StepHeader
-        title="Anything else to share?"
-        subtitle="This is your space to share what hasn't been captured yet: story, nuance, context."
+        title="Anything we should know about you?"
+        subtitle="The stuff that doesn't fit a checkbox. Your story, your situation, what you really need."
       />
 
       <div className="space-y-5">
@@ -16,16 +16,16 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit }:
             onChange={(e) => update("additionalNotes", e.target.value)}
             placeholder="e.g. We're relocating from out of province and need to close by September. We love the mid-century modern aesthetic and would prefer not to do a full renovation. Our dog needs a fenced yard..."
             rows={6}
-            className="w-full border border-[#e8e4de] rounded-xl px-4 py-3.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] transition-colors bg-white resize-none leading-relaxed"
+            className="w-full bg-white border border-[#e0dbd4] rounded-xl px-4 py-3.5 text-sm text-[#2c2825] placeholder:text-[#b8b4b0] focus:outline-none focus:border-[#b8a88a] focus:bg-white transition-all resize-none leading-relaxed"
           />
         </div>
 
         {/* Review summary card */}
-        <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-2xl p-6 space-y-3">
+        <div className="rounded-2xl p-6 space-y-3" style={{ background: "#ffffff", border: "1px solid #e0dbd4", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <p className="text-[#2c2825] font-medium text-sm mb-4">Your profile at a glance</p>
 
           {[
-            { label: "Name", value: `${answers.firstName} ${answers.lastName}` || "-" },
+            { label: "Name", value: `${answers.firstName} ${answers.lastName}`.trim() || "-" },
             { label: "Timeline", value: answers.timeline || "-" },
             { label: "Location", value: answers.preferredCity || "-" },
             { label: "Property type", value: answers.propertyType || "-" },
@@ -37,13 +37,6 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit }:
               <span className="text-[#2c2825] font-medium">{row.value}</span>
             </div>
           ))}
-
-          {answers.mustHaves.length > 0 && (
-            <div className="pt-2 border-t border-[#e8e4de]">
-              <span className="text-[#8c8580] text-xs">Must-haves: </span>
-              <span className="text-[#2c2825] text-xs">{answers.mustHaves.join(", ")}</span>
-            </div>
-          )}
         </div>
       </div>
 

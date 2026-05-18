@@ -87,6 +87,13 @@ export interface QuestionnaireAnswers {
   hostingVsPrivacy: "Hosting haven" | "Private sanctuary" | "Balance of both" | "";
   modernVsCozy: "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique" | "";
 
+  // Step 1.5 – Tradeoffs (identity-based "This or That")
+  tradeoffSpaceVsLocation: "More space" | "Better location" | "Split" | "";
+  tradeoffPrivacyVsWalkability: "Privacy" | "Walkability" | "Split" | "";
+  tradeoffOutdoorVsInterior: "Outdoor space" | "Interior finishes" | "Split" | "";
+  tradeoffQuietVsEnergy: "Quiet & calm" | "Buzz & energy" | "Split" | "";
+  tradeoffNewVsCharacter: "New build" | "Character home" | "Split" | "";
+
   // Step 5 – Lifestyle
   mustHaves: string[];
   dealBreakers: string[];

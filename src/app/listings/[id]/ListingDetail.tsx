@@ -30,6 +30,129 @@ const STATUS_COLORS: Record<string, string> = {
   Sold: "bg-[#e8e4de] text-[#8c8580] border-[#e8e4de]",
 };
 
+// ─── Vibe insight generator ────────────────────────────────────────────────
+// Maps the buyer's personality answers to emotionally resonant listing insights.
+function buildVibeInsights(
+  answers: Partial<QuestionnaireAnswers>,
+  listing: Listing
+): Array<{ emoji: string; headline: string; detail: string }> {
+  const insights: Array<{ emoji: string; headline: string; detail: string }> = [];
+  const featuresLower = listing.features.map((f) => f.toLowerCase()).join(" ");
+  const descLower = (listing.description || "").toLowerCase();
+  const allText = featuresLower + " " + descLower;
+
+  // Hosting vs Privacy
+  if (answers.hostingVsPrivacy === "Private sanctuary") {
+    insights.push({
+      emoji: "🌿",
+      headline: "Your private retreat",
+      detail: "You said you need a true escape. " + (
+        allText.includes("ravine") ? "This home backs onto a ravine, no neighbours behind you." :
+        allText.includes("backyard") || allText.includes("garden") ? "The private backyard means you can breathe without an audience." :
+        "The lot and layout give you the separation you're looking for."
+      ),
+    });
+  } else if (answers.hostingVsPrivacy === "Hosting haven") {
+    insights.push({
+      emoji: "🥂",
+      headline: "Made for hosting",
+      detail: "You love having people over. " + (
+        allText.includes("open concept") || allText.includes("kitchen island") ? "The open-concept layout flows naturally for entertaining." :
+        allText.includes("backyard") || allText.includes("patio") ? "The outdoor space is exactly where those long summer evenings happen." :
+        "The space and layout were built for gathering."
+      ),
+    });
+  }
+
+  // Sunday morning mood
+  const sunday = answers.sundayMorning || "";
+  if (sunday.includes("sunny kitchen") || sunday.includes("coffee")) {
+    if (allText.includes("east") || allText.includes("south") || allText.includes("bright") || allText.includes("natural light")) {
+      insights.push({
+        emoji: "☕",
+        headline: "Your Sunday morning is here",
+        detail: `You pictured "${sunday.toLowerCase()}". This kitchen gets beautiful natural light. That moment is very possible.`,
+      });
+    }
+  } else if (sunday.includes("walk") || sunday.includes("cafe")) {
+    insights.push({
+      emoji: "🚶",
+      headline: "Walkability that feeds your lifestyle",
+      detail: `You crave "${sunday.toLowerCase()}". This neighbourhood puts you steps from cafés, parks, and the rhythm you want.`,
+    });
+  } else if (sunday.includes("reading") || sunday.includes("fireplace")) {
+    if (allText.includes("fireplace") || allText.includes("library") || allText.includes("study")) {
+      insights.push({
+        emoji: "📖",
+        headline: "Your reading nook exists here",
+        detail: "You want a quiet corner to disappear into. This home has exactly the kind of space where that happens.",
+      });
+    }
+  }
+
+  // Style preference
+  const style = answers.modernVsCozy || "";
+  if (style === "Classic elegance") {
+    if (allText.includes("crown") || allText.includes("hardwood") || allText.includes("heritage") || allText.includes("original") || allText.includes("character")) {
+      insights.push({
+        emoji: "🏛️",
+        headline: "The character you were looking for",
+        detail: "You gravitate toward timeless architecture and craftsmanship. This home has the bones, crown moulding, original hardwood, details that aren't replicated anymore.",
+      });
+    }
+  } else if (style === "Modern & minimal") {
+    if (allText.includes("quartz") || allText.includes("smart") || allText.includes("modern") || allText.includes("renovated") || allText.includes("new")) {
+      insights.push({
+        emoji: "✨",
+        headline: "Clean, elevated, exactly your style",
+        detail: "You want modern finishes with nothing unnecessary. The renovation quality here matches that standard.",
+      });
+    }
+  } else if (style === "Warm & cozy") {
+    insights.push({
+      emoji: "🕯️",
+      headline: "The warmth you were describing",
+      detail: "You want a home that feels settled and lived-in, not cold and on-trend. This home has that quality.",
+    });
+  }
+
+  // Tradeoff: Outdoor space
+  if (answers.tradeoffOutdoorVsInterior === "Outdoor space") {
+    if (allText.includes("backyard") || allText.includes("garden") || allText.includes("patio") || allText.includes("deck")) {
+      insights.push({
+        emoji: "🌳",
+        headline: "Outdoor space you prioritised",
+        detail: "You chose outdoor space over interior finishes when it came to trade-offs. This property delivers on that, there's real room outside.",
+      });
+    }
+  }
+
+  // Tradeoff: Quiet vs energy
+  if (answers.tradeoffQuietVsEnergy === "Quiet & calm") {
+    if (allText.includes("quiet") || allText.includes("ravine") || allText.includes("dead end") || allText.includes("cul-de-sac")) {
+      insights.push({
+        emoji: "🌅",
+        headline: "The quiet you asked for",
+        detail: "You need calm, you made that clear. The street profile and lot position here deliver exactly that.",
+      });
+    }
+  }
+
+  // If no specific insights matched, return a generic personality summary
+  if (insights.length === 0) {
+    const feelings = answers.homeFeeling?.slice(0, 2) || [];
+    if (feelings.length > 0) {
+      insights.push({
+        emoji: "🏡",
+        headline: `A ${feelings[0].toLowerCase()}`,
+        detail: `You said you want your home to feel like a ${feelings.join(" and ")}. The character of this property aligns with that.`,
+      });
+    }
+  }
+
+  return insights.slice(0, 3); // max 3
+}
+
 function scoreColor(s: number) {
   if (s >= 80) return "text-emerald-600";
   if (s >= 60) return "text-[#b8a88a]";
@@ -137,6 +260,33 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
 
             {/* ── Lifestyle Layer™ ───────────────────────────────────────── */}
             <LifestyleLayerPanel layer={lifestyleLayer} />
+
+            {/* ── Why This Matches Your Vibe ─────────────────────────────── */}
+            {buyerAnswers && (() => {
+              const vibeInsights = buildVibeInsights(buyerAnswers, listing);
+              if (vibeInsights.length === 0) return null;
+              return (
+                <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
+                  <div className="px-6 py-4 border-b border-[#f0ece6] flex items-center gap-2">
+                    <Sparkles size={15} className="text-[#b8a88a]" />
+                    <p className="text-[#2c2825] font-semibold text-sm">Why this matches your vibe</p>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    {vibeInsights.map((insight) => (
+                      <div key={insight.headline} className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#faf9f7] border border-[#e8e4de] flex items-center justify-center shrink-0 text-lg">
+                          {insight.emoji}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[#2c2825] text-sm font-medium mb-0.5">{insight.headline}</p>
+                          <p className="text-[#8c8580] text-xs leading-relaxed">{insight.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* ── Buyer Match Panel ──────────────────────────────────────── */}
             {buyerMatch ? (

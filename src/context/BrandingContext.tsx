@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { BrandingConfig } from "@/types";
+import { getRealtorAttribution, attributionToBrandingPatch } from "@/lib/realtorAttribution";
 
 const DEFAULTS: BrandingConfig = {
   agencyName: "Home Match Realty",
@@ -31,14 +32,27 @@ const BrandingContext = createContext<BrandingContextValue>({
 export function BrandingProvider({ children }: { children: ReactNode }) {
   const [branding, setBranding] = useState<BrandingConfig>(DEFAULTS);
 
-  // Hydrate from localStorage on mount
+  // Hydrate from localStorage on mount.
+  // Priority: explicit branding override > realtor attribution > defaults.
   // Wrapped in setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
   useEffect(() => {
     const timer = setTimeout(() => {
+      // 1. Start with defaults
+      let resolved: BrandingConfig = DEFAULTS;
+
+      // 2. Layer in realtor attribution if present (invite link, QR, etc.)
+      const attribution = getRealtorAttribution();
+      if (attribution) {
+        resolved = { ...resolved, ...attributionToBrandingPatch(attribution) };
+      }
+
+      // 3. Layer in explicit branding override (realtor-customised settings)
       const stored = localStorage.getItem("homematch_branding");
       if (stored) {
-        try { setBranding({ ...DEFAULTS, ...JSON.parse(stored) }); } catch { /* ignore */ }
+        try { resolved = { ...resolved, ...JSON.parse(stored) }; } catch { /* ignore */ }
       }
+
+      setBranding(resolved);
     }, 0);
     return () => clearTimeout(timer);
   }, []);

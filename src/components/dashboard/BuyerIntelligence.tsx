@@ -74,7 +74,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
   return (
     <div className="space-y-5">
 
-      {/* Recovery prompt — always show first if present */}
+      {/* Recovery prompt, always show first if present */}
       {recoveryPrompt && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
           <div className="flex items-start gap-3 mb-4">
@@ -82,7 +82,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
               <RotateCcw size={14} className="text-amber-600" />
             </div>
             <div>
-              <p className="text-amber-800 font-semibold text-sm">Inactive lead — time to re-engage</p>
+              <p className="text-amber-800 font-semibold text-sm">Inactive lead, time to re-engage</p>
               <p className="text-amber-700 text-xs mt-0.5">This buyer has gone quiet. Here&apos;s a recovery message tailored to their communication style.</p>
             </div>
           </div>
@@ -206,7 +206,7 @@ export default function BuyerIntelligencePanel({ intelligence }: Props) {
               <AlertTriangle size={14} className="text-amber-500" />
               <p className="text-[#2c2825] font-semibold text-sm">Hesitation Points</p>
             </div>
-            <p className="text-[#8c8580] text-xs mb-4">What might be holding them back — and how to address it.</p>
+            <p className="text-[#8c8580] text-xs mb-4">What might be holding them back, and how to address it.</p>
             <div className="space-y-4">
               {hesitations.map((h) => (
                 <div key={h.label} className="border-l-2 border-amber-300 pl-3">

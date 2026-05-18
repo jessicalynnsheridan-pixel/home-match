@@ -1,12 +1,10 @@
-// Shared types and small UI atoms used across questionnaire steps
+// Shared types and small UI atoms, light questionnaire environment
 import { QuestionnaireAnswers } from "@/types";
+import { ArrowRight } from "lucide-react";
 
 export interface StepProps {
   answers: QuestionnaireAnswers;
-  update: <K extends keyof QuestionnaireAnswers>(
-    key: K,
-    value: QuestionnaireAnswers[K]
-  ) => void;
+  update: <K extends keyof QuestionnaireAnswers>(key: K, value: QuestionnaireAnswers[K]) => void;
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;
@@ -14,77 +12,56 @@ export interface StepProps {
 
 export function StepHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="mb-8">
-      <h2 className="text-2xl font-semibold text-[#2c2825] mb-2">{title}</h2>
-      <p className="text-[#8c8580] text-base">{subtitle}</p>
+    <div className="mb-10">
+      <h2 className="text-4xl sm:text-5xl font-bold text-[#2c2825] leading-tight mb-3">{title}</h2>
+      <p className="text-[#8c8580] text-base leading-relaxed">{subtitle}</p>
     </div>
   );
 }
 
 export function NavButtons({
-  onBack,
-  onNext,
-  onSubmit,
-  isFirst,
-  isLast,
-  nextLabel = "Continue",
+  onBack, onNext, onSubmit, isFirst, isLast, nextLabel = "Continue",
 }: {
-  onBack: () => void;
-  onNext?: () => void;
-  onSubmit?: () => void;
-  isFirst: boolean;
-  isLast: boolean;
-  nextLabel?: string;
+  onBack: () => void; onNext?: () => void; onSubmit?: () => void;
+  isFirst: boolean; isLast: boolean; nextLabel?: string;
 }) {
   return (
-    <div className="flex justify-between items-center mt-10 pt-8 border-t border-[#e8e4de]">
-      {!isFirst ? (
-        <button
-          onClick={onBack}
-          className="text-[#8c8580] text-sm hover:text-[#2c2825] transition-colors"
-        >
-          Back
-        </button>
-      ) : (
-        <span />
-      )}
+    <div className="mt-10">
       {isLast ? (
         <button
           onClick={onSubmit}
-          className="bg-[#2c2825] text-white text-sm font-medium px-8 py-3 rounded-full hover:bg-[#1a1714] transition-colors"
+          className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
+          style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
         >
-          Submit My Profile
+          Submit my profile ✨
         </button>
       ) : (
         <button
           onClick={onNext}
-          className="bg-[#2c2825] text-white text-sm font-medium px-8 py-3 rounded-full hover:bg-[#1a1714] transition-colors"
+          className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
+          style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
         >
-          {nextLabel}
+          {nextLabel} <ArrowRight size={15} />
         </button>
       )}
     </div>
   );
 }
 
-export function ToggleChip({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
+export function ToggleChip({ label, selected, onClick }: {
+  label: string; selected: boolean; onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`px-4 py-2.5 rounded-full text-sm border transition-all ${
-        selected
-          ? "bg-[#2c2825] text-white border-[#2c2825]"
-          : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-      }`}
+      className="px-4 py-2.5 rounded-xl text-sm transition-all btn-press"
+      style={{
+        background: selected ? "#b8a88a" : "#ffffff",
+        border: selected ? "1.5px solid #b8a88a" : "1.5px solid #e0dbd4",
+        color: selected ? "#1a1512" : "#6b6560",
+        fontWeight: selected ? 600 : 400,
+      }}
     >
       {label}
     </button>
@@ -93,22 +70,12 @@ export function ToggleChip({
 
 export function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-sm font-medium text-[#2c2825] mb-2">
-      {children}
-    </label>
+    <label className="block text-sm font-medium text-[#6b6560] mb-2">{children}</label>
   );
 }
 
-export function TextInput({
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
+export function TextInput({ value, onChange, placeholder, type = "text" }: {
+  value: string; onChange: (v: string) => void; placeholder?: string; type?: string;
 }) {
   return (
     <input
@@ -116,7 +83,7 @@ export function TextInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] transition-colors bg-white"
+      className="w-full bg-white border border-[#e0dbd4] rounded-xl px-4 py-3.5 text-sm text-[#2c2825] placeholder:text-[#b8b4b0] focus:outline-none focus:border-[#b8a88a] focus:bg-white transition-all"
     />
   );
 }

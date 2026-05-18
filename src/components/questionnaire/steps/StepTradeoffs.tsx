@@ -92,10 +92,10 @@ export default function StepTradeoffs({ answers, update, onNext, onBack }: StepP
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-2">
-          <span className="text-white">Quick instincts.</span><br />
+          <span className="text-[#2c2825]">Quick instincts.</span><br />
           <span className="text-gradient-gold">No wrong answers.</span>
         </h2>
-        <p className="text-white/45 text-sm">
+        <p className="text-[#8c8580] text-sm">
           {current + 1} of {TRADEOFFS.length}. Just go with your gut.
         </p>
       </div>
@@ -111,14 +111,14 @@ export default function StepTradeoffs({ answers, update, onNext, onBack }: StepP
                 ? "bg-[#b8a88a] w-6"
                 : answers[t.key] !== ""
                 ? "bg-[#b8a88a]/50 w-3"
-                : "bg-white/15 w-3"
+                : "bg-[#e0dbd4] w-3"
             }`}
           />
         ))}
       </div>
 
       {/* Question */}
-      <p className="text-white/50 text-sm mb-6 animate-step-enter" key={`q-${current}`}>
+      <p className="text-[#8c8580] text-sm mb-6 animate-step-enter" key={`q-${current}`}>
         {tradeoff.question}
       </p>
 
@@ -139,18 +139,18 @@ export default function StepTradeoffs({ answers, update, onNext, onBack }: StepP
                 minHeight: 170,
                 background: active
                   ? "linear-gradient(145deg, #b8956a 0%, #8a6840 100%)"
-                  : "rgba(255,255,255,0.06)",
+                  : "#ffffff",
                 border: active
                   ? "2px solid rgba(184,168,138,0.8)"
-                  : "2px solid rgba(255,255,255,0.10)",
+                  : "2px solid #e0dbd4",
                 boxShadow: active
-                  ? "0 8px 32px rgba(184,168,138,0.30), 0 2px 8px rgba(0,0,0,0.4)"
-                  : "0 2px 12px rgba(0,0,0,0.25)",
+                  ? "0 8px 32px rgba(184,168,138,0.25), 0 2px 8px rgba(0,0,0,0.08)"
+                  : "0 1px 4px rgba(0,0,0,0.06)",
                 transform: active ? "scale(1.02)" : "scale(1)",
               }}
             >
               <span className="text-3xl">{opt.emoji}</span>
-              <p className="font-semibold text-base text-white">{opt.label}</p>
+              <p className={`font-semibold text-base ${active ? "text-white" : "text-[#2c2825]"}`}>{opt.label}</p>
 
               {isSelected && !selecting && (
                 <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center animate-scale-in">
@@ -181,7 +181,7 @@ export default function StepTradeoffs({ answers, update, onNext, onBack }: StepP
       {!allAnswered && (
         <button
           onClick={onNext}
-          className="w-full text-center text-white/20 text-xs hover:text-white/40 transition-colors py-2"
+          className="w-full text-center text-[#b8b4b0] text-xs hover:text-[#8c8580] transition-colors py-2"
         >
           Skip for now →
         </button>

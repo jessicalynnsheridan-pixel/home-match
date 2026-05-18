@@ -82,7 +82,7 @@ function SundayChip({ emoji, label, selected, onClick }: {
       className={`flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 btn-press ${
         selected
           ? "bg-[#b8a88a] border-[#b8a88a] text-[#1e1a17]"
-          : "bg-white/8 border-white/12 text-white/80 hover:bg-white/14 hover:border-white/20"
+          : "bg-white border-[#e0dbd4] text-[#2c2825] hover:bg-[#f5f3f0] hover:border-[#d0cbc4]"
       }`}
     >
       <span className="text-xl shrink-0">{emoji}</span>
@@ -148,10 +148,10 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
       {/* ── Question 1: Core feeling ────────────────────────────────────────── */}
       <div className="mb-10">
         <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
-          <span className="text-white">How do you want to feel</span><br />
+          <span className="text-[#2c2825]">How do you want to feel</span><br />
           <span className="text-gradient-gold">when you walk in?</span>
         </h2>
-        <p className="text-white/45 text-sm mb-8">
+        <p className="text-[#8c8580] text-sm mb-8">
           Don&apos;t overthink it, tap everything that resonates.
         </p>
 
@@ -171,10 +171,10 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
       {/* ── Question 2: Sunday morning ───────────────────────────────────────── */}
       {phase !== "feeling" && (
         <div className="mb-10 animate-slide-up">
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-[#2c2825] mb-2">
             Your ideal Sunday morning?
           </h3>
-          <p className="text-white/40 text-xs mb-5">Pick the one that&apos;s most you.</p>
+          <p className="text-[#8c8580] text-xs mb-5">Pick the one that&apos;s most you.</p>
           <div className="space-y-2">
             {SUNDAY_MOODS.map((item) => (
               <SundayChip
@@ -198,10 +198,10 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
       {/* ── Question 3: Aesthetic ────────────────────────────────────────────── */}
       {phase === "style" && (
         <div className="mb-10 animate-slide-up">
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-[#2c2825] mb-2">
             Your home&apos;s aesthetic?
           </h3>
-          <p className="text-white/40 text-xs mb-5">Where does your eye naturally land?</p>
+          <p className="text-[#8c8580] text-xs mb-5">Where does your eye naturally land?</p>
           <div className="grid grid-cols-2 gap-3">
             {STYLE_OPTIONS.map((opt, i) => (
               <StyleTile

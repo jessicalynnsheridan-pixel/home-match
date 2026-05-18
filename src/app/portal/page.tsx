@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { mockLeads } from "@/data/mockLeads";
 import { mockProperties } from "@/data/mockProperties";
 import { PropertyRecommendation, QuestionnaireAnswers } from "@/types";
@@ -9,12 +9,14 @@ import {
   Heart, BedDouble, Bath, Ruler, CheckCircle, Circle,
   Lightbulb, BookOpen, MapPin, ShieldCheck, ChevronDown,
   ChevronUp, Info, ArrowRight, TrendingUp, MessageCircle,
-  Sparkles, Star, Bell,
+  Sparkles, Star, Bell, Flame,
 } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { useBranding } from "@/context/BrandingContext";
+import { useToast } from "@/context/ToastContext";
 import Image from "next/image";
 import Link from "next/link";
+import TiltCard from "@/components/ui/TiltCard";
 
 const FALLBACK_LEAD = mockLeads.find((l) => l.id === "lead-001")!;
 
@@ -34,6 +36,14 @@ function ontarioLTT(price: number): number {
   if (price > 55_000) tax += (Math.min(price, 250_000) - 55_000) * 0.01;
   tax += Math.min(price, 55_000) * 0.005;
   return Math.round(tax);
+}
+
+// ─── Time-based greeting ─────────────────────────────────────────────────────
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
 }
 
 // ─── Neighbourhood lifestyle data ────────────────────────────────────────────
@@ -84,7 +94,6 @@ function useSavedHomes(fallbackIds: string[]) {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
     const timer = setTimeout(() => {
       try {
         const raw = localStorage.getItem("homematch_saved_homes");
@@ -115,7 +124,7 @@ function useSavedHomes(fallbackIds: string[]) {
 // ─── Realtor Banner ───────────────────────────────────────────────────────────
 function RealtorBanner({ realtorName, message }: { realtorName: string; message: string }) {
   return (
-    <div className="bg-white border border-[#b8a88a]/40 rounded-2xl p-4 flex items-center gap-4">
+    <div className="bg-white border border-[#b8a88a]/30 rounded-2xl p-4 flex items-center gap-4 glow-gold animate-fade-up">
       <div className="w-10 h-10 rounded-full bg-[#2c2825] flex items-center justify-center shrink-0 text-white font-semibold text-sm">
         {realtorName.charAt(0)}
       </div>
@@ -126,7 +135,7 @@ function RealtorBanner({ realtorName, message }: { realtorName: string; message:
         </p>
         <p className="text-[#8c8580] text-xs leading-relaxed mt-0.5">{message}</p>
       </div>
-      <button className="shrink-0 flex items-center gap-1.5 bg-[#2c2825] text-white text-xs font-medium px-3 py-2 rounded-full hover:bg-[#1a1714] transition-colors">
+      <button className="shrink-0 flex items-center gap-1.5 bg-[#2c2825] text-white text-xs font-medium px-3 py-2 rounded-full hover:bg-[#1a1714] transition-colors btn-press">
         <MessageCircle size={12} />
         Message
       </button>
@@ -134,23 +143,49 @@ function RealtorBanner({ realtorName, message }: { realtorName: string; message:
   );
 }
 
-// ─── New matches badge ─────────────────────────────────────────────────────
-function NewMatchesBadge({ count, realtorName }: { count: number; realtorName: string }) {
-  if (count === 0) return null;
+// ─── Return trigger banner ────────────────────────────────────────────────────
+function ReturnBanner({ count, streak, realtorName }: { count: number; streak: number; realtorName: string }) {
+  const firstName = realtorName.split(" ")[0];
+  if (count === 0 && streak < 2) return null;
+
   return (
-    <div className="flex items-center gap-3 bg-[#b8a88a]/10 border border-[#b8a88a]/30 rounded-xl px-4 py-3">
-      <div className="w-7 h-7 rounded-full bg-[#b8a88a] flex items-center justify-center shrink-0">
-        <Bell size={13} className="text-white" />
-      </div>
-      <p className="text-[#2c2825] text-sm">
-        <span className="font-semibold">{count} new {count === 1 ? "home" : "homes"}</span> match your profile since your last visit.{" "}
-        <span className="text-[#8c8580]">{realtorName} is keeping an eye out for you.</span>
-      </p>
+    <div className="animate-fade-up">
+      {count > 0 && (
+        <div className="flex items-start gap-3 bg-gradient-to-r from-[#b8a88a]/12 to-[#faf9f7] border border-[#b8a88a]/25 rounded-2xl px-5 py-4">
+          <div className="w-8 h-8 rounded-full bg-[#b8a88a] flex items-center justify-center shrink-0 animate-pulse-soft">
+            <Bell size={14} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[#2c2825] text-sm font-semibold">
+              {count} new {count === 1 ? "home" : "homes"} match your vibe.
+            </p>
+            <p className="text-[#8c8580] text-xs mt-0.5">
+              {firstName} has been keeping an eye on your neighbourhoods.
+            </p>
+          </div>
+          <Link
+            href="/listings"
+            className="shrink-0 flex items-center gap-1 text-xs text-[#2c2825] font-medium border border-[#e8e4de] px-3 py-1.5 rounded-full hover:border-[#b8a88a] transition-colors"
+          >
+            See them
+            <ArrowRight size={11} />
+          </Link>
+        </div>
+      )}
+
+      {streak >= 2 && (
+        <div className="flex items-center gap-2.5 mt-2 px-1">
+          <span className="animate-flame text-base">🔥</span>
+          <p className="text-[#8c8580] text-xs">
+            <span className="text-[#2c2825] font-semibold">{streak}-day streak</span> · You&apos;re building momentum on your home search.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── Vibe summary ─────────────────────────────────────────────────────────
+// ─── Vibe summary ─────────────────────────────────────────────────────────────
 function VibeSummary({ answers }: { answers: QuestionnaireAnswers }) {
   const feelings = answers.homeFeeling?.slice(0, 3) || [];
   const style = answers.modernVsCozy || "";
@@ -160,12 +195,12 @@ function VibeSummary({ answers }: { answers: QuestionnaireAnswers }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
+    <div className="bg-white border border-[#e8e4de] rounded-2xl p-5 animate-fade-up card-hover">
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={14} className="text-[#b8a88a]" />
         <p className="text-[#2c2825] font-semibold text-sm">Your Home Personality</p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mb-3">
         {items.map((item) => (
           <span key={item} className="bg-[#faf9f7] border border-[#e8e4de] text-[#2c2825] text-xs px-3 py-1.5 rounded-full">
             {item}
@@ -173,42 +208,170 @@ function VibeSummary({ answers }: { answers: QuestionnaireAnswers }) {
         ))}
       </div>
       {answers.sundayMorning && (
-        <p className="text-[#8c8580] text-xs mt-3 italic">
-          Dream Sunday: &quot;{answers.sundayMorning}&quot;
+        <p className="text-[#8c8580] text-xs italic border-t border-[#f0ece6] pt-3">
+          Dream Sunday: &ldquo;{answers.sundayMorning}&rdquo;
         </p>
       )}
     </div>
   );
 }
 
+// ─── Today's Discoveries deck ─────────────────────────────────────────────────
+function TodaysDiscoveries({
+  properties,
+  savedIds,
+  onToggle,
+}: {
+  properties: PropertyRecommendation[];
+  savedIds: Set<string>;
+  onToggle: (id: string) => void;
+}) {
+  if (properties.length === 0) return null;
+
+  const MATCH_SCORES = [96, 91, 87, 82, 78];
+
+  return (
+    <section className="animate-fade-up stagger-2">
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Sparkles size={15} className="text-[#b8a88a]" />
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#b8a88a] animate-dot-blink" />
+          </div>
+          <div>
+            <h2 className="text-[#2c2825] font-semibold text-sm">Today&apos;s Discoveries</h2>
+            <p className="text-[#8c8580] text-xs">Fresh picks curated for your profile</p>
+          </div>
+        </div>
+        <Link
+          href="/listings"
+          className="shrink-0 flex items-center gap-1 text-xs text-[#2c2825] border border-[#e8e4de] px-3 py-1.5 rounded-full hover:border-[#b8a88a] transition-colors"
+        >
+          Explore all
+          <ArrowRight size={11} />
+        </Link>
+      </div>
+
+      <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide">
+        {properties.map((p, i) => {
+          const score = MATCH_SCORES[i] ?? 75;
+          const isTop = score >= 90;
+          const saved = savedIds.has(p.id);
+
+          return (
+            <TiltCard
+              key={p.id}
+              className={`
+                shrink-0 w-[260px] sm:w-[280px] rounded-2xl overflow-hidden
+                snap-start
+                ${isTop ? "shadow-gold" : "shadow-warm-sm"}
+                animate-fade-up
+              `}
+              style={{ animationDelay: `${i * 0.06}s` } as React.CSSProperties}
+            >
+              <div className={`
+                group bg-white rounded-2xl overflow-hidden
+                ${isTop ? "border border-[#b8a88a]/40" : "border border-[#e8e4de]"}
+              `}>
+                {/* Cinematic image */}
+                <div className="relative h-44 overflow-hidden">
+                  <Image src={p.imageUrl} alt={p.address} fill className="object-cover img-zoom" unoptimized />
+                  <div className="card-image-overlay absolute inset-0" />
+
+                  {isTop ? (
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-[#b8a88a] text-white text-[10px] font-semibold px-2 py-1 rounded-full animate-badge-pop">
+                      <Sparkles size={9} />
+                      Top match
+                    </div>
+                  ) : (
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 text-[10px] font-semibold border px-2 py-1 rounded-full bg-white/90 backdrop-blur-sm text-[#8c8580] border-[#e8e4de]">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#b8a88a]" />
+                      {score}% match
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => onToggle(p.id)}
+                    className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center shadow transition-all hover:scale-110 active:scale-90 ${
+                      saved ? "bg-rose-500" : "bg-white/90 backdrop-blur-sm"
+                    }`}
+                  >
+                    <Heart size={13} className={saved ? "fill-white text-white" : "text-[#8c8580]"} />
+                  </button>
+
+                  {/* Price overlay */}
+                  <div className="absolute bottom-2.5 left-2.5">
+                    <span className="text-white font-bold text-base drop-shadow">{formatCurrency(p.price)}</span>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  <p className="text-[#2c2825] text-xs font-medium leading-snug mb-0.5 truncate">{p.address}</p>
+                  <div className="flex items-center gap-3 text-[10px] text-[#8c8580] mb-3">
+                    <span>{p.bedrooms} bed</span>
+                    <span>·</span>
+                    <span>{p.bathrooms} bath</span>
+                    <span>·</span>
+                    <span>{p.sqft.toLocaleString()} sqft</span>
+                  </div>
+                  <p className="text-[10px] text-[#8c8580] leading-relaxed line-clamp-2">{p.matchReason}</p>
+                </div>
+              </div>
+            </TiltCard>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function BuyerPortalPage() {
   const { branding } = useBranding();
+  const { toast } = useToast();
 
-  // ── Load buyer answers from sessionStorage, fall back to demo lead ──────
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(FALLBACK_LEAD.answers);
   const [isRealUser, setIsRealUser] = useState(false);
   const [newMatchCount, setNewMatchCount] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [openPhase, setOpenPhase] = useState<string | null>(null);
+  const [openTip, setOpenTip] = useState<number | null>(null);
 
   useEffect(() => {
-    // setTimeout so all setState calls fire in a callback (satisfies react-hooks/set-state-in-effect)
     const timer = setTimeout(() => {
+      // Load buyer answers
       try {
         const raw = sessionStorage.getItem("homematch_answers");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          setAnswers(parsed);
-          setIsRealUser(true);
-        }
+        if (raw) { setAnswers(JSON.parse(raw)); setIsRealUser(true); }
       } catch { /* ignore */ }
 
-      // Track last visit for "new matches" return trigger
+      // Track visit streak + new match count
       try {
-        const lastVisit = localStorage.getItem("homematch_last_portal_visit");
         const now = Date.now();
+        const lastVisit = localStorage.getItem("homematch_last_portal_visit");
+        const streakKey = localStorage.getItem("homematch_visit_streak");
+        const currentStreak = parseInt(streakKey || "0");
+
         if (lastVisit) {
           const hoursSince = (now - parseInt(lastVisit)) / (1000 * 60 * 60);
-          if (hoursSince > 1) setNewMatchCount(Math.min(3, Math.floor(hoursSince / 8) + 1));
+          // New match count: simulate 1–4 new homes based on time away
+          if (hoursSince > 2) {
+            setNewMatchCount(Math.min(4, Math.floor(hoursSince / 6) + 1));
+          }
+          // Streak: consecutive daily visits
+          const daysSince = hoursSince / 24;
+          if (daysSince < 1.5) {
+            setStreak(Math.min(currentStreak + 1, 30));
+            localStorage.setItem("homematch_visit_streak", String(Math.min(currentStreak + 1, 30)));
+          } else if (daysSince > 2) {
+            setStreak(1);
+            localStorage.setItem("homematch_visit_streak", "1");
+          } else {
+            setStreak(currentStreak);
+          }
+        } else {
+          setStreak(1);
+          localStorage.setItem("homematch_visit_streak", "1");
         }
         localStorage.setItem("homematch_last_portal_visit", String(now));
       } catch { /* ignore */ }
@@ -216,11 +379,28 @@ export default function BuyerPortalPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const [openPhase, setOpenPhase] = useState<string | null>(null);
-  const [openTip, setOpenTip] = useState<number | null>(null);
+  // Announce new matches via toast after a brief delay
+  useEffect(() => {
+    if (newMatchCount === 0) return;
+    const t = setTimeout(() => {
+      toast(
+        `${newMatchCount} new ${newMatchCount === 1 ? "home" : "homes"} match your vibe.`,
+        { sub: "Scroll down to see today's discoveries.", variant: "match" }
+      );
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [newMatchCount, toast]);
 
   const fallbackSavedIds = isRealUser ? [] : (FALLBACK_LEAD.savedHomeIds || []);
-  const { savedIds, toggle } = useSavedHomes(fallbackSavedIds);
+  const { savedIds, toggle: rawToggle } = useSavedHomes(fallbackSavedIds);
+
+  const toggle = useCallback((id: string) => {
+    const willSave = !savedIds.has(id);
+    rawToggle(id);
+    if (willSave) {
+      toast("Added to your Dream Collection.", { sub: "Saved homes live across all your devices.", variant: "save" });
+    }
+  }, [savedIds, rawToggle, toast]);
 
   const recommendations = mockProperties.filter((p) => p.leadId === "lead-001");
   const readiness = calcBuyerReadiness(answers);
@@ -231,57 +411,66 @@ export default function BuyerPortalPage() {
   const closingCosts = Math.round(midPrice * 0.015);
   const totalHiddenCosts = ltt + closingCosts + 500 + 2000 + 3000;
   const isFirstTimeBuyer = answers.ownershipStatus === "First-time buyer";
+  const firstName = answers.firstName || "";
+  const realtorFirst = branding.realtorName.split(" ")[0];
 
-  // Dynamic realtor messages
-  const realtorMessages = [
-    `${newMatchCount > 0 ? `I found ${newMatchCount} new homes that match your profile. ` : ""}Your profile is looking great. Let me know when you're ready to tour.`,
-    "I've been keeping an eye on your saved neighbourhoods. A few interesting properties just came up.",
-    "Based on your preferences, I think you're going to love what's available right now.",
-  ];
-  const realtorMessage = realtorMessages[0];
+  const realtorMessage = newMatchCount > 0
+    ? `I found ${newMatchCount} new homes that match your profile. Let me know when you're ready to tour.`
+    : "Your profile is looking great. I'm keeping an eye on your neighbourhoods.";
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
-      <div className="max-w-5xl mx-auto px-6 lg:px-8 py-12 space-y-6">
+      <div className="max-w-5xl mx-auto px-6 lg:px-8 py-10 space-y-6">
 
-        {/* ── Realtor banner ────────────────────────────────────────────────── */}
-        <RealtorBanner
-          realtorName={branding.realtorName}
-          message={realtorMessage}
-        />
+        {/* ── Realtor banner ─────────────────────────────────────────────── */}
+        <RealtorBanner realtorName={branding.realtorName} message={realtorMessage} />
 
-        {/* ── New matches badge ─────────────────────────────────────────────── */}
-        <NewMatchesBadge count={newMatchCount} realtorName={branding.realtorName} />
+        {/* ── Return trigger / new matches / streak ──────────────────────── */}
+        <ReturnBanner count={newMatchCount} streak={streak} realtorName={branding.realtorName} />
 
-        {/* ── Welcome header ───────────────────────────────────────────────── */}
-        <div className="bg-[#2c2825] rounded-3xl p-8 text-white">
-          <p className="text-[#b8a88a] text-sm font-medium tracking-widest uppercase mb-3">
-            Your Home Hub
-          </p>
-          <h1 className="text-2xl font-semibold mb-1">
-            Welcome back{answers.firstName ? `, ${answers.firstName}` : ""}.
-          </h1>
-          <p className="text-[#e8e4de]/70 text-sm mb-6">
-            {isRealUser
-              ? "Your profile is active. Everything below is personalised to you."
-              : "Explore your tools, insights, and matched homes below."}
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Stat label="Readiness Score" value={`${readiness.overall}/100`} />
-            <Stat label="Budget" value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`} />
-            <Stat label="Timeline" value={answers.timeline || "-"} />
-            <Stat label="Saved Homes" value={String(savedIds.size)} />
+        {/* ── Welcome header ─────────────────────────────────────────────── */}
+        <div className="gradient-dark-animated rounded-3xl p-8 text-white animate-fade-up relative overflow-hidden">
+          {/* Ambient orbs inside the header */}
+          <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
+            <div className="absolute top-[-20%] right-[10%] w-64 h-64 rounded-full bg-[#b8a88a]/06 blur-3xl" />
+            <div className="absolute bottom-[-10%] left-[5%] w-48 h-48 rounded-full bg-[#b8a88a]/04 blur-2xl" />
+          </div>
+          <div className="relative z-10">
+            <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase mb-3">
+              Your Home Journey
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-semibold mb-1">
+              {getGreeting()}{firstName ? `, ${firstName}` : ""}.
+            </h1>
+            <p className="text-[#e8e4de]/60 text-sm mb-7">
+              {isRealUser
+                ? "Everything here is built around you. Your profile, your matches, your pace."
+                : "Your personalised home search hub. Explore everything below."}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Stat label="Readiness Score" value={`${readiness.overall}/100`} />
+              <Stat label="Budget" value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`} />
+              <Stat label="Timeline" value={answers.timeline || "–"} />
+              <Stat label="Dream Collection" value={`${savedIds.size} saved`} />
+            </div>
           </div>
         </div>
 
-        {/* ── Home Personality ──────────────────────────────────────────────── */}
+        {/* ── Home Personality ───────────────────────────────────────────── */}
         {answers.homeFeeling && answers.homeFeeling.length > 0 && (
           <VibeSummary answers={answers} />
         )}
 
-        {/* ── First-time buyer banner ───────────────────────────────────────── */}
+        {/* ── Today's Discoveries ────────────────────────────────────────── */}
+        <TodaysDiscoveries
+          properties={recommendations}
+          savedIds={savedIds}
+          onToggle={toggle}
+        />
+
+        {/* ── First-time buyer banner ────────────────────────────────────── */}
         {isFirstTimeBuyer && (
-          <div className="bg-[#b8a88a]/10 border border-[#b8a88a]/30 rounded-2xl p-5 flex gap-4 items-start">
+          <div className="bg-[#b8a88a]/10 border border-[#b8a88a]/30 rounded-2xl p-5 flex gap-4 items-start animate-fade-up">
             <Info size={18} className="text-[#b8a88a] shrink-0 mt-0.5" />
             <div>
               <p className="text-[#2c2825] font-medium text-sm mb-1">First-time buyer? We&apos;ve got you.</p>
@@ -292,13 +481,13 @@ export default function BuyerPortalPage() {
           </div>
         )}
 
-        {/* ── Buyer Readiness Score ─────────────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── Buyer Readiness Score ──────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-start justify-between gap-4 mb-5">
             <div className="flex items-center gap-2">
               <TrendingUp size={16} className="text-[#b8a88a]" />
               <div>
-                <h2 className="text-[#2c2825] font-semibold">Buyer Readiness Score</h2>
+                <h2 className="text-[#2c2825] font-semibold">Journey Readiness</h2>
                 <p className="text-[#8c8580] text-sm mt-0.5">How prepared you are to move on the right home.</p>
               </div>
             </div>
@@ -313,13 +502,13 @@ export default function BuyerPortalPage() {
           <div className="space-y-4 mb-5">
             {[readiness.financing, readiness.timeline, readiness.documentation, readiness.commitment].map((dim) => (
               <div key={dim.label}>
-                <div className="flex justify-between text-xs mb-1">
+                <div className="flex justify-between text-xs mb-1.5">
                   <span className="text-[#2c2825] font-medium">{dim.label}</span>
                   <span className="text-[#8c8580]">{dim.detail}</span>
                 </div>
                 <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
+                    className={`h-full rounded-full transition-all duration-700 ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
                     style={{ width: `${dim.score}%` }}
                   />
                 </div>
@@ -332,30 +521,28 @@ export default function BuyerPortalPage() {
               <Info size={14} className="text-[#b8a88a] shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-[#5c5550]">{readiness.tip}</p>
-                <p className="text-xs text-[#b8a88a] mt-1">
-                  {branding.realtorName} can help you with this step.
-                </p>
+                <p className="text-xs text-[#b8a88a] mt-1">{realtorFirst} can help you with this step.</p>
               </div>
             </div>
           )}
         </section>
 
-        {/* ── Affordability insights ────────────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── Affordability clarity ──────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
             <Lightbulb size={16} className="text-[#b8a88a]" />
-            <h2 className="text-[#2c2825] font-semibold">Affordability Insights</h2>
+            <h2 className="text-[#2c2825] font-semibold">What Your Budget Really Means</h2>
           </div>
           <p className="text-[#8c8580] text-sm mb-6">
-            Based on the midpoint of your budget ({formatCurrency(midPrice)}), 20% down, 25-year amortization at 5.5%.
+            At {formatCurrency(midPrice)} (your midpoint), 20% down, 25-year amortization at 5.5%.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             {[
-              { label: "Est. Monthly Payment", value: formatCurrency(Math.round(monthlyPayment)), note: "Principal & interest" },
-              { label: "Down Payment (20%)", value: formatCurrency(Math.round(downPayment)), note: "To avoid CMHC insurance" },
-              { label: "Annual Property Tax", value: "~" + formatCurrency(Math.round(midPrice * 0.007)), note: "Estimate ~0.7% of value" },
-              { label: "Monthly All-In Est.", value: formatCurrency(Math.round(monthlyPayment + (midPrice * 0.007) / 12 + 250)), note: "Payment + tax + maintenance" },
+              { label: "Monthly Payment", value: formatCurrency(Math.round(monthlyPayment)), note: "Principal & interest" },
+              { label: "Down Payment (20%)", value: formatCurrency(Math.round(downPayment)), note: "To skip CMHC insurance" },
+              { label: "Annual Property Tax", value: "~" + formatCurrency(Math.round(midPrice * 0.007)), note: "~0.7% of value" },
+              { label: "All-In Monthly Est.", value: formatCurrency(Math.round(monthlyPayment + (midPrice * 0.007) / 12 + 250)), note: "Payment + tax + upkeep" },
             ].map((s) => (
               <div key={s.label} className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl p-4">
                 <p className="text-[#8c8580] text-xs mb-2">{s.label}</p>
@@ -366,12 +553,14 @@ export default function BuyerPortalPage() {
           </div>
 
           <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl p-4">
-            <p className="text-xs text-[#8c8580] mb-3 font-medium uppercase tracking-wider">What your budget gets you in {answers.preferredCity || "your area"}</p>
+            <p className="text-xs text-[#8c8580] mb-3 font-medium uppercase tracking-wider">
+              What your budget gets you in {answers.preferredCity || "your area"}
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
               {[
-                { range: formatCurrency(answers.budgetMin), label: "Entry point: look for townhomes or smaller detached" },
-                { range: formatCurrency(Math.round(midPrice)), label: "Mid-range: detached with good bones in your neighbourhoods" },
-                { range: formatCurrency(answers.budgetMax), label: "Top of range: larger lots, more finishes, less compromise" },
+                { range: formatCurrency(answers.budgetMin), label: "Entry point: townhomes or smaller detached with good bones" },
+                { range: formatCurrency(Math.round(midPrice)), label: "Mid-range: detached with space and the right neighbourhood" },
+                { range: formatCurrency(answers.budgetMax), label: "Top of range: larger lots, elevated finishes, less compromise" },
               ].map((b) => (
                 <div key={b.range} className="flex items-start gap-2">
                   <span className="text-[#b8a88a] font-semibold shrink-0">{b.range}</span>
@@ -382,22 +571,22 @@ export default function BuyerPortalPage() {
           </div>
         </section>
 
-        {/* ── Hidden costs calculator ───────────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── True cost of buying ─────────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
             <BookOpen size={16} className="text-[#b8a88a]" />
-            <h2 className="text-[#2c2825] font-semibold">Hidden Cost Estimator</h2>
+            <h2 className="text-[#2c2825] font-semibold">The True Cost of Buying</h2>
           </div>
           <p className="text-[#8c8580] text-sm mb-6">
-            Beyond your purchase price, plan for these costs on closing day.
+            Beyond the purchase price, what you need on closing day.
           </p>
 
-          <div className="space-y-2 mb-5">
+          <div className="space-y-1 mb-5">
             {[
               { label: "Ontario Land Transfer Tax", amount: ltt, note: isFirstTimeBuyer ? `Less $4,000 first-time buyer rebate = ${formatCurrency(Math.max(0, ltt - 4000))}` : "Paid on closing" },
               { label: "Closing Costs (legal, title, admin)", amount: closingCosts, note: "~1.5% of purchase price" },
-              { label: "Home Inspection", amount: 500, note: "Strongly recommended, $450-$600" },
-              { label: "Real Estate Lawyer", amount: 2000, note: "Estimated $1,500–$2,500" },
+              { label: "Home Inspection", amount: 500, note: "Strongly recommended · $450–$600" },
+              { label: "Real Estate Lawyer", amount: 2000, note: "$1,500–$2,500 estimated" },
               { label: "Moving Costs", amount: 3000, note: "Local move estimate" },
               { label: "First Year Maintenance Reserve", amount: Math.round(midPrice * 0.01), note: "~1% of purchase price annually" },
             ].map((row) => (
@@ -413,29 +602,29 @@ export default function BuyerPortalPage() {
 
           <div className="bg-[#2c2825] rounded-xl p-4 flex items-center justify-between">
             <div>
-              <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-0.5">Total to budget beyond purchase price</p>
-              <p className="text-white text-xs">(excluding first year maintenance)</p>
+              <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-0.5">Budget beyond purchase price</p>
+              <p className="text-white/50 text-xs">Excluding first year maintenance</p>
             </div>
             <p className="text-white font-bold text-xl">{formatCurrency(totalHiddenCosts)}</p>
           </div>
         </section>
 
-        {/* ── Neighbourhood lifestyle match ─────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── Neighbourhood lifestyle match ──────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
             <MapPin size={16} className="text-[#b8a88a]" />
-            <h2 className="text-[#2c2825] font-semibold">Neighbourhood Lifestyle Match</h2>
+            <h2 className="text-[#2c2825] font-semibold">Where Your Life Fits Best</h2>
           </div>
-          <p className="text-[#8c8580] text-sm mb-2">
-            Based on your vibe preferences, here&apos;s how your top areas score for your lifestyle.
+          <p className="text-[#8c8580] text-sm mb-1">
+            Based on your vibe, here&apos;s how your areas score for your actual lifestyle.
           </p>
           <p className="text-[#b8a88a] text-xs mb-5 italic">
-            {branding.realtorName} is actively watching these neighbourhoods for you.
+            {realtorFirst} is actively watching these neighbourhoods.
           </p>
 
           <div className="space-y-4">
             {NEIGHBOURHOOD_MATCHES.map((n) => (
-              <div key={n.name} className="border border-[#e8e4de] rounded-xl p-5">
+              <div key={n.name} className="border border-[#e8e4de] rounded-xl p-5 hover:border-[#b8a88a]/40 transition-colors">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>
                     <p className="text-[#2c2825] font-semibold">{n.name}</p>
@@ -450,7 +639,7 @@ export default function BuyerPortalPage() {
                 </div>
                 <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden mb-4">
                   <div
-                    className={`h-full rounded-full ${n.fit >= 90 ? "bg-emerald-500" : "bg-[#b8a88a]"}`}
+                    className={`h-full rounded-full transition-all duration-700 ${n.fit >= 90 ? "bg-emerald-500" : "bg-[#b8a88a]"}`}
                     style={{ width: `${n.fit}%` }}
                   />
                 </div>
@@ -464,15 +653,15 @@ export default function BuyerPortalPage() {
           </div>
         </section>
 
-        {/* ── Mortgage readiness checklist ─────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── Mortgage readiness checklist ───────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <h2 className="text-[#2c2825] font-semibold mb-1">Mortgage Readiness Checklist</h2>
           <p className="text-[#8c8580] text-sm mb-5">Complete these before your lender appointment to speed up approval.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {answers.mortgageChecklist.map((item) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-colors ${
                   item.completed ? "bg-emerald-50 border-emerald-200" : "bg-[#faf9f7] border-[#e8e4de]"
                 }`}
               >
@@ -491,7 +680,7 @@ export default function BuyerPortalPage() {
               </div>
               <div className="h-2 bg-[#e8e4de] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-emerald-500 rounded-full transition-all"
+                  className="h-full bg-emerald-500 rounded-full transition-all duration-700"
                   style={{ width: `${(answers.mortgageChecklist.filter((i) => i.completed).length / answers.mortgageChecklist.length) * 100}%` }}
                 />
               </div>
@@ -499,13 +688,13 @@ export default function BuyerPortalPage() {
           )}
         </section>
 
-        {/* ── Closing checklist ─────────────────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── Closing roadmap ────────────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
             <ShieldCheck size={16} className="text-[#b8a88a]" />
-            <h2 className="text-[#2c2825] font-semibold">Closing Checklist</h2>
+            <h2 className="text-[#2c2825] font-semibold">Your Closing Roadmap</h2>
           </div>
-          <p className="text-[#8c8580] text-sm mb-5">From accepted offer to keys in hand.</p>
+          <p className="text-[#8c8580] text-sm mb-5">From accepted offer to keys in hand, nothing surprises you.</p>
           <div className="space-y-2">
             {CLOSING_STEPS.map((phase) => (
               <div key={phase.phase} className="border border-[#e8e4de] rounded-xl overflow-hidden">
@@ -514,10 +703,12 @@ export default function BuyerPortalPage() {
                   onClick={() => setOpenPhase(openPhase === phase.phase ? null : phase.phase)}
                 >
                   <span className="text-sm font-medium text-[#2c2825]">{phase.phase}</span>
-                  {openPhase === phase.phase ? <ChevronUp size={15} className="text-[#8c8580]" /> : <ChevronDown size={15} className="text-[#8c8580]" />}
+                  {openPhase === phase.phase
+                    ? <ChevronUp size={15} className="text-[#8c8580]" />
+                    : <ChevronDown size={15} className="text-[#8c8580]" />}
                 </button>
                 {openPhase === phase.phase && (
-                  <div className="px-5 pb-4 border-t border-[#f0ece6]">
+                  <div className="px-5 pb-4 border-t border-[#f0ece6] animate-fade-in">
                     <ul className="space-y-2 mt-3">
                       {phase.items.map((item) => (
                         <li key={item} className="flex items-start gap-2 text-sm text-[#5c5550]">
@@ -533,11 +724,11 @@ export default function BuyerPortalPage() {
           </div>
         </section>
 
-        {/* ── First-time buyer guide ────────────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6">
+        {/* ── Knowledge base ─────────────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
             <BookOpen size={16} className="text-[#b8a88a]" />
-            <h2 className="text-[#2c2825] font-semibold">Buyer Knowledge Base</h2>
+            <h2 className="text-[#2c2825] font-semibold">Things Every Buyer Should Know</h2>
           </div>
           <p className="text-[#8c8580] text-sm mb-5">Plain-language answers to the questions most buyers are afraid to ask.</p>
           <div className="space-y-2">
@@ -548,10 +739,12 @@ export default function BuyerPortalPage() {
                   onClick={() => setOpenTip(openTip === i ? null : i)}
                 >
                   <span className="text-sm font-medium text-[#2c2825]">{tip.title}</span>
-                  {openTip === i ? <ChevronUp size={15} className="text-[#8c8580]" /> : <ChevronDown size={15} className="text-[#8c8580]" />}
+                  {openTip === i
+                    ? <ChevronUp size={15} className="text-[#8c8580]" />
+                    : <ChevronDown size={15} className="text-[#8c8580]" />}
                 </button>
                 {openTip === i && (
-                  <div className="px-5 pb-4 border-t border-[#f0ece6]">
+                  <div className="px-5 pb-4 border-t border-[#f0ece6] animate-fade-in">
                     <p className="text-sm text-[#5c5550] leading-relaxed mt-3">{tip.body}</p>
                   </div>
                 )}
@@ -560,48 +753,61 @@ export default function BuyerPortalPage() {
           </div>
         </section>
 
-        {/* ── Matched homes ─────────────────────────────────────────────────── */}
-        <section>
+        {/* ── Dream Collection (saved homes) ─────────────────────────────── */}
+        <section className="animate-fade-up">
           <div className="flex items-start justify-between gap-4 mb-5">
             <div>
-              <h2 className="text-[#2c2825] font-semibold">Your Matched Homes</h2>
-              <p className="text-[#8c8580] text-sm">
-                Handpicked by {branding.realtorName} to match your profile.
+              <div className="flex items-center gap-2">
+                <Heart size={15} className="text-[#b8a88a]" />
+                <h2 className="text-[#2c2825] font-semibold">Your Dream Collection</h2>
+              </div>
+              <p className="text-[#8c8580] text-sm mt-0.5">
+                Curated by {realtorFirst} to match your profile.
               </p>
             </div>
             <Link
               href="/listings"
-              className="shrink-0 text-xs text-[#2c2825] border border-[#e8e4de] px-3 py-1.5 rounded-full hover:border-[#2c2825] transition-colors"
+              className="shrink-0 text-xs text-[#2c2825] border border-[#e8e4de] px-3 py-1.5 rounded-full hover:border-[#b8a88a] transition-colors"
             >
               Browse all
             </Link>
           </div>
 
           {recommendations.length === 0 ? (
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-10 text-center">
-              <p className="text-[#2c2825] font-medium mb-2">Matched homes coming soon</p>
-              <p className="text-[#8c8580] text-sm">{branding.realtorName} will add curated listings here for you.</p>
+            <div className="bg-white border border-dashed border-[#d4cfc9] rounded-2xl p-10 text-center">
+              <Heart size={24} className="text-[#e8e4de] mx-auto mb-3" />
+              <p className="text-[#2c2825] font-medium mb-2">Your collection is waiting</p>
+              <p className="text-[#8c8580] text-sm">{realtorFirst} will add curated homes here. Or save ones you love while browsing.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {recommendations.map((p) => (
-                <PortalPropertyCard key={p.id} property={p} saved={savedIds.has(p.id)} onToggle={() => toggle(p.id)} realtorName={branding.realtorName} />
+                <PortalPropertyCard
+                  key={p.id}
+                  property={p}
+                  saved={savedIds.has(p.id)}
+                  onToggle={() => toggle(p.id)}
+                  realtorName={branding.realtorName}
+                />
               ))}
             </div>
           )}
         </section>
 
-        {/* ── Connect when ready ────────────────────────────────────────────── */}
-        <section className="bg-[#2c2825] rounded-2xl p-8">
-          <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase mb-3">Your Advisor</p>
+        {/* ── Connect with realtor ────────────────────────────────────────── */}
+        <section className="gradient-dark-animated rounded-2xl p-8 animate-fade-up relative overflow-hidden">
+          <div className="flex items-center gap-2 mb-4">
+            <Flame size={15} className="text-[#b8a88a]" />
+            <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase">Your Advisor</p>
+          </div>
           <h2 className="text-white font-semibold text-lg mb-2">{branding.realtorName} is ready when you are.</h2>
-          <p className="text-[#e8e4de]/70 text-sm leading-relaxed max-w-md mb-6">
-            {branding.tagline || "Your profile is complete. Connect whenever the time feels right."}
+          <p className="text-[#e8e4de]/60 text-sm leading-relaxed max-w-md mb-6">
+            {branding.tagline || "Your profile is complete. Reach out whenever the time feels right, no pressure, no scripts."}
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <button className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#c9b99b] transition-colors">
+            <button className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#c9b99b] transition-colors btn-press">
               <MessageCircle size={14} />
-              Message {branding.realtorName.split(" ")[0]}
+              Message {realtorFirst}
             </button>
             <Link
               href="/questionnaire"
@@ -618,10 +824,12 @@ export default function BuyerPortalPage() {
   );
 }
 
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white/10 rounded-xl px-4 py-3">
-      <p className="text-[#e8e4de]/60 text-xs mb-0.5">{label}</p>
+      <p className="text-[#e8e4de]/50 text-xs mb-0.5">{label}</p>
       <p className="text-white font-semibold text-sm">{value}</p>
     </div>
   );
@@ -639,44 +847,59 @@ function PortalPropertyCard({
   realtorName: string;
 }) {
   return (
-    <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden shadow-sm">
-      <div className="relative h-44">
-        <Image src={p.imageUrl} alt={p.address} fill className="object-cover" unoptimized />
-        <button
-          onClick={onToggle}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow transition-all hover:scale-110 active:scale-95"
-        >
-          <Heart size={15} className={saved ? "fill-rose-500 text-rose-500" : "text-[#8c8580]"} />
-        </button>
-        {/* Realtor pick badge */}
-        <div className="absolute bottom-3 left-3 bg-[#2c2825]/80 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
-          <Sparkles size={10} />
-          {realtorName.split(" ")[0]}&apos;s pick
+    <TiltCard className={`rounded-2xl overflow-hidden ${saved ? "shadow-gold" : "shadow-warm-md"}`}>
+      <div className="group bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
+        {/* Cinematic image */}
+        <div className="relative h-52 overflow-hidden">
+          <Image src={p.imageUrl} alt={p.address} fill className="object-cover img-zoom" unoptimized />
+          <div className="card-image-overlay-rich absolute inset-0" />
+
+          <button
+            onClick={onToggle}
+            className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow transition-all hover:scale-110 active:scale-90 ${
+              saved ? "bg-rose-500" : "bg-white/90 backdrop-blur-sm"
+            }`}
+          >
+            <Heart size={15} className={saved ? "fill-white text-white" : "text-[#8c8580]"} />
+          </button>
+
+          {/* Realtor pick badge + price overlay */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8">
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-white font-bold text-xl drop-shadow-sm leading-none">{formatCurrency(p.price)}</p>
+              </div>
+              <div className="flex items-center gap-1 bg-[#2c2825]/80 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
+                <Sparkles size={9} />
+                {realtorName.split(" ")[0]}&apos;s pick
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <p className="text-[#2c2825] font-medium text-sm mb-1">{p.address}</p>
+          <div className="flex items-center gap-4 text-xs text-[#8c8580] mb-4">
+            <span className="flex items-center gap-1.5"><BedDouble size={12} /> {p.bedrooms} bed</span>
+            <span className="flex items-center gap-1.5"><Bath size={12} /> {p.bathrooms} bath</span>
+            <span className="flex items-center gap-1.5"><Ruler size={12} /> {p.sqft.toLocaleString()} sqft</span>
+          </div>
+          <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-3 mb-4">
+            <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-1">Why this feels right</p>
+            <p className="text-[#2c2825] text-xs leading-relaxed">{p.matchReason}</p>
+          </div>
+          <button
+            onClick={onToggle}
+            className={`w-full text-sm font-medium py-2.5 rounded-full transition-all btn-press ${
+              saved
+                ? "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
+                : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
+            }`}
+          >
+            {saved ? "Saved to Dream Collection ✓" : "Add to Dream Collection"}
+          </button>
         </div>
       </div>
-      <div className="p-5">
-        <p className="text-[#2c2825] font-medium text-sm mb-1">{p.address}</p>
-        <p className="text-[#b8a88a] font-semibold text-lg mb-3">{formatCurrency(p.price)}</p>
-        <div className="flex items-center gap-4 text-xs text-[#8c8580] mb-4">
-          <span className="flex items-center gap-1.5"><BedDouble size={12} /> {p.bedrooms} bed</span>
-          <span className="flex items-center gap-1.5"><Bath size={12} /> {p.bathrooms} bath</span>
-          <span className="flex items-center gap-1.5"><Ruler size={12} /> {p.sqft.toLocaleString()} sqft</span>
-        </div>
-        <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-3 mb-4">
-          <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-1">Why this matches you</p>
-          <p className="text-[#2c2825] text-xs leading-relaxed">{p.matchReason}</p>
-        </div>
-        <button
-          onClick={onToggle}
-          className={`w-full text-sm font-medium py-2.5 rounded-full transition-all active:scale-95 ${
-            saved
-              ? "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
-              : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
-          }`}
-        >
-          {saved ? "Saved ✓" : "Save for Later"}
-        </button>
-      </div>
-    </div>
+    </TiltCard>
   );
 }

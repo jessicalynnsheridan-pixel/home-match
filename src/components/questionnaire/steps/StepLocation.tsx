@@ -25,7 +25,7 @@ export default function StepLocation({ answers, update, onNext, onBack, onSubmit
             onChange={(v) => update("preferredNeighbourhoods", v)}
             placeholder="e.g. Port Dalhousie, Old Town NOTL, Lakeshore..."
           />
-          <p className="text-white/40 text-xs mt-1.5">Separate multiple with a comma.</p>
+          <p className="text-[#8c8580] text-xs mt-1.5">Separate multiple with a comma.</p>
         </div>
       </div>
 

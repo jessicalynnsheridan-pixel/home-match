@@ -148,10 +148,11 @@ export default function ResultsPage() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-semibold text-white mb-3 leading-tight">
-              {name}, your home profile<br />is ready. 🏡
+              {name ? `${name}, your taste profile` : "Your taste profile"}<br />
+              is live. ✨
             </h1>
             <p className="text-[#e8e4de]/70 text-base leading-relaxed max-w-md mx-auto">
-              We&apos;ve built your personal home fingerprint. Every listing you see from here is matched to you specifically.
+              We&apos;ve built your personal home fingerprint. Every listing you see from here on is matched to you, your lifestyle, your vibe, your priorities.
             </p>
 
             {/* Score reveal */}
@@ -268,51 +269,46 @@ export default function ResultsPage() {
             celebrated ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          {/* Primary CTA — portal */}
+          {/* Primary CTA, see your matches */}
           <Link
-            href="/portal"
-            className="flex items-center justify-between gap-4 bg-[#b8a88a] hover:bg-[#c9b99b] text-[#2c2825] rounded-2xl p-5 transition-colors group"
+            href="/listings"
+            className="flex items-center justify-between gap-4 bg-[#b8a88a] hover:bg-[#c9b99b] text-[#2c2825] rounded-2xl p-5 transition-all btn-press group shadow-lg"
           >
             <div>
-              <p className="font-semibold text-sm mb-0.5">Open your Home Hub</p>
+              <p className="font-semibold text-sm mb-0.5">See your matched homes</p>
               <p className="text-[#2c2825]/70 text-xs">
-                Affordability insights, matched homes, neighbourhood scores
+                Every listing is now scored against your taste profile
               </p>
             </div>
             <ArrowRight size={18} className="shrink-0 group-hover:translate-x-1 transition-transform" />
           </Link>
 
-          {/* Listings */}
+          {/* Home Hub */}
           <Link
-            href="/listings"
-            className="flex items-center justify-between gap-4 bg-white border border-[#e8e4de] hover:border-[#2c2825] text-[#2c2825] rounded-2xl p-5 transition-colors group"
+            href="/portal"
+            className="flex items-center justify-between gap-4 bg-white border border-[#e8e4de] hover:border-[#b8a88a] text-[#2c2825] rounded-2xl p-5 transition-colors group card-hover"
           >
             <div className="flex items-center gap-3">
               <MapPin size={16} className="text-[#b8a88a] shrink-0" />
               <div>
-                <p className="font-semibold text-sm mb-0.5">Browse matched listings</p>
+                <p className="font-semibold text-sm mb-0.5">Open your Home Hub</p>
                 <p className="text-[#8c8580] text-xs">
-                  Every property now shows your personal match score
+                  Affordability insights, neighbourhood scores, your Dream Collection
                 </p>
               </div>
             </div>
             <ArrowRight size={16} className="shrink-0 text-[#8c8580] group-hover:translate-x-1 transition-transform" />
           </Link>
 
-          {/* Realtor connect */}
-          <div className="bg-[#2c2825] rounded-2xl p-5 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-white font-medium text-sm mb-0.5">Your realtor will love this</p>
-              <p className="text-[#e8e4de]/60 text-xs leading-relaxed">
-                Share your completed profile — they can start finding your home immediately.
-              </p>
-            </div>
-            <Link
-              href="/portal"
-              className="shrink-0 bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-4 py-2 rounded-full transition-colors whitespace-nowrap"
-            >
-              View Hub
-            </Link>
+          {/* Profile reminder */}
+          <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-2xl p-5 text-center">
+            <p className="text-[#8c8580] text-xs leading-relaxed">
+              Your profile is saved privately.{" "}
+              <Link href="/questionnaire" className="text-[#2c2825] underline underline-offset-2 hover:text-[#b8a88a] transition-colors">
+                Update it any time
+              </Link>{" "}
+              as your needs evolve.
+            </p>
           </div>
         </div>
 

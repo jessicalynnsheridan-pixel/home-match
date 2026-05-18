@@ -19,7 +19,7 @@ export default function PrintProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
-      {/* Print control — hidden when printing */}
+      {/* Print control, hidden when printing */}
       <div className="print:hidden max-w-4xl mx-auto px-6 py-6 flex justify-between items-center">
         <a href={`/dashboard/${id}`} className="text-sm text-[#8c8580] hover:text-[#2c2825]">
           ← Back to profile
