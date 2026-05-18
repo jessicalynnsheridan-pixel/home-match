@@ -48,7 +48,7 @@ const realtorLinks = [
   { label: "For Realtors", href: "/for-realtors", icon: UserPlus },
 ];
 
-const DARK_PAGES = ["/portal", "/listings", "/results"];
+const DARK_PAGES: string[] = [];
 
 export default function Navigation() {
   const pathname = usePathname();
