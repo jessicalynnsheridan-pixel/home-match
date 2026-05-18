@@ -191,7 +191,7 @@ function IntegrationsInner() {
       logoText: "G",
       logoColor: "#EA4335",
       category: "email",
-      description: "Send outreach emails directly from your Gmail account. Templates auto-fill in a pre-addressed draft — one click to send.",
+      description: "Send outreach emails directly from your Gmail account. Templates auto-fill in a pre-addressed draft, one click to send.",
       status: gmailConnected ? "connected" : "not_connected",
       connectedEmail: gmailEmail,
       features: [
@@ -201,8 +201,8 @@ function IntegrationsInner() {
         "Works with Google Workspace accounts",
       ],
       setupSteps: [
-        { label: "Click Connect Gmail below", detail: "You'll be taken to Google to sign in and grant permission. We only request access to compose and send emails — we never read your inbox." },
-        { label: "Choose your Google account", detail: "Use the same email your leads will recognise — typically your brokerage Google Workspace address." },
+        { label: "Click Connect Gmail below", detail: "You'll be taken to Google to sign in and grant permission. We only request access to compose and send emails. We never read your inbox." },
+        { label: "Choose your Google account", detail: "Use the same email your leads will recognise, typically your brokerage Google Workspace address." },
         { label: "You're done", detail: "Every template in the Outreach Hub will have an 'Open in Gmail' button that opens a pre-filled draft ready to send." },
       ],
       connectHref: "/api/auth/gmail",
@@ -290,7 +290,7 @@ function IntegrationsInner() {
           {toast === "connected" ? (
             <><CheckCircle size={16} /> Gmail connected successfully!</>
           ) : (
-            <>Something went wrong — please try again.</>
+            <>Something went wrong. Please try again.</>
           )}
         </div>
       )}

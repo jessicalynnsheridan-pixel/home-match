@@ -12,7 +12,7 @@ const DEFAULT_MORTGAGE_CHECKLIST = [
 ];
 
 export const mockLeads: Lead[] = [
-  // ── STAGE 1: Urgent call — Hot, pre-approved, ASAP ───────────────────────
+  // STAGE 1: Urgent call - Hot, pre-approved, ASAP
   {
     id: "lead-001",
     score: "Hot",
@@ -74,7 +74,7 @@ export const mockLeads: Lead[] = [
     },
   },
 
-  // ── STAGE 2: Send first email — Hot, new lead, not yet approved ──────────
+  // STAGE 2: Send first email - Hot, new lead, not yet approved
   {
     id: "lead-002",
     score: "Hot",
@@ -119,11 +119,11 @@ export const mockLeads: Lead[] = [
       preApprovalStatus: "In progress",
       ownershipStatus: "Renting",
       mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: false })),
-      additionalNotes: "Has a French Bulldog. Looking for something she can entertain in — currently in a bachelor and it's driving her crazy.",
+      additionalNotes: "Has a French Bulldog. Looking for something she can entertain in, currently in a bachelor and it's driving her crazy.",
     },
   },
 
-  // ── STAGE 3: Follow up — Warm, already qualified, went quiet ─────────────
+  // STAGE 3: Follow up - Warm, already qualified, went quiet
   {
     id: "lead-003",
     score: "Warm",
@@ -135,7 +135,7 @@ export const mockLeads: Lead[] = [
     realtorNotes: [
       {
         id: "note-003",
-        text: "Had a good call. Not in a rush but serious — waiting to see Q3 listings.",
+        text: "Had a good call. Not in a rush but serious, waiting to see Q3 listings.",
         createdAt: "2026-05-11T10:00:00Z",
       },
     ],

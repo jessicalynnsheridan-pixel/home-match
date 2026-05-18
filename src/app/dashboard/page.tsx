@@ -85,14 +85,14 @@ function generateQuickMessage(item: ActionItem, lead: Lead, realtorName: string)
       : lead.answers.homeFeeling?.[0]
       ? `You're looking for something ${lead.answers.homeFeeling[0].toLowerCase()}`
       : `You have a clear sense of what you want`;
-    return `Hi ${name}, it's ${from} from Home Match. ${hook} — I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
+    return `Hi ${name}, it's ${from} from Home Match. ${hook}. I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
   }
   if (item.icon === "new") {
     const propType = lead.answers.propertyType || "property";
     const timeline = lead.answers.timeline || "";
     return `New profile submitted: ${name} is looking for a ${propType} in ${city}. Budget and timeline look ${timeline === "ASAP" || timeline === "1–3 months" ? "urgent" : "solid"}. Open their profile to review and reach out.`;
   }
-  return `Hi ${name}, it's ${from}. Just following up — still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
+  return `Hi ${name}, it's ${from}. Just following up. Still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
 }
 
 function buildActionQueue(leads: Lead[]): ActionItem[] {
@@ -106,13 +106,13 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
     const isFinanced = lead.answers.preApprovalStatus === "Yes, fully approved" || lead.answers.preApprovalStatus === "Paying cash";
 
     if (isHot && isASAP && isFinanced) {
-      items.push({ id: `call-${lead.id}`, priority: "urgent", icon: "call", label: `Call ${name} now`, sub: "Hot · Pre-approved · ASAP — don't wait", leadId: lead.id, phone: lead.answers.phone, emailAddr: lead.answers.email, lead });
+      items.push({ id: `call-${lead.id}`, priority: "urgent", icon: "call", label: `Call ${name} now`, sub: "Hot · Pre-approved · ASAP, act now", leadId: lead.id, phone: lead.answers.phone, emailAddr: lead.answers.email, lead });
     } else if (isHot && isNew) {
-      items.push({ id: `email-${lead.id}`, priority: "high", icon: "email", label: `Send first email to ${name}`, sub: "Hot lead · New — reach out within the hour", leadId: lead.id, emailAddr: lead.answers.email, lead });
+      items.push({ id: `email-${lead.id}`, priority: "high", icon: "email", label: `Send first email to ${name}`, sub: "Hot lead · New, reach out within the hour", leadId: lead.id, emailAddr: lead.answers.email, lead });
     } else if (isNew) {
-      items.push({ id: `new-${lead.id}`, priority: isWarm ? "high" : "medium", icon: "new", label: `New lead: ${name}`, sub: `${lead.score} · ${lead.answers.propertyType || "Buyer"} in ${lead.answers.preferredCity || "—"}`, leadId: lead.id, lead });
+      items.push({ id: `new-${lead.id}`, priority: isWarm ? "high" : "medium", icon: "new", label: `New lead: ${name}`, sub: `${lead.score} · ${lead.answers.propertyType || "Buyer"} in ${lead.answers.preferredCity || "N/A"}`, leadId: lead.id, lead });
     } else if (isWarm) {
-      items.push({ id: `followup-${lead.id}`, priority: "medium", icon: "followup", label: `Follow up with ${name}`, sub: `Warm · ${lead.status} — keep the momentum`, leadId: lead.id, emailAddr: lead.answers.email, lead });
+      items.push({ id: `followup-${lead.id}`, priority: "medium", icon: "followup", label: `Follow up with ${name}`, sub: `Warm · ${lead.status}, keep the momentum`, leadId: lead.id, emailAddr: lead.answers.email, lead });
     }
   }
   const order = { urgent: 0, high: 1, medium: 2 };
@@ -171,7 +171,7 @@ function ActionQueueItem({
   const message = generateQuickMessage(item, item.lead, realtorName);
   const isEmailType = item.icon === "email" || (item.icon === "followup" && item.emailAddr);
   const gmailUrl = item.emailAddr
-    ? quickGmailUrl(item.emailAddr, `Homes in ${item.lead.answers.preferredCity || "your area"} — Home Match`, message)
+    ? quickGmailUrl(item.emailAddr, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message)
     : "";
   const smsUrl = item.phone ? quickSmsUrl(item.phone, message) : "";
 
@@ -392,7 +392,7 @@ export default function DashboardPage() {
               <p className="text-[#8c8580] text-sm">
                 {activeItems.length > 0
                   ? `You have ${activeItems.length} priority action${activeItems.length !== 1 ? "s" : ""} today`
-                  : "You're all caught up — great work!"}
+                  : "You're all caught up. Great work!"}
               </p>
             </div>
             <button
@@ -579,7 +579,7 @@ export default function DashboardPage() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
               </div>
               <p className="text-[#6b6560] text-xs mb-4 leading-relaxed">
-                Share this link — buyers fill out the questionnaire and land directly in your dashboard.
+                Share this link. Buyers fill out the questionnaire and land directly in your dashboard.
               </p>
               {shareableLink ? (
                 <>
@@ -615,7 +615,7 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-4xl font-bold text-[#2c2825]">{hot}</p>
                 <p className="text-[#8c8580] text-xs mt-1">
-                  {hot === 1 ? "lead" : "leads"} ready to move — act fast
+                  {hot === 1 ? "lead" : "leads"} ready to move. Act fast.
                 </p>
                 {allLeads.length > 0 && (
                   <div className="mt-3">

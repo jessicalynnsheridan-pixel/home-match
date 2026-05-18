@@ -9,7 +9,7 @@ import Link from "next/link";
 // ─── Send helpers ─────────────────────────────────────────────────────────────
 
 function gmailUrl(to: string, subject: string, body: string) {
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function outlookUrl(to: string, subject: string, body: string) {
@@ -421,11 +421,11 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
                 </a>
               </div>
 
-              {/* Zap tip — 1 sentence */}
+              {/* Zap tip */}
               <div className="flex items-center gap-2">
                 <Zap size={12} className="text-[#b8a88a] shrink-0" />
                 <p className="text-xs text-[#8c8580]">
-                  Personalised from {lead.answers.firstName}&apos;s lifestyle answers — reads like you wrote it.
+                  Personalised from {lead.answers.firstName}&apos;s lifestyle answers. Reads like you wrote it.
                 </p>
               </div>
 
@@ -440,7 +440,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
                 </div>
               </div>
 
-              {/* Body — collapsed by default */}
+              {/* Body - collapsed by default */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
@@ -479,7 +479,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
               {/* Zap tip */}
               <div className="flex items-center gap-2">
                 <Zap size={12} className="text-[#b8a88a] shrink-0" />
-                <p className="text-xs text-[#8c8580]">Works on mobile — on desktop, use Copy and paste into your SMS app.</p>
+                <p className="text-xs text-[#8c8580]">Works on mobile. On desktop, use Copy and paste into your SMS app.</p>
               </div>
 
               {/* Message preview */}
@@ -523,10 +523,10 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
               {/* Zap tip */}
               <div className="flex items-center gap-2">
                 <Zap size={12} className="text-[#b8a88a] shrink-0" />
-                <p className="text-xs text-[#8c8580]">Name their lifestyle answer in the first 30 seconds — it signals you actually read their profile.</p>
+                <p className="text-xs text-[#8c8580]">Name their lifestyle answer in the first 30 seconds. It signals you actually read their profile.</p>
               </div>
 
-              {/* Script — collapsed */}
+              {/* Script - collapsed */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Call Script</p>
@@ -575,7 +575,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
               {/* Zap tip */}
               <div className="flex items-center gap-2">
                 <Zap size={12} className="text-[#b8a88a] shrink-0" />
-                <p className="text-xs text-[#8c8580]">Send 48–72 hrs after no reply — short is better.</p>
+                <p className="text-xs text-[#8c8580]">Send 48-72 hrs after no reply. Short is better.</p>
               </div>
 
               {/* Subject */}
@@ -589,7 +589,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
                 </div>
               </div>
 
-              {/* Body — collapsed */}
+              {/* Body - collapsed */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>

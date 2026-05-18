@@ -155,7 +155,7 @@ export default function QuestionnaireForm() {
           is_priority: score === "Hot",
           match_score: matchScore,
         });
-      } catch { /* non-blocking — still redirect */ }
+      } catch { /* non-blocking - still redirect */ }
     }
 
     router.push("/results");
