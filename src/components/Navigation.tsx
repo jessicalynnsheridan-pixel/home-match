@@ -262,6 +262,16 @@ export default function Navigation() {
             <Settings size={18} />
           </Link>
           <Link
+            href="/login"
+            className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${
+              isDark
+                ? "text-white/60 border-white/15 hover:text-white hover:border-white/35"
+                : "text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
+            }`}
+          >
+            Sign In
+          </Link>
+          <Link
             href="/realtor-signup"
             className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${
               isDark
@@ -391,15 +401,26 @@ export default function Navigation() {
           <div className={`h-px my-1 ${isDark ? "bg-white/8" : "bg-[#e8e4de]"}`} />
 
           {/* Bottom CTAs */}
-          <Link
-            href="/realtor-signup"
-            onClick={() => setMobileOpen(false)}
-            className={`text-sm px-5 py-3 rounded-full text-center mt-1 border ${
-              isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#2c2825]"
-            }`}
-          >
-            Realtor Sign Up
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className={`flex-1 text-sm px-5 py-3 rounded-full text-center mt-1 border ${
+                isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#e8e4de]"
+              }`}
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/realtor-signup"
+              onClick={() => setMobileOpen(false)}
+              className={`flex-1 text-sm px-5 py-3 rounded-full text-center mt-1 border ${
+                isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#2c2825]"
+              }`}
+            >
+              Sign Up
+            </Link>
+          </div>
           <Link
             href="/questionnaire"
             onClick={() => setMobileOpen(false)}
