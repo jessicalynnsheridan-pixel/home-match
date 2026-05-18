@@ -55,7 +55,10 @@ function formatDate() {
 }
 
 function quickGmailUrl(to: string, subject: string, body: string) {
-  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+function openGmailPopup(to: string, subject: string, body: string) {
+  window.open(quickGmailUrl(to, subject, body), "gmail_compose", "width=960,height=720,left=200,top=100");
 }
 
 function quickSmsUrl(phone: string, body: string) {
@@ -261,11 +264,12 @@ function ActionQueueItem({
             >
               <Copy size={11} /> Copy text
             </button>
-            {isEmailType && gmailUrl ? (
-              <a href={gmailUrl}
+            {isEmailType && item.emailAddr ? (
+              <button
+                onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message); }}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium">
-                <ExternalLink size={11} /> Open Draft
-              </a>
+                <ExternalLink size={11} /> Open in Gmail
+              </button>
             ) : smsUrl ? (
               <a href={smsUrl}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium">

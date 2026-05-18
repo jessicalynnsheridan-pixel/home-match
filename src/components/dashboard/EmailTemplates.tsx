@@ -8,8 +8,12 @@ import Link from "next/link";
 
 // ─── Send helpers ─────────────────────────────────────────────────────────────
 
-function mailtoUrl(to: string, subject: string, body: string) {
-  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+function gmailUrl(to: string, subject: string, body: string) {
+  return `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function openGmail(to: string, subject: string, body: string) {
+  window.open(gmailUrl(to, subject, body), "gmail_compose", "width=960,height=720,left=200,top=100");
 }
 
 function outlookUrl(to: string, subject: string, body: string) {
@@ -40,12 +44,12 @@ function EmailSendBar({ to, subject, body, realtorName, realtorPhone }: { to: st
   const full = `${body}\n\n${signature}`;
   return (
     <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
-      <a
-        href={mailtoUrl(to, subject, full)}
+      <button
+        onClick={() => openGmail(to, subject, full)}
         className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
       >
-        <Mail size={11} /> Open Draft <ExternalLink size={10} />
-      </a>
+        <Mail size={11} /> Open in Gmail <ExternalLink size={10} />
+      </button>
       <a
         href={outlookUrl(to, subject, full)}
         target="_blank"
@@ -397,14 +401,14 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
             <>
               {/* BIG send buttons FIRST */}
               <div className="flex flex-col sm:flex-row gap-2">
-                <a
-                  href={mailtoUrl(lead.answers.email, email.subject, fillRealtor(`${email.body}\n\n${rName}\n${rPhone}`))}
+                <button
+                  onClick={() => openGmail(lead.answers.email, email.subject, fillRealtor(`${email.body}\n\n${rName}\n${rPhone}`))}
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
                 >
                   <Mail size={15} />
-                  Open Draft
+                  Open in Gmail
                   <ExternalLink size={12} className="opacity-60" />
-                </a>
+                </button>
                 <a
                   href={outlookUrl(lead.answers.email, email.subject, fillRealtor(`${email.body}\n\n${rName}\n${rPhone}`))}
                   target="_blank"
@@ -546,14 +550,14 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
             <>
               {/* BIG send buttons */}
               <div className="flex flex-col sm:flex-row gap-2">
-                <a
-                  href={mailtoUrl(lead.answers.email, followup.subject, fillRealtor(`${followup.body}\n\n${rName}\n${rPhone}`))}
+                <button
+                  onClick={() => openGmail(lead.answers.email, followup.subject, fillRealtor(`${followup.body}\n\n${rName}\n${rPhone}`))}
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
                 >
                   <Mail size={15} />
-                  Open Draft
+                  Open in Gmail
                   <ExternalLink size={12} className="opacity-60" />
-                </a>
+                </button>
                 <a
                   href={outlookUrl(lead.answers.email, followup.subject, `${followup.body}\n\n[Your name]\n[Your phone]`)}
                   target="_blank"
