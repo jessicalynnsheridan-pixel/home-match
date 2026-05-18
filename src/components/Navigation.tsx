@@ -53,9 +53,9 @@ const realtorFeatures = [
   },
   {
     icon: Mail,
-    label: "Lead Pipeline",
-    sub: "Outreach templates & stages",
-    href: "/pipeline",
+    label: "Task List",
+    sub: "Follow-ups & action items",
+    href: "/dashboard",
     color: "#f0fdf4",
     iconColor: "#16a34a",
   },
