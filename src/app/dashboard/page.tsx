@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, Bell } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, Bell, ChevronDown, CheckCircle2, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
@@ -54,6 +54,14 @@ function formatDate() {
   return new Date().toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric" });
 }
 
+function quickGmailUrl(to: string, subject: string, body: string) {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function quickSmsUrl(phone: string, body: string) {
+  return `sms:${phone}?body=${encodeURIComponent(body)}`;
+}
+
 type ActionItem = {
   id: string;
   priority: "urgent" | "high" | "medium";
@@ -63,7 +71,28 @@ type ActionItem = {
   leadId: string;
   phone?: string;
   emailAddr?: string;
+  lead: Lead;
 };
+
+function generateQuickMessage(item: ActionItem, lead: Lead): string {
+  const name = lead.answers.firstName;
+  const city = lead.answers.preferredCity || "your area";
+  const timeline = lead.answers.timeline || "";
+  const propType = lead.answers.propertyType || "property";
+
+  if (item.icon === "call" || item.icon === "email") {
+    const hook = lead.answers.sundayMorning
+      ? `You mentioned ${lead.answers.sundayMorning.toLowerCase()} as your ideal Sunday`
+      : lead.answers.homeFeeling?.[0]
+      ? `You're looking for something ${lead.answers.homeFeeling[0].toLowerCase()}`
+      : `You have a clear sense of what you want`;
+    return `Hi ${name}, it's [Your Name] from Home Match. ${hook} — I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
+  }
+  if (item.icon === "new") {
+    return `New profile submitted: ${name} is looking for a ${propType} in ${city}. Budget and timeline look ${timeline === "ASAP" || timeline === "1–3 months" ? "urgent" : "solid"}. Open their profile to review and reach out.`;
+  }
+  return `Hi ${name}, just following up — still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
+}
 
 function buildActionQueue(leads: Lead[]): ActionItem[] {
   const items: ActionItem[] = [];
@@ -76,13 +105,13 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
     const isFinanced = lead.answers.preApprovalStatus === "Yes, fully approved" || lead.answers.preApprovalStatus === "Paying cash";
 
     if (isHot && isASAP && isFinanced) {
-      items.push({ id: `call-${lead.id}`, priority: "urgent", icon: "call", label: `Call ${name} now`, sub: "Hot · Pre-approved · ASAP — don't wait", leadId: lead.id, phone: lead.answers.phone, emailAddr: lead.answers.email });
+      items.push({ id: `call-${lead.id}`, priority: "urgent", icon: "call", label: `Call ${name} now`, sub: "Hot · Pre-approved · ASAP — don't wait", leadId: lead.id, phone: lead.answers.phone, emailAddr: lead.answers.email, lead });
     } else if (isHot && isNew) {
-      items.push({ id: `email-${lead.id}`, priority: "high", icon: "email", label: `Send first email to ${name}`, sub: "Hot lead · New — reach out within the hour", leadId: lead.id, emailAddr: lead.answers.email });
+      items.push({ id: `email-${lead.id}`, priority: "high", icon: "email", label: `Send first email to ${name}`, sub: "Hot lead · New — reach out within the hour", leadId: lead.id, emailAddr: lead.answers.email, lead });
     } else if (isNew) {
-      items.push({ id: `new-${lead.id}`, priority: isWarm ? "high" : "medium", icon: "new", label: `New lead: ${name}`, sub: `${lead.score} · ${lead.answers.propertyType || "Buyer"} in ${lead.answers.preferredCity || "—"}`, leadId: lead.id });
+      items.push({ id: `new-${lead.id}`, priority: isWarm ? "high" : "medium", icon: "new", label: `New lead: ${name}`, sub: `${lead.score} · ${lead.answers.propertyType || "Buyer"} in ${lead.answers.preferredCity || "—"}`, leadId: lead.id, lead });
     } else if (isWarm) {
-      items.push({ id: `followup-${lead.id}`, priority: "medium", icon: "followup", label: `Follow up with ${name}`, sub: `Warm · ${lead.status} — keep the momentum`, leadId: lead.id, emailAddr: lead.answers.email });
+      items.push({ id: `followup-${lead.id}`, priority: "medium", icon: "followup", label: `Follow up with ${name}`, sub: `Warm · ${lead.status} — keep the momentum`, leadId: lead.id, emailAddr: lead.answers.email, lead });
     }
   }
   const order = { urgent: 0, high: 1, medium: 2 };
@@ -90,10 +119,136 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
 }
 
 const PRIORITY_STYLES = {
-  urgent: { dot: "bg-rose-500", bg: "bg-rose-50 border-rose-200", text: "text-rose-700", label: "Urgent" },
-  high:   { dot: "bg-amber-500", bg: "bg-amber-50 border-amber-200", text: "text-amber-700", label: "Today" },
-  medium: { dot: "bg-blue-400", bg: "bg-blue-50 border-blue-200", text: "text-blue-700", label: "This week" },
+  urgent: { dot: "bg-rose-500", bg: "bg-rose-50 border-rose-200", text: "text-rose-700", label: "Urgent", border: "border-l-4 border-rose-400" },
+  high:   { dot: "bg-amber-500", bg: "bg-amber-50 border-amber-200", text: "text-amber-700", label: "Today", border: "border-l-4 border-amber-400" },
+  medium: { dot: "bg-blue-400", bg: "bg-blue-50 border-blue-200", text: "text-blue-700", label: "This week", border: "border-l-4 border-blue-300" },
 };
+
+function ActionQueueItem({
+  item,
+  isChecked,
+  isExpanded,
+  onToggleCheck,
+  onToggleExpand,
+}: {
+  item: ActionItem;
+  isChecked: boolean;
+  isExpanded: boolean;
+  onToggleCheck: () => void;
+  onToggleExpand: () => void;
+}) {
+  const s = PRIORITY_STYLES[item.priority];
+  const message = generateQuickMessage(item, item.lead);
+  const isEmailType = item.icon === "email" || (item.icon === "followup" && item.emailAddr);
+  const gmailUrl = item.emailAddr
+    ? quickGmailUrl(
+        item.emailAddr,
+        `Homes in ${item.lead.answers.preferredCity || "your area"} — Home Match`,
+        message
+      )
+    : "";
+  const smsUrl = item.phone ? quickSmsUrl(item.phone, message) : "";
+
+  function handleCopy(e: React.MouseEvent) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(message);
+  }
+
+  return (
+    <div className={`${s.border} ${isChecked ? "opacity-50" : ""} transition-opacity`}>
+      <div
+        className="flex items-center gap-3 px-4 py-3.5 hover:bg-[#faf9f7] transition-colors cursor-pointer"
+        onClick={onToggleExpand}
+      >
+        {/* Checkbox */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleCheck(); }}
+          className="shrink-0 w-5 h-5 rounded border border-[#d4cfc9] flex items-center justify-center hover:border-[#2c2825] transition-colors bg-white"
+          aria-label={isChecked ? "Mark incomplete" : "Mark complete"}
+        >
+          {isChecked && <Check size={11} className="text-emerald-600" />}
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-medium text-[#2c2825] truncate ${isChecked ? "line-through text-[#b8b4b0]" : ""}`}>
+            {item.label}
+          </p>
+          <p className="text-xs text-[#8c8580] mt-0.5">{item.sub}</p>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${s.bg} ${s.text}`}>{s.label}</span>
+          {item.icon === "call" && item.phone && (
+            <a
+              href={`tel:${item.phone}`}
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium"
+            >
+              <Phone size={11} /> Call
+            </a>
+          )}
+          {item.emailAddr && item.icon !== "call" && (
+            <a
+              href={gmailUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+            >
+              <Mail size={11} /> Email
+            </a>
+          )}
+          <ChevronDown
+            size={14}
+            className={`text-[#b8b4b0] transition-transform ${isExpanded ? "rotate-180" : ""}`}
+          />
+        </div>
+      </div>
+
+      {/* Expanded message panel */}
+      {isExpanded && (
+        <div className="px-4 pb-4 pt-1 bg-[#faf9f7] border-t border-[#f0ece6]">
+          <p className="text-xs text-[#5c5550] leading-relaxed bg-white border border-[#e8e4de] rounded-xl px-3 py-2.5 mb-3">
+            {message}
+          </p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#e8e4de] bg-white text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
+            >
+              <Copy size={11} /> Copy
+            </button>
+
+            {isEmailType && gmailUrl ? (
+              <a
+                href={gmailUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#e8e4de] bg-white text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
+              >
+                <ExternalLink size={11} /> Open in Gmail
+              </a>
+            ) : smsUrl ? (
+              <a
+                href={smsUrl}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#e8e4de] bg-white text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
+              >
+                <ExternalLink size={11} /> Open in Messages
+              </a>
+            ) : null}
+
+            <Link
+              href={`/dashboard/${item.leadId}`}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg text-[#b8a88a] hover:text-[#8c6a3e] transition-colors font-medium ml-auto"
+            >
+              View Full Profile <ChevronRight size={11} />
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -105,6 +260,8 @@ export default function DashboardPage() {
   const [realtorName, setRealtorName] = useState<string>("");
   const [realtorId, setRealtorId] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const demoLeads = mockLeads;
   const allLeads = [...realLeads, ...demoLeads];
@@ -155,6 +312,33 @@ export default function DashboardPage() {
   const newLeads = allLeads.filter((l) => l.status === "New Lead").length;
   const actionQueue = buildActionQueue(allLeads);
 
+  const activeItems = actionQueue.filter((item) => !checkedItems.has(item.id));
+  const doneItems = actionQueue.filter((item) => checkedItems.has(item.id));
+
+  function toggleCheck(id: string) {
+    setCheckedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    // collapse when checking off
+    setExpandedItems((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }
+
+  function toggleExpand(id: string) {
+    setExpandedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   // suppress unused router warning — kept for potential future use
   void router;
 
@@ -182,12 +366,13 @@ export default function DashboardPage() {
           {/* TODAY'S PRIORITY QUEUE */}
           <div className="lg:col-span-2">
             <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden h-full">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-[#f0ece6]">
+              {/* Header with gold left accent */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[#f0ece6] border-l-4 border-l-[#b8a88a]">
                 <div className="flex items-center gap-2">
                   <Bell size={14} className="text-[#b8a88a]" />
                   <h2 className="text-sm font-semibold text-[#2c2825]">Today&apos;s Priorities</h2>
-                  {actionQueue.length > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-600">{actionQueue.length}</span>
+                  {activeItems.length > 0 && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-600">{activeItems.length}</span>
                   )}
                 </div>
                 <Link href="/pipeline" className="text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors flex items-center gap-1">
@@ -196,42 +381,60 @@ export default function DashboardPage() {
               </div>
 
               {actionQueue.length === 0 ? (
-                <div className="px-5 py-12 text-center">
-                  <Star size={24} className="text-[#e8e4de] mx-auto mb-3" />
-                  <p className="text-[#2c2825] font-medium text-sm mb-1">All caught up</p>
-                  <p className="text-[#8c8580] text-xs">No urgent actions right now. Share your buyer link to grow your pipeline.</p>
+                <div className="px-5 py-12 text-center bg-emerald-50/40">
+                  <CheckCircle2 size={24} className="text-emerald-400 mx-auto mb-3" />
+                  <p className="text-emerald-700 font-medium text-sm mb-1">You&apos;re all caught up ✓</p>
+                  <p className="text-emerald-600/70 text-xs">No urgent actions right now. Share your buyer link to grow your pipeline.</p>
                 </div>
               ) : (
-                <div className="divide-y divide-[#f5f3f0]">
-                  {actionQueue.map((item) => {
-                    const s = PRIORITY_STYLES[item.priority];
-                    return (
-                      <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-[#faf9f7] transition-colors group">
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${s.dot}`} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#2c2825] truncate">{item.label}</p>
-                          <p className="text-xs text-[#8c8580] mt-0.5">{item.sub}</p>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${s.bg} ${s.text}`}>{s.label}</span>
-                          {item.icon === "call" && item.phone && (
-                            <a href={`tel:${item.phone}`} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium">
-                              <Phone size={11} /> Call
-                            </a>
-                          )}
-                          {item.emailAddr && (
-                            <Link href={`/dashboard/${item.leadId}`} className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium">
-                              <Mail size={11} /> Email
-                            </Link>
-                          )}
-                          <Link href={`/dashboard/${item.leadId}`} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ChevronRight size={14} className="text-[#b8b4b0]" />
-                          </Link>
-                        </div>
+                <>
+                  {/* Active items */}
+                  {activeItems.length === 0 && doneItems.length > 0 ? (
+                    <div className="px-5 py-8 text-center bg-emerald-50/40">
+                      <CheckCircle2 size={20} className="text-emerald-400 mx-auto mb-2" />
+                      <p className="text-emerald-700 font-medium text-sm">You&apos;re all caught up ✓</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-[#f5f3f0]">
+                      {activeItems.map((item) => (
+                        <ActionQueueItem
+                          key={item.id}
+                          item={item}
+                          isChecked={checkedItems.has(item.id)}
+                          isExpanded={expandedItems.has(item.id)}
+                          onToggleCheck={() => toggleCheck(item.id)}
+                          onToggleExpand={() => toggleExpand(item.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Done for today section */}
+                  {doneItems.length > 0 && (
+                    <div className="border-t border-[#f0ece6]">
+                      <div className="px-5 py-2.5 flex items-center gap-3">
+                        <div className="flex-1 h-px bg-[#f0ece6]" />
+                        <span className="text-[10px] text-[#b8b4b0] font-medium whitespace-nowrap">
+                          Completed today ({doneItems.length})
+                        </span>
+                        <div className="flex-1 h-px bg-[#f0ece6]" />
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="divide-y divide-[#f5f3f0]">
+                        {doneItems.map((item) => (
+                          <div key={item.id} className="flex items-center gap-3 px-4 py-2.5 opacity-40">
+                            <button
+                              onClick={() => toggleCheck(item.id)}
+                              className="shrink-0 w-5 h-5 rounded border border-emerald-300 bg-emerald-50 flex items-center justify-center"
+                            >
+                              <Check size={11} className="text-emerald-600" />
+                            </button>
+                            <p className="text-xs text-[#8c8580] line-through truncate">{item.label}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -244,14 +447,14 @@ export default function DashboardPage() {
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a] mb-3">Pipeline</p>
               <div className="space-y-3">
                 {[
-                  { label: "Total leads", value: allLeads.length, icon: <Users size={13} />, color: "text-[#8c8580]" },
-                  { label: "Hot", value: hot, icon: <Flame size={13} />, color: "text-rose-500" },
-                  { label: "Warm", value: warm, icon: <Zap size={13} />, color: "text-amber-500" },
-                  { label: "New", value: newLeads, icon: <TrendingUp size={13} />, color: "text-blue-500" },
+                  { label: "Total leads", value: allLeads.length, icon: <Users size={13} />, dot: "bg-[#c4bfb9]", rowBg: "" },
+                  { label: "Hot", value: hot, icon: <Flame size={13} />, dot: "bg-rose-500", rowBg: hot > 0 ? "bg-rose-50/50 -mx-2 px-2 rounded-lg" : "" },
+                  { label: "Warm", value: warm, icon: <Zap size={13} />, dot: "bg-amber-400", rowBg: "" },
+                  { label: "New", value: newLeads, icon: <TrendingUp size={13} />, dot: "bg-blue-400", rowBg: "" },
                 ].map((s) => (
-                  <div key={s.label} className="flex items-center justify-between">
-                    <div className={`flex items-center gap-2 ${s.color}`}>
-                      {s.icon}
+                  <div key={s.label} className={`flex items-center justify-between py-0.5 transition-colors ${s.rowBg}`}>
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${s.dot}`} />
                       <span className="text-xs text-[#5c5550]">{s.label}</span>
                     </div>
                     <span className="text-sm font-bold text-[#2c2825]">{s.value}</span>
@@ -268,8 +471,8 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Buyer link */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
+            {/* Buyer link — warm gradient */}
+            <div className="border border-[#e8e4de] rounded-2xl p-4 bg-gradient-to-br from-[#faf8f5] to-[#f5f0e8]">
               <div className="flex items-center gap-2 mb-2">
                 <Link2 size={13} className="text-[#b8a88a]" />
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
@@ -277,7 +480,7 @@ export default function DashboardPage() {
               <p className="text-xs text-[#8c8580] mb-3 leading-relaxed">Share with buyers — their responses come straight to your dashboard.</p>
               {shareableLink ? (
                 <>
-                  <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-3 py-2 mb-2">
+                  <div className="bg-white/70 border border-[#e8e4de] rounded-xl px-3 py-2 mb-2">
                     <p className="text-[10px] text-[#8c8580] truncate">{shareableLink}</p>
                   </div>
                   <button
@@ -288,7 +491,7 @@ export default function DashboardPage() {
                   </button>
                 </>
               ) : (
-                <div className="bg-[#f5f3f0] rounded-xl px-3 py-2">
+                <div className="bg-white/70 rounded-xl px-3 py-2">
                   <p className="text-[10px] text-[#8c8580]">Sign in to get your link</p>
                 </div>
               )}
