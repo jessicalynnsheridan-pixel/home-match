@@ -783,7 +783,7 @@ function GiftReminderWidget({ leads }: { leads: Lead[] }) {
   return (
     <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm">
       <div className="px-4 py-3.5 border-b border-[#f0ece6] flex items-center gap-2">
-        <span className="text-base">🎁</span>
+        <span className="text-base">💌</span>
         <p className="text-xs font-bold text-[#2c2825]">Send a Closing Gift</p>
         <span className="ml-auto text-[10px] text-[#b8b4b0]">Builds referrals</span>
       </div>
