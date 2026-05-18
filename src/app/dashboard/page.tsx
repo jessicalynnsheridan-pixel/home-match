@@ -1,10 +1,14 @@
 "use client";
 
+"use client";
+
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const SCORE_FILTERS: (LeadScore | "All")[] = ["All", "Hot", "Warm", "Browsing"];
 const STATUS_FILTERS: (LeadStatus | "All")[] = [
@@ -61,6 +65,14 @@ function exportLeads(leads: Lead[]) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
   const [scoreFilter, setScoreFilter] = useState<LeadScore | "All">("All");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "All">("All");
   const [search, setSearch] = useState("");
@@ -95,12 +107,21 @@ export default function DashboardPage() {
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-semibold text-[#2c2825]">Leads</h1>
-          <button
-            onClick={() => exportLeads(filtered)}
-            className="flex items-center gap-1.5 border border-[#e8e4de] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white"
-          >
-            <Download size={12} /> Export
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => exportLeads(filtered)}
+              className="flex items-center gap-1.5 border border-[#e8e4de] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white"
+            >
+              <Download size={12} /> Export
+            </button>
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1.5 border border-[#e8e4de] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-rose-300 hover:text-rose-600 transition-colors bg-white"
+              title="Sign out"
+            >
+              <LogOut size={12} /> Sign out
+            </button>
+          </div>
         </div>
 
         {/* ── Stats strip ────────────────────────────────────────────────── */}

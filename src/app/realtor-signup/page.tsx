@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ArrowRight, Shield, Users, BarChart3 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const PLAN_FEATURES = [
   "Unlimited buyer questionnaire links",
@@ -28,7 +29,9 @@ export default function RealtorSignupPage() {
     licenseNumber: "",
     city: "",
   });
-  const [errors, setErrors] = useState<Partial<typeof form>>({});
+  const [errors, setErrors] = useState<Partial<typeof form> & { auth?: string }>({});
+  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
 
   function update(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -47,9 +50,33 @@ export default function RealtorSignupPage() {
     return Object.keys(next).length === 0;
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (step === "plan") { setStep("details"); return; }
-    if (step === "details" && validateDetails()) { setStep("confirm"); }
+    if (step === "details" && validateDetails()) {
+      setLoading(true);
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({
+        email: form.email,
+        password,
+        options: {
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+          data: {
+            first_name: form.firstName,
+            last_name: form.lastName,
+            phone: form.phone,
+            brokerage: form.brokerageName,
+            license: form.licenseNumber,
+            city: form.city,
+          },
+        },
+      });
+      setLoading(false);
+      if (error) {
+        setErrors({ auth: error.message });
+        return;
+      }
+      setStep("confirm");
+    }
   }
 
   if (step === "confirm") {
@@ -272,8 +299,30 @@ export default function RealtorSignupPage() {
                     />
                   </Field>
                 </div>
+
+                {/* Password */}
+                <div className="mt-4">
+                  <Field label="Create a password" error={undefined}>
+                    <input
+                      type="password"
+                      autoComplete="new-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min. 8 characters"
+                      minLength={8}
+                      required
+                      className={inputClass(false)}
+                    />
+                  </Field>
+                </div>
               </div>
             </div>
+
+            {errors.auth && (
+              <div className="px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm">
+                {errors.auth}
+              </div>
+            )}
 
             <div className="flex gap-3">
               <button
@@ -285,10 +334,10 @@ export default function RealtorSignupPage() {
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-[#2c2825] text-white font-medium py-3 rounded-full hover:bg-[#1a1714] transition-colors flex items-center justify-center gap-2"
+                disabled={loading}
+                className="flex-1 bg-[#2c2825] text-white font-medium py-3 rounded-full hover:bg-[#1a1714] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
               >
-                Request Access
-                <ArrowRight size={15} />
+                {loading ? "Creating account..." : <><span>Create Account</span><ArrowRight size={15} /></>}
               </button>
             </div>
 
