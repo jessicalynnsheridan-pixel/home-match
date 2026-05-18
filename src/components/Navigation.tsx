@@ -127,14 +127,13 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
 
         {/* Logo */}
-        <Link href="/" className="shrink-0 flex items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.svg"
-            alt="HomeMatch"
-            height={32}
-            style={{ height: 32, width: "auto", filter: isDark ? "brightness(0) invert(1)" : "none" }}
-          />
+        <Link
+          href="/"
+          className={`font-semibold text-lg tracking-tight shrink-0 transition-colors ${
+            isDark ? "text-white" : "text-[#2c2825]"
+          }`}
+        >
+          Home<span className={isDark ? "text-[#c9a870]" : "text-[#b8a88a]"}> Match</span>
         </Link>
 
         {/* Desktop nav */}
