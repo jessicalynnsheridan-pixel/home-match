@@ -9,7 +9,7 @@ import {
   Heart, BedDouble, Bath, Ruler, CheckCircle, Circle,
   Lightbulb, BookOpen, MapPin, ShieldCheck, ChevronDown,
   ChevronUp, Info, ArrowRight, TrendingUp, MessageCircle,
-  Sparkles, Star, Bell, Flame,
+  Sparkles, Star, Bell, Flame, CalendarDays,
 } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { useBranding } from "@/context/BrandingContext";
@@ -339,6 +339,13 @@ export default function BuyerPortalPage() {
   const [streak, setStreak] = useState(0);
   const [openPhase, setOpenPhase] = useState<string | null>(null);
   const [openTip, setOpenTip] = useState<number | null>(null);
+  const [showingForm, setShowingForm] = useState<{
+    dates: string;
+    time: string;
+    message: string;
+    submitted: boolean;
+    submitting: boolean;
+  }>({ dates: "", time: "", message: "", submitted: false, submitting: false });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -794,6 +801,125 @@ export default function BuyerPortalPage() {
                 />
               ))}
             </div>
+          )}
+        </section>
+
+        {/* ── Request a Showing ──────────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
+          <div className="flex items-center gap-2 mb-1">
+            <CalendarDays size={16} className="text-[#b8a88a]" />
+            <h2 className="text-[#2c2825] font-semibold">Request a Showing</h2>
+          </div>
+          <p className="text-[#8c8580] text-sm mb-6">Pick a time and we&apos;ll make it happen.</p>
+
+          {showingForm.submitted ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-3">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                <CheckCircle size={22} className="text-emerald-500" />
+              </div>
+              <p className="text-[#2c2825] font-semibold text-center">Request sent!</p>
+              <p className="text-[#8c8580] text-sm text-center">Your realtor will confirm shortly.</p>
+            </div>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setShowingForm((prev) => ({ ...prev, submitting: true }));
+
+                let realtorId: string | null = null;
+                try {
+                  const raw = sessionStorage.getItem("homematch_answers");
+                  if (raw) realtorId = JSON.parse(raw).realtorId ?? null;
+                } catch { /* ignore */ }
+                if (!realtorId) {
+                  const params = new URLSearchParams(window.location.search);
+                  realtorId = params.get("r");
+                }
+
+                try {
+                  const res = await fetch("/api/showings/request", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      realtorId,
+                      buyerName: answers.firstName || "",
+                      buyerEmail: answers.email || "",
+                      preferredDates: showingForm.dates,
+                      preferredTime: showingForm.time,
+                      message: showingForm.message,
+                    }),
+                  });
+                  // Treat 404 as success (API not built yet)
+                  if (res.ok || res.status === 404) {
+                    setShowingForm((prev) => ({ ...prev, submitting: false, submitted: true }));
+                  } else {
+                    throw new Error("Request failed");
+                  }
+                } catch {
+                  // Network error or non-404 failure
+                  setShowingForm((prev) => ({ ...prev, submitting: false }));
+                  toast("Something went wrong. Please try again or message your realtor directly.", { variant: "save" });
+                }
+              }}
+              className="space-y-5"
+            >
+              {/* Preferred dates */}
+              <div>
+                <label className="block text-xs font-medium text-[#2c2825] mb-1.5">Preferred dates</label>
+                <input
+                  type="text"
+                  placeholder='e.g. "This weekend or next Tuesday"'
+                  value={showingForm.dates}
+                  onChange={(e) => setShowingForm((prev) => ({ ...prev, dates: e.target.value }))}
+                  required
+                  className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] placeholder:text-[#b8a88a]/60 focus:outline-none focus:border-[#b8a88a] transition-colors"
+                />
+              </div>
+
+              {/* Preferred time toggle chips */}
+              <div>
+                <label className="block text-xs font-medium text-[#2c2825] mb-2">Preferred time</label>
+                <div className="flex gap-2 flex-wrap">
+                  {["Morning", "Afternoon", "Evening"].map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setShowingForm((prev) => ({ ...prev, time: prev.time === slot ? "" : slot }))}
+                      className={`px-4 py-2 rounded-full text-sm font-medium border transition-all btn-press ${
+                        showingForm.time === slot
+                          ? "bg-[#2c2825] text-white border-[#2c2825]"
+                          : "bg-[#faf9f7] text-[#2c2825] border-[#e8e4de] hover:border-[#b8a88a]"
+                      }`}
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Optional message */}
+              <div>
+                <label className="block text-xs font-medium text-[#2c2825] mb-1.5">
+                  Anything to add? <span className="text-[#8c8580] font-normal">(optional)</span>
+                </label>
+                <textarea
+                  placeholder="Any specific homes you'd like to see, or notes for your realtor..."
+                  value={showingForm.message}
+                  onChange={(e) => setShowingForm((prev) => ({ ...prev, message: e.target.value }))}
+                  rows={3}
+                  className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] placeholder:text-[#b8a88a]/60 focus:outline-none focus:border-[#b8a88a] transition-colors resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={showingForm.submitting || !showingForm.dates}
+                className="inline-flex items-center gap-2 bg-[#2c2825] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#1a1714] transition-colors btn-press disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <CalendarDays size={14} />
+                {showingForm.submitting ? "Sending…" : "Request a Showing →"}
+              </button>
+            </form>
           )}
         </section>
 

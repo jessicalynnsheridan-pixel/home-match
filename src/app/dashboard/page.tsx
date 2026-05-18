@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles, Calendar, Clock, MapPin, Bell } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles, Calendar, Clock, MapPin, Bell, DollarSign } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
@@ -487,6 +487,86 @@ function ScheduleWidget({ leads }: { leads: Lead[] }) {
   );
 }
 
+// ─── Revenue Forecast Widget ─────────────────────────────────────────────────
+
+function formatCommission(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${Math.round(value / 1_000)}K`;
+  return `$${Math.round(value)}`;
+}
+
+function RevenueWidget({ leads }: { leads: Lead[] }) {
+  const COMMISSION_RATE = 0.025;
+
+  const activeLeads = leads.filter((l) => l.status !== "Closed");
+  const hotLeads = activeLeads.filter((l) => l.score === "Hot");
+  const warmLeads = activeLeads.filter((l) => l.score === "Warm");
+
+  function calcCommission(group: Lead[]): number {
+    return group.reduce((sum, lead) => {
+      const min = lead.answers.budgetMin ?? 0;
+      const max = lead.answers.budgetMax ?? 0;
+      if (!min && !max) return sum;
+      const avg = (min + max) / 2;
+      return sum + avg * COMMISSION_RATE;
+    }, 0);
+  }
+
+  const totalCommission = calcCommission(activeLeads);
+  const hotCommission = calcCommission(hotLeads);
+  const warmCommission = calcCommission(warmLeads);
+
+  const hasData = activeLeads.some(
+    (l) => (l.answers.budgetMin ?? 0) > 0 || (l.answers.budgetMax ?? 0) > 0
+  );
+
+  return (
+    <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm">
+      {/* Header */}
+      <div className="bg-[#2c2825] px-4 py-3.5 flex items-center gap-2">
+        <DollarSign size={13} className="text-[#b8a88a]" />
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Revenue Forecast</p>
+      </div>
+
+      {!hasData ? (
+        <div className="px-4 py-8 text-center">
+          <p className="text-[#b8b4b0] text-xs">No budget data available.</p>
+          <p className="text-[#c4bfb9] text-[10px] mt-0.5">Budgets from leads will appear here.</p>
+        </div>
+      ) : (
+        <div className="p-4 space-y-3">
+          {/* Total pipeline */}
+          <div className="bg-[#faf9f7] border border-[#ece8e2] rounded-xl px-4 py-3">
+            <p className="text-[10px] text-[#8c8580] font-medium uppercase tracking-wider mb-1">Total Pipeline @ 2.5%</p>
+            <p className="text-2xl font-bold text-[#2c2825]">{formatCommission(totalCommission)}</p>
+            <p className="text-[10px] text-[#b8a88a] mt-0.5">{activeLeads.length} active lead{activeLeads.length !== 1 ? "s" : ""}</p>
+          </div>
+
+          {/* Hot + Warm side by side */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-rose-50 border border-rose-100 rounded-xl px-3 py-2.5">
+              <div className="flex items-center gap-1 mb-1">
+                <Flame size={10} className="text-rose-400" />
+                <p className="text-[10px] text-rose-500 font-semibold uppercase tracking-wider">Hot</p>
+              </div>
+              <p className="text-lg font-bold text-[#2c2825]">{formatCommission(hotCommission)}</p>
+              <p className="text-[10px] text-rose-400 mt-0.5">{hotLeads.length} lead{hotLeads.length !== 1 ? "s" : ""}</p>
+            </div>
+            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2.5">
+              <div className="flex items-center gap-1 mb-1">
+                <Zap size={10} className="text-amber-400" />
+                <p className="text-[10px] text-amber-500 font-semibold uppercase tracking-wider">Warm</p>
+              </div>
+              <p className="text-lg font-bold text-[#2c2825]">{formatCommission(warmCommission)}</p>
+              <p className="text-[10px] text-amber-400 mt-0.5">{warmLeads.length} lead{warmLeads.length !== 1 ? "s" : ""}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [scoreFilter, setScoreFilter] = useState<LeadScore | "All">("All");
@@ -500,6 +580,8 @@ export default function DashboardPage() {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
+  const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
+  const [emailCopied, setEmailCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const demoLeads = mockLeads;
   const allLeads = loading ? [] : realLeads.length > 0 ? realLeads : demoLeads;
@@ -579,6 +661,38 @@ export default function DashboardPage() {
   }
 
   void router;
+
+  function toggleLeadSelect(id: string) {
+    setSelectedLeads((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function copySelectedEmails() {
+    const emails = Array.from(selectedLeads)
+      .map((id) => allLeads.find((l) => l.id === id)?.answers.email)
+      .filter(Boolean)
+      .join(", ");
+    navigator.clipboard.writeText(emails).then(() => {
+      setEmailCopied(true);
+      setTimeout(() => setEmailCopied(false), 2000);
+    });
+  }
+
+  function openGmailForSelected() {
+    for (const id of selectedLeads) {
+      const lead = allLeads.find((l) => l.id === id);
+      if (!lead) continue;
+      openGmailPopup(
+        lead.answers.email,
+        "Checking in | HomeMatch",
+        `Hi ${lead.answers.firstName}, just wanted to follow up on your home search. I have some great options I'd love to share with you. Would you be available for a quick call this week?`
+      );
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#f5f3f0]">
@@ -760,8 +874,42 @@ export default function DashboardPage() {
                 ) : filtered.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {showingDemos
-                      ? filteredDemo.map((lead) => <LeadCard key={lead.id} lead={lead} isDemo />)
-                      : filteredReal.map((lead) => <LeadCard key={lead.id} lead={lead} />)}
+                      ? filteredDemo.map((lead) => (
+                          <div key={lead.id} className="relative">
+                            <div className="absolute top-0 left-0 z-10 p-1">
+                              <button
+                                onClick={() => toggleLeadSelect(lead.id)}
+                                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                  selectedLeads.has(lead.id)
+                                    ? "bg-[#2c2825] border-[#2c2825]"
+                                    : "bg-white/80 border-[#c4bfb9] hover:border-[#2c2825]"
+                                }`}
+                                aria-label={selectedLeads.has(lead.id) ? "Deselect lead" : "Select lead"}
+                              >
+                                {selectedLeads.has(lead.id) && <Check size={11} className="text-white" />}
+                              </button>
+                            </div>
+                            <LeadCard lead={lead} isDemo />
+                          </div>
+                        ))
+                      : filteredReal.map((lead) => (
+                          <div key={lead.id} className="relative">
+                            <div className="absolute top-0 left-0 z-10 p-1">
+                              <button
+                                onClick={() => toggleLeadSelect(lead.id)}
+                                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                  selectedLeads.has(lead.id)
+                                    ? "bg-[#2c2825] border-[#2c2825]"
+                                    : "bg-white/80 border-[#c4bfb9] hover:border-[#2c2825]"
+                                }`}
+                                aria-label={selectedLeads.has(lead.id) ? "Deselect lead" : "Select lead"}
+                              >
+                                {selectedLeads.has(lead.id) && <Check size={11} className="text-white" />}
+                              </button>
+                            </div>
+                            <LeadCard lead={lead} />
+                          </div>
+                        ))}
                   </div>
                 ) : (
                   <div className="text-center py-10 border border-dashed border-[#e8e4de] rounded-2xl">
@@ -854,6 +1002,9 @@ export default function DashboardPage() {
               </div>
             )}
 
+            {/* Revenue forecast */}
+            <RevenueWidget leads={allLeads} />
+
             {/* Quick access */}
             <div className="bg-white border border-[#ece8e2] rounded-2xl p-4 shadow-sm">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a] mb-3">Quick Access</p>
@@ -877,6 +1028,36 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Bulk Outreach Floating Bar ───────────────────────────────── */}
+      {selectedLeads.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-[#2c2825] rounded-2xl shadow-xl px-6 py-4 flex items-center gap-4 text-sm">
+            <span className="text-white font-semibold whitespace-nowrap">
+              {selectedLeads.size} lead{selectedLeads.size !== 1 ? "s" : ""} selected
+            </span>
+            <button
+              onClick={() => setSelectedLeads(new Set())}
+              className="text-white/60 hover:text-white transition-colors whitespace-nowrap"
+            >
+              Clear
+            </button>
+            <button
+              onClick={copySelectedEmails}
+              className="flex items-center gap-1.5 text-white bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-xl whitespace-nowrap"
+            >
+              <Copy size={12} />
+              {emailCopied ? "Copied!" : "Copy emails"}
+            </button>
+            <button
+              onClick={openGmailForSelected}
+              className="flex items-center gap-1.5 text-white bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-xl whitespace-nowrap"
+            >
+              <Mail size={12} /> Open in Gmail
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
