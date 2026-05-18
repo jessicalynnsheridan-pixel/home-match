@@ -74,11 +74,12 @@ type ActionItem = {
   lead: Lead;
 };
 
-function generateQuickMessage(item: ActionItem, lead: Lead): string {
+function generateQuickMessage(item: ActionItem, lead: Lead, realtorName: string): string {
   const name = lead.answers.firstName;
   const city = lead.answers.preferredCity || "your area";
   const timeline = lead.answers.timeline || "";
   const propType = lead.answers.propertyType || "property";
+  const from = realtorName || "Your Name";
 
   if (item.icon === "call" || item.icon === "email") {
     const hook = lead.answers.sundayMorning
@@ -86,12 +87,12 @@ function generateQuickMessage(item: ActionItem, lead: Lead): string {
       : lead.answers.homeFeeling?.[0]
       ? `You're looking for something ${lead.answers.homeFeeling[0].toLowerCase()}`
       : `You have a clear sense of what you want`;
-    return `Hi ${name}, it's [Your Name] from Home Match. ${hook} — I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
+    return `Hi ${name}, it's ${from} from Home Match. ${hook} — I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
   }
   if (item.icon === "new") {
     return `New profile submitted: ${name} is looking for a ${propType} in ${city}. Budget and timeline look ${timeline === "ASAP" || timeline === "1–3 months" ? "urgent" : "solid"}. Open their profile to review and reach out.`;
   }
-  return `Hi ${name}, just following up — still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
+  return `Hi ${name}, it's ${from}. Just following up — still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
 }
 
 function buildActionQueue(leads: Lead[]): ActionItem[] {
@@ -128,17 +129,19 @@ function ActionQueueItem({
   item,
   isChecked,
   isExpanded,
+  realtorName,
   onToggleCheck,
   onToggleExpand,
 }: {
   item: ActionItem;
   isChecked: boolean;
   isExpanded: boolean;
+  realtorName: string;
   onToggleCheck: () => void;
   onToggleExpand: () => void;
 }) {
   const s = PRIORITY_STYLES[item.priority];
-  const message = generateQuickMessage(item, item.lead);
+  const message = generateQuickMessage(item, item.lead, realtorName);
   const isEmailType = item.icon === "email" || (item.icon === "followup" && item.emailAddr);
   const gmailUrl = item.emailAddr
     ? quickGmailUrl(
@@ -402,6 +405,7 @@ export default function DashboardPage() {
                           item={item}
                           isChecked={checkedItems.has(item.id)}
                           isExpanded={expandedItems.has(item.id)}
+                          realtorName={realtorName}
                           onToggleCheck={() => toggleCheck(item.id)}
                           onToggleExpand={() => toggleExpand(item.id)}
                         />
