@@ -189,7 +189,7 @@ function buildTextMessage(lead: Lead): string {
   const location = answers.preferredCity || "the area";
   const feeling = answers.homeFeeling?.[0]?.toLowerCase();
 
-  if (answers.timeline === "ASAP" || answers.timeline === "1–3 months") {
+  if (answers.timeline === "ASAP" || answers.timeline === "1-3 months") {
     return `Hi ${name}, it's YOUR_NAME from HomeMatch. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
   }
 
@@ -509,7 +509,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
                 <a
                   href={googleCalendarUrl(
                     `Call with ${lead.answers.firstName} ${lead.answers.lastName}`,
-                    `Buyer profile: ${profileUrl}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} – ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`
+                    `Buyer profile: ${profileUrl}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} to ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`
                   )}
                   target="_blank"
                   rel="noopener noreferrer"

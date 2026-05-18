@@ -6,9 +6,9 @@ import { formatCurrency } from "@/lib/utils";
 
 const TIMELINES: { value: BuyingTimeline; emoji: string; sub: string }[] = [
   { value: "ASAP",           emoji: "🔥", sub: "I'm actively searching now" },
-  { value: "1–3 months",     emoji: "⚡", sub: "Getting serious soon" },
-  { value: "3–6 months",     emoji: "📅", sub: "Doing my research" },
-  { value: "6–12 months",    emoji: "🌱", sub: "Planning ahead" },
+  { value: "1-3 months",     emoji: "⚡", sub: "Getting serious soon" },
+  { value: "3-6 months",     emoji: "📅", sub: "Doing my research" },
+  { value: "6-12 months",    emoji: "🌱", sub: "Planning ahead" },
   { value: "Just exploring", emoji: "🧭", sub: "No pressure, just curious" },
 ];
 

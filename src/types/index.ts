@@ -19,9 +19,9 @@ export type PropertyType =
 
 export type BuyingTimeline =
   | "ASAP"
-  | "1–3 months"
-  | "3–6 months"
-  | "6–12 months"
+  | "1-3 months"
+  | "3-6 months"
+  | "6-12 months"
   | "Just exploring";
 
 export type PreApprovalStatus =

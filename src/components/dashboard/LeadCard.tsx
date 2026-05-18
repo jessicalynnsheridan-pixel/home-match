@@ -11,7 +11,7 @@ type Playbook = { icon: ReactNode; action: string; color: string; bg: string; bo
 function getPlaybook(lead: Lead): Playbook {
   const { answers, score } = lead;
   const isFinanced = answers.preApprovalStatus === "Yes, fully approved" || answers.preApprovalStatus === "Paying cash";
-  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1–3 months";
+  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1-3 months";
 
   if (score === "Hot" && isASAP && isFinanced) return {
     icon: <Phone size={10} />, action: "Call within 2 hours",
@@ -79,7 +79,7 @@ export default function LeadCard({ lead, isDemo }: { lead: Lead; isDemo?: boolea
         <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3">
           <div className="flex items-center gap-1">
             <DollarSign size={10} className="text-[#b8b4b0] shrink-0" />
-            <p className="text-xs text-[#2c2825] truncate">{formatCurrency(answers.budgetMin)}–{formatCurrency(answers.budgetMax)}</p>
+            <p className="text-xs text-[#2c2825] truncate">{formatCurrency(answers.budgetMin)} to {formatCurrency(answers.budgetMax)}</p>
           </div>
           <div className="flex items-center gap-1">
             <Calendar size={10} className="text-[#b8b4b0] shrink-0" />

@@ -18,7 +18,7 @@ export function getPlaybook(lead: Lead): Playbook {
     answers.preApprovalStatus === "Yes, fully approved" ||
     answers.preApprovalStatus === "Paying cash";
   const isASAP =
-    answers.timeline === "ASAP" || answers.timeline === "1–3 months";
+    answers.timeline === "ASAP" || answers.timeline === "1-3 months";
 
   if (score === "Hot" && isASAP && isFinanced) {
     return {

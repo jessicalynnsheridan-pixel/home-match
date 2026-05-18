@@ -130,9 +130,9 @@ export function calcBuyerReadiness(answers: Partial<QuestionnaireAnswers>): Read
   let tim = 2;
   let timDetail = "No timeline set";
   if (timeline === "ASAP") { tim = 25; timDetail = "Actively searching now"; }
-  else if (timeline === "1–3 months") { tim = 20; timDetail = "Ready within 3 months"; }
-  else if (timeline === "3–6 months") { tim = 13; timDetail = "Planning for 3-6 months out"; }
-  else if (timeline === "6–12 months") { tim = 7; timDetail = "Looking ahead 6-12 months"; }
+  else if (timeline === "1-3 months") { tim = 20; timDetail = "Ready within 3 months"; }
+  else if (timeline === "3-6 months") { tim = 13; timDetail = "Planning for 3-6 months out"; }
+  else if (timeline === "6-12 months") { tim = 7; timDetail = "Looking ahead 6-12 months"; }
   else if (timeline === "Just exploring") { tim = 2; timDetail = "Early research stage"; }
 
   // Documentation (raw 0-20)

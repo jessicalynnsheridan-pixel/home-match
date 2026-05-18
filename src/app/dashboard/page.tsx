@@ -93,7 +93,7 @@ function generateQuickMessage(item: ActionItem, lead: Lead, realtorName: string)
   if (item.icon === "new") {
     const propType = lead.answers.propertyType || "property";
     const timeline = lead.answers.timeline || "";
-    return `New profile submitted: ${name} is looking for a ${propType} in ${city}. Budget and timeline look ${timeline === "ASAP" || timeline === "1–3 months" ? "urgent" : "solid"}. Open their profile to review and reach out.`;
+    return `New profile submitted: ${name} is looking for a ${propType} in ${city}. Budget and timeline look ${timeline === "ASAP" || timeline === "1-3 months" ? "urgent" : "solid"}. Open their profile to review and reach out.`;
   }
   return `Hi ${name}, it's ${from}. Just following up. Still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
 }
@@ -105,7 +105,7 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
     const isHot = lead.score === "Hot";
     const isWarm = lead.score === "Warm";
     const isNew = lead.status === "New Lead";
-    const isASAP = lead.answers.timeline === "ASAP" || lead.answers.timeline === "1–3 months";
+    const isASAP = lead.answers.timeline === "ASAP" || lead.answers.timeline === "1-3 months";
     const isFinanced = lead.answers.preApprovalStatus === "Yes, fully approved" || lead.answers.preApprovalStatus === "Paying cash";
 
     if (isHot && isASAP && isFinanced) {

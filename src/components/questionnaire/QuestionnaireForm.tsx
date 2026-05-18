@@ -77,10 +77,10 @@ function scoreAnswers(answers: QuestionnaireAnswers): LeadScore {
   const timeline = answers.timeline;
   const approval = answers.preApprovalStatus;
 
-  const isUrgent = timeline === "ASAP" || timeline === "1–3 months";
+  const isUrgent = timeline === "ASAP" || timeline === "1-3 months";
   const isFinanced = approval === "Yes, fully approved" || approval === "Paying cash";
   const isInProgress = approval === "In progress";
-  const isMidTerm = timeline === "3–6 months";
+  const isMidTerm = timeline === "3-6 months";
 
   if (isUrgent && isFinanced) return "Hot";
   if ((isUrgent && isInProgress) || (isMidTerm && isFinanced)) return "Warm";

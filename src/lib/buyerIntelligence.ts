@@ -111,7 +111,7 @@ function deriveStyle(a: QuestionnaireAnswers): StyleProfile {
   if (contains(a.proximityPriorities, "parks", "shops", "cafes", "community")) scores.Visionary += 10;
 
   // Decisive signals
-  if (a.timeline === "ASAP" || a.timeline === "1–3 months") scores.Decisive += 32;
+  if (a.timeline === "ASAP" || a.timeline === "1-3 months") scores.Decisive += 32;
   if (a.mustHaves.length >= 5) scores.Decisive += 12;
   if (a.dealBreakers.length >= 3) scores.Decisive += 12;
   if (["Yes, fully approved", "Paying cash"].includes(a.preApprovalStatus)) scores.Decisive += 14;
@@ -171,9 +171,9 @@ function deriveMotivation(a: QuestionnaireAnswers): MotivationProfile {
 
   const timelineMap: Record<string, number> = {
     ASAP: 35,
-    "1–3 months": 28,
-    "3–6 months": 18,
-    "6–12 months": 10,
+    "1-3 months": 28,
+    "3-6 months": 18,
+    "6-12 months": 10,
     "Just exploring": 3,
   };
   if (a.timeline && timelineMap[a.timeline] !== undefined) {

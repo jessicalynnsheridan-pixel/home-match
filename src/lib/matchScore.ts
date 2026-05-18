@@ -25,9 +25,9 @@ export function calculateMatchScore(a: QuestionnaireAnswers): ScoreBreakdown {
   let timeline = 0;
   switch (a.timeline) {
     case "ASAP":           timeline = 25; break;
-    case "1–3 months":     timeline = 22; break;
-    case "3–6 months":     timeline = 14; break;
-    case "6–12 months":    timeline = 7;  break;
+    case "1-3 months":     timeline = 22; break;
+    case "3-6 months":     timeline = 14; break;
+    case "6-12 months":    timeline = 7;  break;
     case "Just exploring": timeline = 2;  break;
   }
 

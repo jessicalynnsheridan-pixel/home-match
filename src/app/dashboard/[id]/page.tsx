@@ -32,7 +32,7 @@ type Playbook = { icon: React.ReactNode; action: string; color: string; bg: stri
 function getPlaybook(lead: Lead): Playbook {
   const { answers, score } = lead;
   const isFinanced = answers.preApprovalStatus === "Yes, fully approved" || answers.preApprovalStatus === "Paying cash";
-  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1–3 months";
+  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1-3 months";
   if (score === "Hot" && isASAP && isFinanced) return { icon: <Phone size={13} />, action: "Call within 2 hours", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
   if (score === "Hot") return { icon: <Mail size={13} />, action: "Email today, call tomorrow", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
   if (score === "Warm") return { icon: <MessageSquare size={13} />, action: "Email now, follow up in 5 days", color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" };

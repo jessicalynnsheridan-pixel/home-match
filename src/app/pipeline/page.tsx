@@ -25,7 +25,7 @@ function getPlaybook(lead: Lead): Playbook {
     answers.preApprovalStatus === "Yes, fully approved" ||
     answers.preApprovalStatus === "Paying cash";
   const isASAP =
-    answers.timeline === "ASAP" || answers.timeline === "1–3 months";
+    answers.timeline === "ASAP" || answers.timeline === "1-3 months";
 
   if (score === "Hot" && isASAP && isFinanced) {
     return {
@@ -304,7 +304,7 @@ function PipelineCard({
       {/* Key info */}
       <div className="text-xs text-[#8c8580] space-y-1 mb-4">
         <p className="text-[#2c2825]">
-          {formatCurrency(lead.answers.budgetMin)} – {formatCurrency(lead.answers.budgetMax)}
+          {formatCurrency(lead.answers.budgetMin)} to {formatCurrency(lead.answers.budgetMax)}
         </p>
         <p>{lead.answers.preferredCity} · {lead.answers.timeline}</p>
         <p>{lead.answers.propertyType} · {lead.answers.bedrooms} bed</p>
