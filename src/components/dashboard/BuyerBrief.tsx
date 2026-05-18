@@ -176,51 +176,37 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
     answers.tradeoffQuietVsEnergy ||
     answers.tradeoffNewVsCharacter;
 
+  // Derive availability hints from questionnaire answers
+  const availabilityHints: string[] = [];
+  if (answers.sundayMorning === "Total quiet" || answers.sundayMorning === "Slow & cozy") {
+    availabilityHints.push("Prefers weekday showings");
+  } else if (answers.sundayMorning === "Getting out" || answers.sundayMorning === "Outside with kids") {
+    availabilityHints.push("Flexible — weekends work");
+  }
+  if (answers.timeline === "ASAP" || answers.timeline === "1–3 months") {
+    availabilityHints.push("Urgently available");
+  }
+  if (availabilityHints.length === 0) availabilityHints.push("Contact to confirm availability");
+
   return (
     <div className="space-y-4">
 
-      {/* ── Buyer snapshot grid ───────────────────────────────────────────────── */}
+      {/* ── Buyer snapshot grid — neutral ────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-2">
-        {answers.propertyType && (
-          <div className="bg-sky-50 border border-sky-100 rounded-xl p-3 flex items-start gap-2.5">
-            <Home size={13} className="text-sky-500 mt-0.5 shrink-0" />
+        {[
+          { icon: <Home size={12} className="text-[#b8a88a]" />, label: "Property", value: answers.propertyType ? `${answers.bedrooms ? `${answers.bedrooms}-bed ` : ""}${answers.propertyType}` : null },
+          { icon: <MapPin size={12} className="text-[#b8a88a]" />, label: "Location", value: answers.preferredCity || null },
+          { icon: <DollarSign size={12} className="text-[#b8a88a]" />, label: "Budget", value: (answers.budgetMin > 0 || answers.budgetMax > 0) ? `${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}` : null },
+          { icon: <Clock size={12} className="text-[#b8a88a]" />, label: "Timeline", value: answers.timeline || null },
+        ].filter(s => s.value).map((s) => (
+          <div key={s.label} className="bg-white border border-[#e8e4de] rounded-xl p-3 flex items-start gap-2.5">
+            <span className="mt-0.5 shrink-0">{s.icon}</span>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-sky-500 mb-0.5">Property</p>
-              <p className="text-xs font-semibold text-[#2c2825] leading-tight">
-                {answers.bedrooms ? `${answers.bedrooms}-bed ` : ""}{answers.propertyType}
-              </p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#b8a88a] mb-0.5">{s.label}</p>
+              <p className="text-xs font-semibold text-[#2c2825] leading-tight">{s.value}</p>
             </div>
           </div>
-        )}
-        {answers.preferredCity && (
-          <div className="bg-violet-50 border border-violet-100 rounded-xl p-3 flex items-start gap-2.5">
-            <MapPin size={13} className="text-violet-500 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-violet-500 mb-0.5">Location</p>
-              <p className="text-xs font-semibold text-[#2c2825]">{answers.preferredCity}</p>
-            </div>
-          </div>
-        )}
-        {(answers.budgetMin > 0 || answers.budgetMax > 0) && (
-          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 flex items-start gap-2.5">
-            <DollarSign size={13} className="text-emerald-500 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500 mb-0.5">Budget</p>
-              <p className="text-xs font-semibold text-[#2c2825]">
-                {formatCurrency(answers.budgetMin)}<span className="text-[#b8a88a] mx-0.5">–</span>{formatCurrency(answers.budgetMax)}
-              </p>
-            </div>
-          </div>
-        )}
-        {answers.timeline && (
-          <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 flex items-start gap-2.5">
-            <Clock size={13} className="text-amber-500 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500 mb-0.5">Timeline</p>
-              <p className="text-xs font-semibold text-[#2c2825]">{answers.timeline}</p>
-            </div>
-          </div>
-        )}
+        ))}
       </div>
 
       {/* Pre-approval pill */}
@@ -231,18 +217,34 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
         </div>
       )}
 
-      {/* ── Must-haves + Deal-breakers side by side ───────────────────────────── */}
+      {/* ── Showing Availability ──────────────────────────────────────────────── */}
+      <div className="bg-white border border-[#e8e4de] rounded-xl px-4 py-3.5">
+        <div className="flex items-center gap-2 mb-2.5">
+          <Star size={12} className="text-[#b8a88a]" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#b8a88a]">Showing Availability</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {availabilityHints.map((h) => (
+            <span key={h} className="text-xs text-[#2c2825] bg-[#faf9f7] border border-[#e8e4de] px-3 py-1 rounded-full">{h}</span>
+          ))}
+          {["Morning", "Afternoon", "Evening"].map((slot) => (
+            <span key={slot} className="text-xs text-[#8c8580] bg-[#faf9f7] border border-[#e8e4de] px-3 py-1 rounded-full cursor-default hover:border-[#b8a88a] transition-colors">{slot}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Must-haves + Deal-breakers — neutral ─────────────────────────────── */}
       {(answers.mustHaves?.length > 0 || answers.dealBreakers?.length > 0) && (
         <div className="grid grid-cols-2 gap-3">
           {answers.mustHaves?.length > 0 && (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
+            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
               <div className="flex items-center gap-1.5 mb-2.5">
-                <ShieldCheck size={12} className="text-emerald-500" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Must Have</p>
+                <ShieldCheck size={12} className="text-[#b8a88a]" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#b8a88a]">Must Have</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.mustHaves.map((item) => (
-                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white text-emerald-700 border border-emerald-200">
+                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#faf9f7] text-[#2c2825] border border-[#e8e4de]">
                     ✓ {item}
                   </span>
                 ))}
@@ -250,15 +252,15 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
             </div>
           )}
           {answers.dealBreakers?.length > 0 && (
-            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4">
+            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
               <div className="flex items-center gap-1.5 mb-2.5">
-                <XIcon size={12} className="text-rose-500" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-rose-600">Deal Breakers</p>
+                <XIcon size={12} className="text-[#8c8580]" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#8c8580]">Deal Breakers</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.dealBreakers.map((item) => (
-                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white text-rose-700 border border-rose-200">
-                    ✕ {item}
+                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#faf9f7] text-[#5c5550] border border-[#e8e4de] line-through decoration-[#8c8580]">
+                    {item}
                   </span>
                 ))}
               </div>
