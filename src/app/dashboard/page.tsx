@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles, Calendar, Clock, MapPin, Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
@@ -308,6 +308,181 @@ function ActionQueueItem({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Schedule Widget ─────────────────────────────────────────────────────────
+
+type ScheduleEvent = {
+  id: string;
+  type: "showing" | "call" | "reminder" | "followup";
+  label: string;
+  sub: string;
+  time?: string; // "10:00 AM"
+  leadId?: string;
+};
+
+function getScheduleEvents(leads: Lead[]): ScheduleEvent[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const events: ScheduleEvent[] = [];
+
+  // Pull reminders from localStorage for all known leads
+  if (typeof window !== "undefined") {
+    leads.forEach((lead) => {
+      try {
+        const stored = localStorage.getItem(`hm_reminders_${lead.id}`);
+        if (!stored) return;
+        const reminders: { id: string; text: string; dueDate: string; completed: boolean }[] = JSON.parse(stored);
+        reminders
+          .filter((r) => !r.completed && r.dueDate)
+          .forEach((r) => {
+            const due = new Date(r.dueDate);
+            due.setHours(0, 0, 0, 0);
+            if (due.getTime() === today.getTime()) {
+              events.push({
+                id: r.id,
+                type: "reminder",
+                label: r.text,
+                sub: `${lead.answers.firstName} ${lead.answers.lastName}`,
+                leadId: lead.id,
+              });
+            }
+          });
+      } catch { /* ignore */ }
+    });
+  }
+
+  // Leads with "Showing Booked" status → treat as a scheduled showing today (demo)
+  leads
+    .filter((l) => l.status === "Showing Booked")
+    .forEach((lead, i) => {
+      const times = ["9:30 AM", "11:00 AM", "1:30 PM", "3:00 PM", "4:30 PM"];
+      events.push({
+        id: `showing-${lead.id}`,
+        type: "showing",
+        label: `Showing — ${lead.answers.firstName} ${lead.answers.lastName}`,
+        sub: lead.answers.preferredCity || "Location TBD",
+        time: times[i % times.length],
+        leadId: lead.id,
+      });
+    });
+
+  // Hot leads that are "New Lead" → suggest a call today
+  leads
+    .filter((l) => l.score === "Hot" && l.status === "New Lead")
+    .slice(0, 1)
+    .forEach((lead) => {
+      events.push({
+        id: `call-${lead.id}`,
+        type: "call",
+        label: `Call ${lead.answers.firstName} ${lead.answers.lastName}`,
+        sub: "Hot lead — reach out today",
+        time: "ASAP",
+        leadId: lead.id,
+      });
+    });
+
+  return events;
+}
+
+const EVENT_CONFIG = {
+  showing: { icon: MapPin,  bg: "bg-sky-50",    border: "border-sky-100",   dot: "bg-sky-400",    text: "text-sky-700"   },
+  call:    { icon: Phone,   bg: "bg-rose-50",   border: "border-rose-100",  dot: "bg-rose-400",   text: "text-rose-700"  },
+  reminder:{ icon: Bell,    bg: "bg-amber-50",  border: "border-amber-100", dot: "bg-amber-400",  text: "text-amber-700" },
+  followup:{ icon: Mail,    bg: "bg-violet-50", border: "border-violet-100",dot: "bg-violet-400", text: "text-violet-700"},
+};
+
+function ScheduleWidget({ leads }: { leads: Lead[] }) {
+  const events = getScheduleEvents(leads);
+
+  // Mini week strip
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Sun
+  const weekDays = ["S","M","T","W","T","F","S"];
+  const weekDates = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - dayOfWeek + i);
+    return d;
+  });
+
+  const timeLabel = today.toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
+
+  return (
+    <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm">
+      {/* Header */}
+      <div className="bg-[#2c2825] px-4 py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Calendar size={13} className="text-[#b8a88a]" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Today&apos;s Schedule</p>
+        </div>
+        <div className="flex items-center gap-1 text-white/40">
+          <Clock size={10} />
+          <span className="text-[10px]">{timeLabel}</span>
+        </div>
+      </div>
+
+      {/* Week strip */}
+      <div className="grid grid-cols-7 border-b border-[#f0ece6] bg-[#faf9f7]">
+        {weekDates.map((d, i) => {
+          const isToday = d.toDateString() === today.toDateString();
+          return (
+            <div key={i} className={`flex flex-col items-center py-2.5 ${isToday ? "bg-[#2c2825]" : ""}`}>
+              <span className={`text-[9px] font-semibold uppercase ${isToday ? "text-[#b8a88a]" : "text-[#b8b4b0]"}`}>
+                {weekDays[i]}
+              </span>
+              <span className={`text-xs font-bold mt-0.5 ${isToday ? "text-white" : "text-[#8c8580]"}`}>
+                {d.getDate()}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Events */}
+      <div className="p-3 space-y-2">
+        {events.length === 0 ? (
+          <div className="text-center py-5">
+            <p className="text-[#b8b4b0] text-xs">Nothing scheduled today.</p>
+            <p className="text-[#c4bfb9] text-[10px] mt-0.5">Set reminders from any lead profile.</p>
+          </div>
+        ) : (
+          events.map((event) => {
+            const cfg = EVENT_CONFIG[event.type];
+            const Icon = cfg.icon;
+            return (
+              <Link
+                key={event.id}
+                href={event.leadId ? `/dashboard/${event.leadId}` : "/dashboard"}
+                className={`flex items-start gap-2.5 p-2.5 rounded-xl border ${cfg.bg} ${cfg.border} hover:opacity-80 transition-opacity`}
+              >
+                <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${cfg.dot}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-[#2c2825] truncate">{event.label}</p>
+                  <p className={`text-[10px] mt-0.5 truncate ${cfg.text}`}>{event.sub}</p>
+                </div>
+                {event.time && (
+                  <span className="text-[10px] text-[#8c8580] shrink-0 mt-0.5 font-medium">{event.time}</span>
+                )}
+              </Link>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer CTA */}
+      <div className="px-3 pb-3">
+        <Link
+          href="/integrations"
+          className="w-full flex items-center justify-center gap-1.5 text-[10px] font-semibold text-[#b8a88a] border border-[#e8e4de] rounded-xl py-2 hover:bg-[#faf9f7] transition-colors"
+        >
+          <Calendar size={10} /> Sync with Google Calendar
+        </Link>
+      </div>
     </div>
   );
 }
@@ -632,6 +807,9 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+
+            {/* Schedule widget */}
+            <ScheduleWidget leads={allLeads} />
 
             {/* Hot leads callout */}
             {hot > 0 && (
