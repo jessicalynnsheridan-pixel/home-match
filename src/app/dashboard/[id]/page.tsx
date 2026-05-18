@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { mockLeads } from "@/data/mockLeads";
 import { mockProperties } from "@/data/mockProperties";
 import { Lead, LeadStatus, RealtorNote, FollowUpReminder, MortgageChecklistItem } from "@/types";
@@ -44,6 +45,29 @@ export default function LeadDetailPage() {
 
   const initialLead = mockLeads.find((l) => l.id === id);
   const [lead, setLead] = useState<Lead | null>(initialLead ?? null);
+
+  // Fetch from Supabase if not found in mock data
+  useEffect(() => {
+    if (initialLead) return;
+    const supabase = createClient();
+    supabase.from("leads").select("*").eq("id", id).single().then(({ data }) => {
+      if (data) {
+        const row = data as Record<string, unknown>;
+        setLead({
+          id: row.id as string,
+          score: (row.score as Lead["score"]) ?? "Browsing",
+          matchScore: (row.match_score as number) ?? 0,
+          status: (row.status as Lead["status"]) ?? "New Lead",
+          isPriority: (row.is_priority as boolean) ?? false,
+          submittedAt: row.submitted_at as string,
+          realtorNotes: [],
+          reminders: [],
+          savedHomeIds: [],
+          answers: row.answers as Lead["answers"],
+        });
+      }
+    });
+  }, [id, initialLead]);
   const [newNote, setNewNote] = useState("");
   const [tab, setTab] = useState<Tab>("brief");
 

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import QuestionnaireForm from "@/components/questionnaire/QuestionnaireForm";
 
 export const metadata = {
@@ -9,7 +10,9 @@ export default function QuestionnairePage() {
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: "linear-gradient(160deg, #f8f5f0 0%, #faf9f7 60%, #f5f2ec 100%)" }}>
       <div className="max-w-xl mx-auto px-6 lg:px-8 py-14 pb-20">
-        <QuestionnaireForm />
+        <Suspense>
+          <QuestionnaireForm />
+        </Suspense>
       </div>
     </div>
   );

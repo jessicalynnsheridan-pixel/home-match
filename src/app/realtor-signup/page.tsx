@@ -41,12 +41,13 @@ export default function RealtorSignupPage() {
   }
 
   function validateDetails() {
-    const next: Partial<typeof form> = {};
+    const next: Partial<typeof form> & { auth?: string; password?: string } = {};
     if (!form.firstName.trim()) next.firstName = "Required";
     if (!form.lastName.trim()) next.lastName = "Required";
     if (!form.email.trim() || !form.email.includes("@")) next.email = "Valid email required";
     if (!form.phone.trim()) next.phone = "Required";
     if (!form.brokerageName.trim()) next.brokerageName = "Required";
+    if (!password || password.length < 8) next.password = "Must be at least 8 characters";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -113,10 +114,10 @@ export default function RealtorSignupPage() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/dashboard"
+              href="/login"
               className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm px-6 py-2.5 rounded-full hover:bg-[#1a1714] transition-colors"
             >
-              Preview the Dashboard
+              Sign in to your dashboard
               <ArrowRight size={14} />
             </Link>
             <Link
@@ -307,16 +308,16 @@ export default function RealtorSignupPage() {
 
                 {/* Password */}
                 <div className="mt-4">
-                  <Field label="Create a password" error={undefined}>
+                  <Field label="Create a password" error={(errors as Record<string, string>).password}>
                     <input
                       type="password"
                       autoComplete="new-password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => { setPassword(e.target.value); setErrors((e) => { const n = { ...e }; delete (n as Record<string, string>).password; return n; }); }}
                       placeholder="Min. 8 characters"
                       minLength={8}
                       required
-                      className={inputClass(false)}
+                      className={inputClass(!!(errors as Record<string, string>).password)}
                     />
                   </Field>
                 </div>
