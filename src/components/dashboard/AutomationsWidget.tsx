@@ -65,13 +65,13 @@ function day1Variants(a: QuestionnaireAnswers, realtorName: string): Variant[] {
   // Variant 1 - Lifestyle-first (emotional, vibe-led)
   const v1 = `Hi ${first},
 
-I just finished reading through your profile - and I love what you're looking for.
+I just went through your profile and I love what you're looking for.
 
-A ${feeling.toLowerCase()}${feeling2 ? ` that also feels like a ${feeling2.toLowerCase()}` : ""}${vibe ? ` - someone whose ideal Sunday starts with ${vibe.toLowerCase()}` : ""} - you're not just looking for a house. You have a feeling in mind, and that's exactly how the best searches start.
+${feeling ? `A ${feeling.toLowerCase()}${feeling2 ? ` that doubles as a ${feeling2.toLowerCase()}` : ""}${vibe ? `. Someone whose ideal Sunday starts with ${vibe.toLowerCase()}` : ""}. You're not just looking for a house. You have a feeling in mind, and that's exactly how the best searches start.` : `You're not just looking for a house. You have a feeling in mind, and that's exactly how the best searches start.`}
 
 I've noted everything: ${hoods ? `the ${hoods} neighbourhoods` : `the ${city} pockets`} you're drawn to, ${must1 ? `the ${must1.toLowerCase()} at the top of your list` : "the features that matter most"}, and the things you're leaving behind. I'll be in touch this week to say hello properly and share some early thoughts.
 
-Reply here any time - I read every message personally.
+Reply here any time. I read every message personally.
 
 Warm regards,
 ${realtorName}`;
@@ -79,11 +79,11 @@ ${realtorName}`;
   // Variant 2 - Practical (by the numbers, shows you read everything)
   const v2 = `Hi ${first},
 
-Your profile is in - and I've gone through every detail.
+Your profile is in. I've gone through every detail.
 
 Here's what I'm working with:
 
-City: ${city}${hoods ? ` - ${hoods}` : ""}
+City: ${city}${hoods ? ` (${hoods})` : ""}
 Property: ${a.propertyType || "Any"}, ${a.bedrooms}bd / ${a.bathrooms}ba
 Budget: ${budget}
 Timeline: ${a.timeline || "Flexible"}
@@ -98,20 +98,20 @@ ${realtorName}`;
   // Variant 3 - Their story (situational, references notes/frustrations)
   let hook = "";
   if (notes && notes.length > 15) {
-    hook = `I caught what you wrote - "${notes.split(".")[0]}" - that kind of context is exactly what helps me move faster and smarter.`;
+    hook = `I caught what you wrote: "${notes.split(".")[0]}." That kind of context is exactly what helps me move faster and smarter for you.`;
   } else if (frustration) {
-    hook = `The "${frustration.toLowerCase()}" situation you mentioned - I hear that a lot from people searching in ${city}. The right home genuinely changes that.`;
+    hook = `The "${frustration.toLowerCase()}" situation you mentioned really stood out. I hear that a lot from people searching in ${city} and the right home genuinely changes it.`;
   } else {
     hook = `You clearly know what you want, and that already puts you ahead. A lot of buyers figure that out three showings in.`;
   }
 
   const v3 = `Hi ${first},
 
-Your profile came through - thank you for being so thorough.
+Your profile came through. Thank you for being so thorough.
 
 ${hook}
 
-I'll reach out this week to introduce myself and walk through where your search is headed. No pressure - just a proper conversation.
+I'll reach out this week to introduce myself and walk through where your search is headed. No pressure, just a proper conversation.
 
 Talk soon,
 ${realtorName}`;
@@ -137,7 +137,7 @@ function day3Variants(a: QuestionnaireAnswers, realtorName: string): Variant[] {
 
 Just wanted to check in and make sure everything landed okay.
 
-No agenda - genuinely just curious how you're feeling about the search. Have any questions come up since you submitted your profile?
+No agenda here. Genuinely just curious how you're feeling about the search. Have any questions come up since you submitted your profile?
 
 I'm here whenever you're ready. A quick reply is more than enough.
 
@@ -147,7 +147,7 @@ ${realtorName}`;
   // Variant 2 - Curious (meaningful question pulled from their profile)
   const v2 = `Hi ${first},
 
-Quick question for you - when you picture ${city}, is there a specific neighbourhood feel you keep coming back to?${vibe ? ` You mentioned "${vibe.toLowerCase()}" - ` : " "}I ask because it helps me tighten the search significantly before we look at a single listing.
+Quick question. When you picture ${city}, is there a specific neighbourhood feel you keep coming back to?${vibe ? ` You mentioned "${vibe.toLowerCase()}" and that's exactly the kind of detail that helps me tighten the search before we look at a single listing.` : " That kind of thing helps me tighten the search significantly before we look at a single listing."}
 
 No pressure at all. Just thinking ahead for you.
 
@@ -158,16 +158,16 @@ ${realtorName}`;
   if (timeline === "ASAP") {
     momentumHook = `You're on an ASAP timeline, so I want to make sure we're moving at the pace that works for you.`;
   } else if (timeline === "1-3 months") {
-    momentumHook = `With a 1-3 month window, now is a good time to lock in a few viewings - the right ones go fast.`;
+    momentumHook = `With a 1 to 3 month window, now is a good time to lock in a few viewings. The right ones tend to go fast.`;
   } else {
-    momentumHook = `There's no rush on your end, and that's actually a strong position - you can afford to wait for the right fit.`;
+    momentumHook = `There's no rush on your end, and that's actually a strong position. You can afford to wait for the right fit.`;
   }
 
   const v3 = `Hi ${first},
 
 ${momentumHook}
 
-I've been keeping an eye on ${city} since you submitted your profile - specifically the${must1 ? ` "${must1.toLowerCase()}"` : " " + feeling} options in your range. Want to get on a quick call this week and talk through what's worth seeing?
+I've been keeping an eye on ${city} since you submitted your profile. Specifically the${must1 ? ` "${must1.toLowerCase()}"` : " " + feeling} options in your range. Want to get on a quick call this week and talk through what's worth seeing?
 
 Here whenever you are,
 ${realtorName}`;
@@ -191,7 +191,7 @@ function day7Variants(a: QuestionnaireAnswers, realtorName: string): Variant[] {
   // Variant 1 - Easy (lowest pressure, just present)
   const v1 = `Hi ${first},
 
-Just a quick note to say - no pressure, still here whenever you're ready.
+Just a quick note. No pressure at all. Still here whenever you're ready.
 
 Buying a home is a big decision, and sometimes life gets busy or you just need more time to sit with it. That's completely normal.
 
@@ -202,7 +202,7 @@ ${realtorName}`;
   // Variant 2 - Market (city-specific, shows active attention)
   const v2 = `Hi ${first},
 
-I've been watching the ${city} market in your range (${budget}) this week${hoods ? ` - especially around ${hoods.split(",")[0].trim()}` : ""}.
+I've been watching the ${city} market in your range (${budget}) this week${hoods ? `. Especially around ${hoods.split(",")[0].trim()}` : ""}.
 
 There are a few things worth talking through. Nothing urgent, but the kind of context that's useful when you're ready to move.
 
@@ -213,9 +213,9 @@ ${realtorName}`;
   // Variant 3 - Personal (references something very specific from their quiz)
   let personalHook = "";
   if (notes && notes.length > 15) {
-    personalHook = `I keep coming back to what you wrote - "${notes.split(".")[0].toLowerCase()}". That's really what we're solving for, and I want to make sure I do it right.`;
+    personalHook = `I keep coming back to what you wrote: "${notes.split(".")[0].toLowerCase()}." That's really what we're solving for, and I want to make sure I do it right.`;
   } else if (must1) {
-    personalHook = `The ${must1.toLowerCase()} you're after - that's a specific ask, and I've had a few ideas in the back of my mind I'd love to run by you.`;
+    personalHook = `The ${must1.toLowerCase()} you're after is a specific ask, and I've had a few ideas in the back of my mind I'd love to run by you.`;
   } else {
     personalHook = `Your search has stayed at the top of my mind. You know exactly what you want, and I want to help you find it.`;
   }
@@ -224,7 +224,7 @@ ${realtorName}`;
 
 ${personalHook}
 
-Whenever you're ready to pick this up - even just for a conversation - I'd love to reconnect. I'll follow your lead completely.
+Whenever you're ready to pick this up, even just for a conversation, I'd love to reconnect. I'll follow your lead completely.
 
 ${realtorName}`;
 
@@ -443,15 +443,15 @@ interface TemplatePreview {
 }
 const TEMPLATE_PREVIEWS: TemplatePreview[] = [
   { day: "Day 1", trigger: "Sent to buyer as soon as you click Send", subject: "Your home search is officially on 🏡",
-    body: `Hi [First name],\n\nI just finished reading through your profile - and I love what you're looking for. A peaceful retreat that also feels like a family nest - someone whose ideal Sunday starts with total quiet - you're not just looking for a house. You have a feeling in mind.\n\nI've noted everything: the Rosedale, Forest Hill, Lawrence Park neighbourhoods, the chef's kitchen at the top of your list, the private backyard. I'll be in touch this week.\n\nWarm regards,\n[Your name]`,
+    body: `Hi [First name],\n\nI just finished reading through your profile and I love what you're looking for. A peaceful retreat that also feels like a family nest. Someone whose ideal Sunday starts with total quiet. You're not just looking for a house. You have a feeling in mind.\n\nI've noted everything: the Rosedale, Forest Hill, Lawrence Park neighbourhoods, the chef's kitchen at the top of your list, the private backyard. I'll be in touch this week.\n\nWarm regards,\n[Your name]`,
     tagBg: "#dcfce7", tagColor: "#166534", color: "#059669" },
   { day: "Day 3", trigger: "Appears after 3 days if uncontacted",
     subject: "Just checking in 👋",
-    body: `Hi [First name],\n\nJust wanted to check in. No agenda - genuinely just curious how you're feeling about the search. Have any questions come up?\n\nI'm here whenever you're ready.\n\nWarmly,\n[Your name]`,
+    body: `Hi [First name],\n\nJust wanted to check in. No agenda here. Genuinely just curious how you're feeling about the search. Have any questions come up?\n\nI'm here whenever you're ready.\n\nWarmly,\n[Your name]`,
     tagBg: "#fef3c7", tagColor: "#92400e", color: "#d97706" },
   { day: "Day 7", trigger: "Appears after 7 days if still uncontacted",
     subject: "Still thinking about [City]?",
-    body: `Hi [First name],\n\nJust a quick note to say - no pressure, still here whenever you're ready.\n\nIf you ever want to talk through your search, I'm just a reply away.\n\n[Your name]`,
+    body: `Hi [First name],\n\nJust a quick note. No pressure at all. Still here whenever you're ready.\n\nIf you ever want to talk through your search, I'm just a reply away.\n\n[Your name]`,
     tagBg: "#ede9fe", tagColor: "#4c1d95", color: "#7c3aed" },
   { day: "Realtor alert", trigger: "Auto-sent to you when a Hot/Warm lead goes quiet for 5+ days",
     subject: "🔥 Inactivity alert: [Name] ([X] days)",
