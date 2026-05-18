@@ -4,34 +4,61 @@ import { useState } from "react";
 import { StepProps } from "./shared";
 import { ArrowRight } from "lucide-react";
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+type StyleValue = "" | "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique";
 
 const HOME_FEELINGS = [
-  { label: "Peaceful",   bg: "#4a7c59", text: "#ffffff" },
-  { label: "Social",     bg: "#c87941", text: "#ffffff" },
-  { label: "Creative",   bg: "#4a6f9c", text: "#ffffff" },
-  { label: "Family",     bg: "#b89040", text: "#ffffff" },
-  { label: "Modern",     bg: "#4a4540", text: "#ffffff" },
-  { label: "Adventure",  bg: "#3d6b4a", text: "#ffffff" },
+  "Peaceful",
+  "Social",
+  "Creative",
+  "Family-first",
+  "Modern",
+  "Adventurous",
 ];
 
 const SUNDAY_MOODS = [
-  { label: "Total quiet",       bg: "#4a4540" },
-  { label: "Hosting people",    bg: "#c87941" },
-  { label: "Outside with kids", bg: "#4a7c59" },
-  { label: "Solo, no plans",    bg: "#4a6f9c" },
-  { label: "Getting out",       bg: "#7a6858" },
-  { label: "Slow & cozy",       bg: "#8c4a3c" },
+  "Total quiet",
+  "Hosting people",
+  "Outside with kids",
+  "Solo, no plans",
+  "Getting out",
+  "Slow & cozy",
 ];
 
-type StyleValue = "" | "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique";
-
-const STYLE_OPTIONS: { value: StyleValue; bg: string }[] = [
-  { value: "Modern & minimal",  bg: "#5a6268" },
-  { value: "Warm & cozy",       bg: "#b88040" },
-  { value: "Classic elegance",  bg: "#7a6858" },
-  { value: "Bold & unique",     bg: "#8c4a3c" },
+const STYLE_OPTIONS: StyleValue[] = [
+  "Modern & minimal",
+  "Warm & cozy",
+  "Classic elegance",
+  "Bold & unique",
 ];
+
+// ─── Shared chip component ────────────────────────────────────────────────────
+
+function Chip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full px-5 py-4 rounded-2xl text-left text-sm font-medium transition-all duration-150 btn-press"
+      style={{
+        background: selected ? "#1a1512" : "#ffffff",
+        border: selected ? "1.5px solid #1a1512" : "1.5px solid #e0dbd4",
+        color: selected ? "#ffffff" : "#2c2825",
+        boxShadow: selected ? "0 2px 12px rgba(0,0,0,0.12)" : "0 1px 3px rgba(0,0,0,0.04)",
+      }}
+    >
+      <span className="flex items-center justify-between">
+        {label}
+        {selected && (
+          <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+              <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
+        )}
+      </span>
+    </button>
+  );
+}
 
 // ─── Step ────────────────────────────────────────────────────────────────────
 
@@ -48,60 +75,57 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
 
   function pickSunday(label: string) {
     update("sundayMorning", label);
-    setTimeout(() => setSlide(2), 200);
+    setTimeout(() => setSlide(2), 220);
   }
 
   function pickStyle(value: StyleValue) {
     update("modernVsCozy", value);
   }
 
+  // ── Slide progress dots ───────────────────────────────────────────────────
+  const dots = (
+    <div className="flex gap-1.5 mb-10">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-1 rounded-full transition-all duration-300"
+          style={{
+            width: i === slide ? 24 : 8,
+            background: i === slide ? "#1a1512" : "#d8d4ce",
+          }}
+        />
+      ))}
+    </div>
+  );
+
   // ── Slide 0: Core feeling ─────────────────────────────────────────────────
   if (slide === 0) return (
     <div>
+      {dots}
       <div className="mb-8">
-        <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
-          <span className="text-[#1a1512]">How should home</span><br />
-          <span className="text-gradient-gold">make you feel?</span>
+        <h2 className="text-4xl font-bold leading-tight mb-2 text-[#1a1512]">
+          How do you want<br />
+          <span className="text-gradient-gold">to feel at home?</span>
         </h2>
-        <p className="text-[#8c8580] text-sm">Tap all that resonate.</p>
+        <p className="text-[#8c8580] text-sm">Pick everything that feels right.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 mb-8">
-        {HOME_FEELINGS.map((item) => {
-          const selected = answers.homeFeeling.includes(item.label);
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => toggleFeeling(item.label)}
-              className="relative rounded-2xl text-left transition-all duration-150 btn-press"
-              style={{
-                background: item.bg,
-                minHeight: 110,
-                outline: selected ? "2.5px solid #1a1512" : "2.5px solid transparent",
-                outlineOffset: "2px",
-              }}
-            >
-              <div className="p-4 flex flex-col justify-end h-full" style={{ minHeight: 110 }}>
-                <p className="font-semibold text-sm text-white">{item.label}</p>
-              </div>
-              {selected && (
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white flex items-center justify-center">
-                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                    <path d="M1 3.5L3 5.5L8 1" stroke="#1a1512" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
-            </button>
-          );
-        })}
+      <div className="grid grid-cols-2 gap-2 mb-8">
+        {HOME_FEELINGS.map((label) => (
+          <Chip
+            key={label}
+            label={label}
+            selected={answers.homeFeeling.includes(label)}
+            onClick={() => toggleFeeling(label)}
+          />
+        ))}
       </div>
 
       {answers.homeFeeling.length > 0 && (
         <button
           onClick={() => setSlide(1)}
           className="w-full flex items-center justify-center gap-2 text-white font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
-          style={{ background: "#1a1512" }}
+          style={{ background: "#1a1512", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}
         >
           Continue <ArrowRight size={15} />
         </button>
@@ -112,43 +136,24 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
   // ── Slide 1: Sunday morning ───────────────────────────────────────────────
   if (slide === 1) return (
     <div>
+      {dots}
       <div className="mb-8">
-        <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
-          <span className="text-[#1a1512]">Your ideal</span><br />
+        <h2 className="text-4xl font-bold leading-tight mb-2 text-[#1a1512]">
+          Your ideal<br />
           <span className="text-gradient-gold">Sunday morning?</span>
         </h2>
-        <p className="text-[#8c8580] text-sm">Tap one.</p>
+        <p className="text-[#8c8580] text-sm">Tap one — it moves to the next automatically.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5">
-        {SUNDAY_MOODS.map((item) => {
-          const selected = answers.sundayMorning === item.label;
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => pickSunday(item.label)}
-              className="relative rounded-2xl text-left transition-all duration-150 btn-press"
-              style={{
-                background: item.bg,
-                minHeight: 110,
-                outline: selected ? "2.5px solid #1a1512" : "2.5px solid transparent",
-                outlineOffset: "2px",
-              }}
-            >
-              <div className="p-4 flex flex-col justify-end h-full" style={{ minHeight: 110 }}>
-                <p className="font-semibold text-sm text-white">{item.label}</p>
-              </div>
-              {selected && (
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white flex items-center justify-center">
-                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                    <path d="M1 3.5L3 5.5L8 1" stroke="#1a1512" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
-            </button>
-          );
-        })}
+      <div className="grid grid-cols-2 gap-2">
+        {SUNDAY_MOODS.map((label) => (
+          <Chip
+            key={label}
+            label={label}
+            selected={answers.sundayMorning === label}
+            onClick={() => pickSunday(label)}
+          />
+        ))}
       </div>
     </div>
   );
@@ -156,50 +161,31 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
   // ── Slide 2: Aesthetic ────────────────────────────────────────────────────
   return (
     <div>
+      {dots}
       <div className="mb-8">
-        <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
-          <span className="text-[#1a1512]">Your home&apos;s</span><br />
+        <h2 className="text-4xl font-bold leading-tight mb-2 text-[#1a1512]">
+          Your home&apos;s<br />
           <span className="text-gradient-gold">aesthetic?</span>
         </h2>
-        <p className="text-[#8c8580] text-sm">Tap one to continue.</p>
+        <p className="text-[#8c8580] text-sm">One pick, gut instinct.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 mb-8">
-        {STYLE_OPTIONS.map((opt) => {
-          const selected = answers.modernVsCozy === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => pickStyle(opt.value as StyleValue)}
-              className="relative rounded-2xl text-left transition-all duration-150 btn-press"
-              style={{
-                background: opt.bg,
-                minHeight: 110,
-                outline: selected ? "2.5px solid #1a1512" : "2.5px solid transparent",
-                outlineOffset: "2px",
-              }}
-            >
-              <div className="p-4 flex flex-col justify-end" style={{ minHeight: 110 }}>
-                <p className="font-semibold text-sm text-white leading-snug">{opt.value}</p>
-              </div>
-              {selected && (
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white flex items-center justify-center">
-                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                    <path d="M1 3.5L3 5.5L8 1" stroke="#1a1512" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
-            </button>
-          );
-        })}
+      <div className="grid grid-cols-2 gap-2 mb-8">
+        {STYLE_OPTIONS.map((value) => (
+          <Chip
+            key={value}
+            label={value}
+            selected={answers.modernVsCozy === value}
+            onClick={() => pickStyle(value)}
+          />
+        ))}
       </div>
 
       {answers.modernVsCozy && (
         <button
           onClick={onNext}
           className="w-full flex items-center justify-center gap-2 text-white font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
-          style={{ background: "#1a1512" }}
+          style={{ background: "#1a1512", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}
         >
           Continue <ArrowRight size={15} />
         </button>
