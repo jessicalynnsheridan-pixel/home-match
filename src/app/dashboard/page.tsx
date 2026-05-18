@@ -1373,49 +1373,6 @@ export default function DashboardPage() {
             {/* Schedule widget */}
             <ScheduleWidget leads={allLeads} />
 
-            {/* Hot leads callout */}
-            {hot > 0 && (
-              <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-xl bg-rose-100 flex items-center justify-center">
-                    <Flame size={14} className="text-rose-500" />
-                  </div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Hot Pipeline</p>
-                </div>
-                <p className="text-4xl font-bold text-[#2c2825]">{hot}</p>
-                <p className="text-[#8c8580] text-xs mt-1">
-                  {hot === 1 ? "lead" : "leads"} ready to move. Act fast.
-                </p>
-                {allLeads.length > 0 && (
-                  <div className="mt-3">
-                    <div className="h-1.5 bg-rose-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-rose-400"
-                        style={{ width: `${Math.min(100, (hot / allLeads.length) * 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-[10px] text-rose-400 mt-1">
-                      {Math.round((hot / allLeads.length) * 100)}% of your pipeline is hot
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Warm leads card */}
-            {warm > 0 && (
-              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <Zap size={14} className="text-amber-500" />
-                  </div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Warm Pipeline</p>
-                </div>
-                <p className="text-4xl font-bold text-[#2c2825]">{warm}</p>
-                <p className="text-[#8c8580] text-xs mt-1">nurture before they go cold</p>
-              </div>
-            )}
-
             {/* Revenue forecast */}
             {/* Thank You Gift Reminder */}
             <GiftReminderWidget leads={allLeads} />
