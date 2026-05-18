@@ -177,14 +177,19 @@ function IntegrationsInner() {
   const [toast, setToast] = useState<"connected" | "error" | null>(null);
 
   useEffect(() => {
-    // Load real Gmail connection status from Supabase user metadata
+    // Load Gmail connection status from the realtor_integrations table (server-side tokens)
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.user_metadata?.gmail_connected) {
-        setGmailConnected(true);
-        setGmailEmail(user.user_metadata.gmail_email ?? "");
-      }
-    });
+    supabase
+      .from("realtor_integrations")
+      .select("email, connected_at")
+      .eq("provider", "gmail")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setGmailConnected(true);
+          setGmailEmail(data.email ?? "");
+        }
+      });
 
     // Show toast if redirected back from OAuth
     const result = searchParams.get("gmail");

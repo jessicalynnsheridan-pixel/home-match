@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export async function GET(request: NextRequest) {
@@ -39,16 +40,14 @@ export async function GET(request: NextRequest) {
   });
   const googleUser = await userRes.json();
 
-  // Save connection status to Supabase user metadata
+  // Get the authenticated realtor's ID from their session
   const cookieStore = await cookies();
-  const supabase = createServerClient(
+  const supabaseSession = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
+        getAll() { return cookieStore.getAll(); },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options);
@@ -58,19 +57,49 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  const { error: updateError } = await supabase.auth.updateUser({
-    data: {
-      gmail_connected: true,
-      gmail_email: googleUser.email ?? "",
-      gmail_access_token: tokens.access_token,
-      gmail_refresh_token: tokens.refresh_token ?? null,
-    },
-  });
+  const { data: { user } } = await supabaseSession.auth.getUser();
 
-  if (updateError) {
-    console.error("Supabase updateUser failed:", updateError.message);
+  if (!user) {
+    console.error("Gmail callback: no authenticated user");
     return NextResponse.redirect(`${appUrl}/integrations?gmail=error`);
   }
+
+  // Store tokens server-side only using the service role key.
+  // This bypasses RLS so tokens are never writable from the client.
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+
+  const { error: upsertError } = await supabaseAdmin
+    .from("realtor_integrations")
+    .upsert(
+      {
+        realtor_id: user.id,
+        provider: "gmail",
+        email: googleUser.email ?? "",
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token ?? null,
+        connected_at: new Date().toISOString(),
+      },
+      { onConflict: "realtor_id,provider" }
+    );
+
+  if (upsertError) {
+    console.error("Failed to save Gmail integration:", upsertError.message);
+    return NextResponse.redirect(`${appUrl}/integrations?gmail=error`);
+  }
+
+  // Remove old tokens from user metadata if they were stored there previously
+  await supabaseSession.auth.updateUser({
+    data: {
+      gmail_connected: undefined,
+      gmail_email: undefined,
+      gmail_access_token: undefined,
+      gmail_refresh_token: undefined,
+    },
+  });
 
   return NextResponse.redirect(`${appUrl}/integrations?gmail=connected`);
 }
