@@ -23,7 +23,9 @@ const SUNDAY_MOODS = [
   "Kids playing while I cook",
 ];
 
-const STYLE_OPTIONS = [
+type StyleValue = "" | "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique";
+
+const STYLE_OPTIONS: { value: StyleValue; bg: string }[] = [
   { value: "Modern & minimal",  bg: "#5a6268" },
   { value: "Warm & cozy",       bg: "#b88040" },
   { value: "Classic elegance",  bg: "#7a6858" },
@@ -48,7 +50,7 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
     setTimeout(() => setSlide(2), 200);
   }
 
-  function pickStyle(value: string) {
+  function pickStyle(value: StyleValue) {
     update("modernVsCozy", value);
   }
 
@@ -158,7 +160,7 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
             <button
               key={opt.value}
               type="button"
-              onClick={() => pickStyle(opt.value)}
+              onClick={() => pickStyle(opt.value as StyleValue)}
               className="relative rounded-2xl text-left transition-all duration-150 btn-press"
               style={{
                 background: opt.bg,
