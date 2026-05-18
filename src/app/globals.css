@@ -105,10 +105,7 @@ input[type="range"]::-moz-range-thumb { height: 20px; width: 20px; border-radius
 ══════════════════════════════════════════════════════════════════════════════ */
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, #d4b896 0%, #b8956a 45%, #c8a97a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #b8956a;
 }
 .text-gradient-light {
   background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);

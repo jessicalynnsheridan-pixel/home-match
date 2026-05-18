@@ -50,7 +50,7 @@ export default function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ─── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative gradient-dark-animated min-h-[92vh] flex flex-col items-center justify-center px-6 lg:px-8 pt-24 pb-20">
+      <section className="relative gradient-animated min-h-[92vh] flex flex-col items-center justify-center px-6 lg:px-8 pt-24 pb-20">
 
         {/* Ambient floating orbs */}
         <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -61,18 +61,18 @@ export default function HomePage() {
 
         <div className="max-w-4xl mx-auto text-center animate-fade-up relative z-10">
           {/* Pill badge */}
-          <div className="inline-flex items-center gap-2 glass-dark rounded-full px-4 py-2 mb-8 text-sm text-white/55" style={{ border: "1px solid rgba(255,255,255,0.10)" }}>
-            <Sparkles size={13} className="text-[#c9a870]" />
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-8 text-sm text-[#8c8580]" style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.08)" }}>
+            <Sparkles size={13} className="text-[#b8956a]" />
             Homes matched to who you are, not just what you can afford
           </div>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.08] tracking-tight mb-6">
-            <span className="text-white">More than listings.</span>
+            <span className="text-[#2c2825]">More than listings.</span>
             <br />
             <span className="text-gradient-gold">A lifestyle match.</span>
           </h1>
 
-          <p className="text-white/55 text-lg sm:text-xl leading-relaxed max-w-lg mx-auto mb-12">
+          <p className="text-[#8c8580] text-lg sm:text-xl leading-relaxed max-w-lg mx-auto mb-12">
             Not a filter, a match. Built around how you actually live.
           </p>
 
@@ -87,30 +87,30 @@ export default function HomePage() {
             </Link>
             <Link
               href="/portal"
-              className="inline-flex items-center justify-center gap-2 glass-dark text-white/65 text-sm font-medium px-9 py-4 rounded-full hover:text-white transition-all btn-press" style={{ border: "1px solid rgba(255,255,255,0.12)" }}
+              className="inline-flex items-center justify-center gap-2 text-[#6b6560] text-sm font-medium px-9 py-4 rounded-full hover:text-[#2c2825] transition-all btn-press" style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.08)" }}
             >
               See buyer tools
             </Link>
           </div>
-          <p className="text-white/35 text-sm">Takes 8 minutes · No sign-up · No pressure</p>
+          <p className="text-[#b8b4b0] text-sm">Takes 8 minutes · No sign-up · No pressure</p>
         </div>
 
         {/* Vibe chips */}
         <div className="mt-16 max-w-3xl mx-auto animate-fade-up relative z-10" style={{ animationDelay: "0.12s" }}>
-          <p className="text-center text-white/40 text-xs font-medium tracking-widest uppercase mb-5">
+          <p className="text-center text-[#b8b4b0] text-xs font-medium tracking-widest uppercase mb-5">
             We match on things like
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {vibes.map((v, i) => (
               <div
                 key={v.label}
-                className="inline-flex items-center gap-2 glass-dark rounded-xl px-4 py-2.5 animate-fade-up"
-                style={{ border: "1px solid rgba(255,255,255,0.08)", animationDelay: `${0.18 + i * 0.06}s` }}
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 animate-fade-up"
+                style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.07)", animationDelay: `${0.18 + i * 0.06}s` }}
               >
                 <span className="text-base">{v.emoji}</span>
                 <div>
-                  <p className="text-white text-xs font-medium leading-none">{v.label}</p>
-                  <p className="text-white/45 text-[10px] mt-0.5">{v.sub}</p>
+                  <p className="text-[#2c2825] text-xs font-medium leading-none">{v.label}</p>
+                  <p className="text-[#8c8580] text-[10px] mt-0.5">{v.sub}</p>
                 </div>
               </div>
             ))}
