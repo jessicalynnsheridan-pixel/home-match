@@ -747,18 +747,18 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Stat pills — 2×2 on mobile, row on desktop */}
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 mt-8">
+          {/* Stat pills — horizontal scroll on mobile, row on desktop */}
+          <div className="flex overflow-x-auto gap-2 mt-8 -mx-1 px-1 pb-1 scrollbar-hide sm:flex-wrap sm:overflow-visible sm:gap-3">
             {[
-              { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Users size={14} className="text-[#b8a88a]" /> },
-              { label: "Hot", value: hot, bg: "bg-rose-50 border border-rose-100", text: "text-rose-700", sub: "text-rose-400", icon: <Flame size={14} className="text-rose-400" /> },
-              { label: "Warm", value: warm, bg: "bg-amber-50 border border-amber-100", text: "text-amber-700", sub: "text-amber-400", icon: <Zap size={14} className="text-amber-400" /> },
-              { label: "New", value: newLeads, bg: "bg-sky-50 border border-sky-100", text: "text-sky-700", sub: "text-sky-400", icon: <TrendingUp size={14} className="text-sky-400" /> },
+              { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Users size={13} className="text-[#b8a88a]" /> },
+              { label: "Hot", value: hot, bg: "bg-rose-50 border border-rose-100", text: "text-rose-700", sub: "text-rose-400", icon: <Flame size={13} className="text-rose-400" /> },
+              { label: "Warm", value: warm, bg: "bg-amber-50 border border-amber-100", text: "text-amber-700", sub: "text-amber-400", icon: <Zap size={13} className="text-amber-400" /> },
+              { label: "New", value: newLeads, bg: "bg-sky-50 border border-sky-100", text: "text-sky-700", sub: "text-sky-400", icon: <TrendingUp size={13} className="text-sky-400" /> },
             ].map((stat) => (
-              <div key={stat.label} className={`flex items-center gap-3 px-4 py-3 rounded-2xl shadow-sm ${stat.bg}`}>
+              <div key={stat.label} className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm shrink-0 ${stat.bg}`}>
                 {stat.icon}
                 <div>
-                  <p className={`text-xl font-bold leading-none ${stat.text}`}>{stat.value}</p>
+                  <p className={`text-base sm:text-xl font-bold leading-none ${stat.text}`}>{stat.value}</p>
                   <p className={`text-[10px] mt-0.5 ${stat.sub}`}>{stat.label}</p>
                 </div>
               </div>
@@ -858,15 +858,42 @@ export default function DashboardPage() {
               </div>
 
               <div className="px-5 pt-4">
-                <div className="flex flex-col sm:flex-row gap-2 mb-3">
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search name, email, city…"
-                    className="flex-1 border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7]"
-                  />
-                  <div className="flex gap-1.5 flex-wrap">
+                {/* Search */}
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search name, email, city…"
+                  className="w-full border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7] mb-3"
+                />
+
+                {/* Mobile: two compact selects */}
+                <div className="flex gap-2 mb-3 sm:hidden">
+                  <select
+                    value={scoreFilter}
+                    onChange={(e) => setScoreFilter(e.target.value as LeadScore | "All")}
+                    className="flex-1 border border-[#e8e4de] rounded-xl px-3 py-2 text-xs text-[#2c2825] bg-[#faf9f7] focus:outline-none focus:border-[#2c2825]"
+                  >
+                    {SCORE_FILTERS.map((f) => <option key={f} value={f}>{f === "All" ? "All Scores" : f}</option>)}
+                  </select>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as LeadStatus | "All")}
+                    className="flex-1 border border-[#e8e4de] rounded-xl px-3 py-2 text-xs text-[#2c2825] bg-[#faf9f7] focus:outline-none focus:border-[#2c2825]"
+                  >
+                    {STATUS_FILTERS.map((f) => <option key={f} value={f}>{f === "All" ? "All Stages" : f}</option>)}
+                  </select>
+                  <button
+                    onClick={() => setPriorityOnly((v) => !v)}
+                    className={`px-3 py-2 rounded-xl border text-xs transition-all flex items-center gap-1 shrink-0 ${priorityOnly ? "bg-[#b8a88a]/20 text-[#8c6a3e] border-[#b8a88a]" : "bg-white text-[#8c8580] border-[#e8e4de]"}`}
+                  >
+                    <Star size={10} />
+                  </button>
+                </div>
+
+                {/* Desktop: chip buttons */}
+                <div className="hidden sm:block">
+                  <div className="flex gap-1.5 flex-wrap mb-3">
                     {SCORE_FILTERS.map((f) => (
                       <button key={f} onClick={() => setScoreFilter(f)}
                         className={`text-xs px-3 py-2 rounded-xl border transition-all ${scoreFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"}`}>
@@ -878,15 +905,16 @@ export default function DashboardPage() {
                       <Star size={10} /> Priority
                     </button>
                   </div>
+                  <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
+                    {STATUS_FILTERS.map((f) => (
+                      <button key={f} onClick={() => setStatusFilter(f)}
+                        className={`text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap transition-all shrink-0 ${statusFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"}`}>
+                        {f}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
-                  {STATUS_FILTERS.map((f) => (
-                    <button key={f} onClick={() => setStatusFilter(f)}
-                      className={`text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap transition-all shrink-0 ${statusFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"}`}>
-                      {f}
-                    </button>
-                  ))}
-                </div>
+
                 <p className="text-[#b8b4b0] text-xs mb-4">{filtered.length} of {allLeads.length} leads</p>
               </div>
 
