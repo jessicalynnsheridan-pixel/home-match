@@ -224,17 +224,17 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
       )}
 
       {/* ── Showing Availability ──────────────────────────────────────────────── */}
-      <div className="bg-violet-100 border border-violet-200 rounded-xl px-4 py-3.5">
+      <div style={{ background: "#ede9fe", border: "1px solid #c4b5fd", borderRadius: "12px", padding: "14px 16px" }}>
         <div className="flex items-center gap-2 mb-2.5">
-          <Star size={12} className="text-violet-600" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-violet-700">Showing Availability</p>
+          <Star size={12} style={{ color: "#7c3aed" }} />
+          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6d28d9" }}>Showing Availability</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {availabilityHints.map((h) => (
-            <span key={h} className="text-xs font-semibold text-violet-800 bg-violet-200 px-3 py-1 rounded-full">{h}</span>
+            <span key={h} className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "#c4b5fd", color: "#3b0764" }}>{h}</span>
           ))}
           {["Morning", "Afternoon", "Evening"].map((slot) => (
-            <span key={slot} className="text-xs font-medium text-violet-600 bg-white border border-violet-200 px-3 py-1 rounded-full">{slot}</span>
+            <span key={slot} className="text-xs font-medium px-3 py-1 rounded-full" style={{ background: "white", color: "#7c3aed", border: "1px solid #c4b5fd" }}>{slot}</span>
           ))}
         </div>
       </div>
@@ -243,14 +243,14 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
       {(answers.mustHaves?.length > 0 || answers.dealBreakers?.length > 0) && (
         <div className="grid grid-cols-2 gap-3">
           {answers.mustHaves?.length > 0 && (
-            <div className="bg-emerald-100 border border-emerald-200 rounded-2xl p-4">
+            <div style={{ background: "#d1fae5", border: "1px solid #6ee7b7", borderRadius: "16px", padding: "16px" }}>
               <div className="flex items-center gap-1.5 mb-2.5">
-                <ShieldCheck size={12} className="text-emerald-700" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Must Have</p>
+                <ShieldCheck size={12} style={{ color: "#059669" }} />
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#065f46" }}>Must Have</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.mustHaves.map((item) => (
-                  <span key={item} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-200 text-emerald-900">
+                  <span key={item} className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: "#6ee7b7", color: "#064e3b" }}>
                     ✓ {item}
                   </span>
                 ))}
@@ -258,14 +258,14 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
             </div>
           )}
           {answers.dealBreakers?.length > 0 && (
-            <div className="bg-rose-100 border border-rose-200 rounded-2xl p-4">
+            <div style={{ background: "#ffe4e6", border: "1px solid #fda4af", borderRadius: "16px", padding: "16px" }}>
               <div className="flex items-center gap-1.5 mb-2.5">
-                <XIcon size={12} className="text-rose-600" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-rose-700">Deal Breakers</p>
+                <XIcon size={12} style={{ color: "#e11d48" }} />
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#9f1239" }}>Deal Breakers</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.dealBreakers.map((item) => (
-                  <span key={item} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-rose-200 text-rose-900 line-through decoration-rose-400">
+                  <span key={item} className="text-[11px] font-semibold px-2.5 py-1 rounded-full line-through" style={{ background: "#fda4af", color: "#881337", textDecorationColor: "#e11d48" }}>
                     {item}
                   </span>
                 ))}
