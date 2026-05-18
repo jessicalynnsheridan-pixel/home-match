@@ -7,12 +7,12 @@ import { ArrowRight } from "lucide-react";
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const HOME_FEELINGS = [
-  { label: "Peaceful retreat",      emoji: "🌿", bg: "linear-gradient(145deg, #4a7c59 0%, #2d5a3d 100%)" },
-  { label: "Social hub",            emoji: "🥂", bg: "linear-gradient(145deg, #c87941 0%, #9a5228 100%)" },
-  { label: "Creative sanctuary",    emoji: "🎨", bg: "linear-gradient(145deg, #4a6f9c 0%, #2d4f7a 100%)" },
-  { label: "Family nest",           emoji: "🏡", bg: "linear-gradient(145deg, #b89040 0%, #8a6820 100%)" },
-  { label: "Modern haven",          emoji: "✨", bg: "linear-gradient(145deg, #5a5248 0%, #302c28 100%)" },
-  { label: "Adventure base",        emoji: "🌲", bg: "linear-gradient(145deg, #3d6b4a 0%, #234030 100%)" },
+  { label: "Peaceful retreat",      emoji: "🌿", bg: "#4a7c59" },
+  { label: "Social hub",            emoji: "🥂", bg: "#c87941" },
+  { label: "Creative sanctuary",    emoji: "🎨", bg: "#4a6f9c" },
+  { label: "Family nest",           emoji: "🏡", bg: "#b89040" },
+  { label: "Modern haven",          emoji: "✨", bg: "#4a4540" },
+  { label: "Adventure base",        emoji: "🌲", bg: "#3d6b4a" },
 ];
 
 const SUNDAY_MOODS = [
@@ -24,10 +24,10 @@ const SUNDAY_MOODS = [
 ];
 
 const STYLE_OPTIONS = [
-  { value: "Modern & minimal",  emoji: "🪟", bg: "linear-gradient(145deg, #5a6268 0%, #3a4248 100%)" },
-  { value: "Warm & cozy",       emoji: "🕯️", bg: "linear-gradient(145deg, #b88040 0%, #8a5c20 100%)" },
-  { value: "Classic elegance",  emoji: "🏛️", bg: "linear-gradient(145deg, #7a6858 0%, #4e4038 100%)" },
-  { value: "Bold & unique",     emoji: "🎭", bg: "linear-gradient(145deg, #8c4a3c 0%, #5c2820 100%)" },
+  { value: "Modern & minimal",  emoji: "🪟", bg: "#5a6268" },
+  { value: "Warm & cozy",       emoji: "🕯️", bg: "#b88040" },
+  { value: "Classic elegance",  emoji: "🏛️", bg: "#7a6858" },
+  { value: "Bold & unique",     emoji: "🎭", bg: "#8c4a3c" },
 ] as const;
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -53,9 +53,6 @@ function VibeCard({
         transform: selected ? "scale(1.02)" : "scale(1)",
       }}
     >
-      {/* Inner gloss */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/20 pointer-events-none" />
-
       <div className="relative z-10 p-5 h-full flex flex-col justify-between" style={{ minHeight: 160 }}>
         <span className="text-4xl block">{emoji}</span>
         <p className="font-bold text-base text-white leading-snug mt-4">{label}</p>
@@ -110,7 +107,6 @@ function StyleTile({ value, emoji, bg, selected, onClick, delay }: {
         transform: selected ? "scale(1.02)" : "scale(1)",
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-black/20 pointer-events-none" />
       <div className="relative z-10 p-4 flex flex-col justify-between" style={{ minHeight: 110 }}>
         <span className="text-2xl">{emoji}</span>
         <p className="text-white font-semibold text-xs leading-snug mt-3">{value}</p>
