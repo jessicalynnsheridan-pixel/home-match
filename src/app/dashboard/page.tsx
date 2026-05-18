@@ -656,11 +656,11 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
   if (coldLeads.length > 0) {
     const fmt = atRiskCommission >= 1000 ? `$${Math.round(atRiskCommission / 1000)}K` : `$${Math.round(atRiskCommission)}`;
     insights.push({
-      icon: <ShieldAlert size={14} className="text-rose-500" />,
+      icon: <ShieldAlert size={14} className="text-[#8c8580]" />,
       text: `${coldLeads.length} lead${coldLeads.length > 1 ? "s" : ""} going cold`,
       sub: `${fmt} commission at risk`,
-      color: "text-rose-700",
-      bg: "bg-rose-50 border-rose-200",
+      color: "text-[#2c2825]",
+      bg: "bg-white border-[#e8e4de]",
       action: "Show them →",
       onClick: () => { onScoreFilter(coldLeads[0].score as LeadScore); onStatusFilter("All"); },
     });
@@ -668,10 +668,10 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
 
   if (offerLeads.length > 0) {
     insights.push({
-      icon: <Target size={14} className="text-emerald-600" />,
+      icon: <Target size={14} className="text-emerald-500" />,
       text: `${offerLeads.length} lead${offerLeads.length > 1 ? "s" : ""} at Offer Stage`,
       sub: "You're close — keep momentum",
-      color: "text-emerald-700",
+      color: "text-[#2c2825]",
       bg: "bg-emerald-50 border-emerald-200",
       action: "View leads →",
       onClick: () => { onStatusFilter("Offer Stage"); onScoreFilter("All"); },
@@ -680,11 +680,11 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
 
   if (hotLeads.length > 0 && coldLeads.length === 0) {
     insights.push({
-      icon: <Flame size={14} className="text-amber-500" />,
+      icon: <Flame size={14} className="text-[#8c8580]" />,
       text: `${hotLeads.length} hot lead${hotLeads.length > 1 ? "s" : ""} need attention`,
       sub: "Reach out before they go elsewhere",
-      color: "text-amber-700",
-      bg: "bg-amber-50 border-amber-200",
+      color: "text-[#2c2825]",
+      bg: "bg-white border-[#e8e4de]",
       action: "Show hot leads →",
       onClick: () => { onScoreFilter("Hot"); onStatusFilter("All"); },
     });
@@ -695,11 +695,11 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
   );
   if (urgentTimeline) {
     insights.push({
-      icon: <Clock size={14} className="text-violet-500" />,
+      icon: <Clock size={14} className="text-[#8c8580]" />,
       text: `${urgentTimeline.answers.firstName} needs to move fast`,
       sub: `Timeline: ${urgentTimeline.answers.timeline} · ${urgentTimeline.answers.preferredCity || "local"}`,
-      color: "text-violet-700",
-      bg: "bg-violet-50 border-violet-200",
+      color: "text-[#2c2825]",
+      bg: "bg-white border-[#e8e4de]",
       action: "Find them →",
       onClick: () => { onSearch(urgentTimeline.answers.firstName ?? ""); onScoreFilter("All"); onStatusFilter("All"); },
     });
@@ -707,11 +707,11 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
 
   if (insights.length === 0) {
     insights.push({
-      icon: <Activity size={14} className="text-sky-500" />,
+      icon: <Activity size={14} className="text-emerald-500" />,
       text: "Pipeline looking healthy",
       sub: "No urgent actions right now",
-      color: "text-sky-700",
-      bg: "bg-sky-50 border-sky-200",
+      color: "text-[#2c2825]",
+      bg: "bg-emerald-50 border-emerald-200",
       action: "View all →",
       onClick: () => { onScoreFilter("All"); onStatusFilter("All"); },
     });
@@ -729,7 +729,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
           <div className="flex-1 min-w-0">
             <p className={`text-xs font-semibold ${ins.color}`}>{ins.text}</p>
             <p className="text-[10px] text-[#8c8580] mt-0.5 leading-relaxed">{ins.sub}</p>
-            <p className={`text-[11px] font-bold mt-2 ${ins.color}`}>{ins.action}</p>
+            <p className="text-[11px] font-bold mt-2 text-[#b8a88a]">{ins.action}</p>
           </div>
         </button>
       ))}
