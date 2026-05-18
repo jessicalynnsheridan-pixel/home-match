@@ -5,7 +5,61 @@ import { mockLeads } from "@/data/mockLeads";
 import { Lead, LeadStatus } from "@/types";
 import { formatCurrency, getScoreColor } from "@/lib/utils";
 import Link from "next/link";
-import { Star, ArrowRight } from "lucide-react";
+import { Star, ArrowRight, Phone, Mail, MessageSquare, Clock } from "lucide-react";
+
+// ─── Playbook chip ─────────────────────────────────────────────────────────────
+
+type Playbook = {
+  icon: React.ReactNode;
+  action: string;
+  color: string;
+  bg: string;
+  border: string;
+};
+
+function getPlaybook(lead: Lead): Playbook {
+  const { answers, score } = lead;
+  const isFinanced =
+    answers.preApprovalStatus === "Yes, fully approved" ||
+    answers.preApprovalStatus === "Paying cash";
+  const isASAP =
+    answers.timeline === "ASAP" || answers.timeline === "1–3 months";
+
+  if (score === "Hot" && isASAP && isFinanced) {
+    return {
+      icon: <Phone size={11} />,
+      action: "Call within 2 hours",
+      color: "#dc2626",
+      bg: "#fef2f2",
+      border: "#fecaca",
+    };
+  }
+  if (score === "Hot") {
+    return {
+      icon: <Mail size={11} />,
+      action: "Email today, call tomorrow",
+      color: "#d97706",
+      bg: "#fffbeb",
+      border: "#fde68a",
+    };
+  }
+  if (score === "Warm") {
+    return {
+      icon: <MessageSquare size={11} />,
+      action: "Email now, follow up in 5 days",
+      color: "#2563eb",
+      bg: "#eff6ff",
+      border: "#bfdbfe",
+    };
+  }
+  return {
+    icon: <Clock size={11} />,
+    action: "Monthly touch — no rush",
+    color: "#6b7280",
+    bg: "#f9fafb",
+    border: "#e5e7eb",
+  };
+}
 
 const STAGES: LeadStatus[] = ["New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed"];
 
@@ -172,6 +226,22 @@ function PipelineCard({
           />
         </div>
       </div>
+
+      {/* Action playbook */}
+      {(() => {
+        const pb = getPlaybook(lead);
+        return (
+          <div
+            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 mb-3 border"
+            style={{ background: pb.bg, borderColor: pb.border }}
+          >
+            <span style={{ color: pb.color }} className="shrink-0">{pb.icon}</span>
+            <p className="text-[11px] font-semibold leading-none" style={{ color: pb.color }}>
+              {pb.action}
+            </p>
+          </div>
+        );
+      })()}
 
       {/* Key info */}
       <div className="text-xs text-[#8c8580] space-y-1 mb-4">
