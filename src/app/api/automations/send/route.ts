@@ -31,10 +31,10 @@ function wrapInHtml(subject: string, text: string, realtorName: string): string 
     .split(/\n{2,}/)
     .map((p) => p.trim())
     .filter(Boolean)
-    .map((p) => `<p style="font-size:14px;color:#5c5550;line-height:1.8;margin:0 0 16px;font-family:Georgia,serif">${p.replace(/\n/g, "<br/>")}</p>`)
+    .map((p) => `<p style="font-size:14px;color:#5c5550;line-height:1.8;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif">${p.replace(/\n/g, "<br/>")}</p>`)
     .join("");
   return `
-    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
         <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
         <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">${subject}</h1>
@@ -53,7 +53,7 @@ function emailDay1(realtorName: string, answers: LeadAnswers) {
   return {
     subject: `Your home search is officially on 🏡`,
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
         <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
           <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
           <h1 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Your home search is officially on 🏡</h1>
@@ -84,7 +84,7 @@ function emailDay3(realtorName: string, answers: LeadAnswers) {
   return {
     subject: `Just checking in on your search, ${first} 👋`,
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
         <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
           <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
           <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Just checking in on your search 👋</h1>
@@ -107,7 +107,7 @@ function emailDay7(realtorName: string, answers: LeadAnswers) {
   return {
     subject: `Still thinking about buying in ${city}?`,
     html: `
-      <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
         <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
           <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
           <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Still thinking about buying in ${city}?</h1>

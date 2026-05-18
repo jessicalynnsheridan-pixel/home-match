@@ -402,7 +402,7 @@ function QueueRow({
             onChange={(e) => setBody(e.target.value)}
             rows={10}
             className="w-full text-[12px] text-[#2c2825] leading-relaxed rounded-xl border border-[#e8e4de] px-3.5 py-3 resize-none outline-none focus:border-[#b8a88a] transition-colors"
-            style={{ background: "#ffffff", fontFamily: "Georgia, serif" }}
+            style={{ background: "#ffffff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}
           />
 
           {/* Footer row */}
@@ -481,7 +481,7 @@ function TemplateCard({ t }: { t: TemplatePreview }) {
               <p style={{ color: "#ffffff", fontSize: "12px", fontWeight: 700, margin: 0, lineHeight: 1.3 }}>{t.subject}</p>
             </div>
             <div style={{ padding: "12px 14px" }}>
-              <p style={{ fontSize: "11px", color: "#5c5550", lineHeight: 1.75, whiteSpace: "pre-line", margin: 0, fontFamily: "Georgia, serif" }}>{t.body}</p>
+              <p style={{ fontSize: "11px", color: "#5c5550", lineHeight: 1.75, whiteSpace: "pre-line", margin: 0, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>{t.body}</p>
             </div>
           </div>
           <p className="text-[10px] flex items-center gap-1 mt-2" style={{ color: "#8c8580" }}>

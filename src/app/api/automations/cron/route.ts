@@ -59,7 +59,7 @@ function emailDay1Buyer(realtorName: string, lead: LeadRow) {
   const budget = formatBudget(lead.answers.budgetMin, lead.answers.budgetMax);
   const portalUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
   return `
-    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
         <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
         <h1 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Your home search is officially on 🏡</h1>
@@ -87,7 +87,7 @@ function emailDay3Buyer(realtorName: string, lead: LeadRow) {
   const buyer = `${lead.answers.firstName ?? ""}`.trim() || "there";
   const city = lead.answers.preferredCity ?? "your area";
   return `
-    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
         <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
         <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Just checking in on your search 👋</h1>
@@ -107,7 +107,7 @@ function emailDay7Buyer(realtorName: string, lead: LeadRow) {
   const buyer = `${lead.answers.firstName ?? ""}`.trim() || "there";
   const city = lead.answers.preferredCity ?? "your area";
   return `
-    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
         <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
         <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Still thinking about buying in ${city}?</h1>
@@ -130,7 +130,7 @@ function emailInactivityRealtor(realtorName: string, lead: LeadRow, daysIdle: nu
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
   const scoreEmoji = lead.score === "Hot" ? "🔥" : "⚡";
   return `
-    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
         <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch · Inactivity Alert</p>
         <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">${scoreEmoji} ${buyer} - ${Math.floor(daysIdle)} days with no contact</h1>
