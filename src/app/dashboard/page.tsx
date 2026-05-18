@@ -124,34 +124,34 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
 
 const PRIORITY_CONFIG = {
   urgent: {
-    cardBg: "bg-gradient-to-r from-rose-50 to-red-50",
-    border: "border border-rose-200",
-    leftBar: "bg-rose-500",
-    badge: "bg-rose-500 text-white",
+    cardBg: "bg-white",
+    border: "border border-[#e8e4de]",
+    leftBar: "bg-rose-400",
+    badge: "bg-[#f5f3f0] text-[#5c5550] border border-[#e8e4de]",
     badgeLabel: "Urgent",
-    iconBg: "bg-rose-100 text-rose-600",
-    ctaBg: "bg-rose-600 hover:bg-rose-700 text-white",
-    expandBg: "bg-rose-50/60",
+    iconBg: "bg-[#f5f3f0] text-[#2c2825]",
+    ctaBg: "bg-[#2c2825] hover:bg-[#1a1714] text-white",
+    expandBg: "bg-[#faf9f7]",
   },
   high: {
-    cardBg: "bg-gradient-to-r from-amber-50 to-orange-50",
-    border: "border border-amber-200",
-    leftBar: "bg-amber-400",
-    badge: "bg-amber-500 text-white",
+    cardBg: "bg-white",
+    border: "border border-[#e8e4de]",
+    leftBar: "bg-amber-300",
+    badge: "bg-[#f5f3f0] text-[#5c5550] border border-[#e8e4de]",
     badgeLabel: "Today",
-    iconBg: "bg-amber-100 text-amber-600",
-    ctaBg: "bg-amber-600 hover:bg-amber-700 text-white",
-    expandBg: "bg-amber-50/60",
+    iconBg: "bg-[#f5f3f0] text-[#2c2825]",
+    ctaBg: "bg-[#2c2825] hover:bg-[#1a1714] text-white",
+    expandBg: "bg-[#faf9f7]",
   },
   medium: {
-    cardBg: "bg-gradient-to-r from-blue-50 to-indigo-50",
-    border: "border border-blue-200",
-    leftBar: "bg-blue-400",
-    badge: "bg-blue-500 text-white",
+    cardBg: "bg-white",
+    border: "border border-[#e8e4de]",
+    leftBar: "bg-[#b8a88a]",
+    badge: "bg-[#f5f3f0] text-[#5c5550] border border-[#e8e4de]",
     badgeLabel: "This week",
-    iconBg: "bg-blue-100 text-blue-600",
-    ctaBg: "bg-blue-600 hover:bg-blue-700 text-white",
-    expandBg: "bg-blue-50/60",
+    iconBg: "bg-[#f5f3f0] text-[#2c2825]",
+    ctaBg: "bg-[#2c2825] hover:bg-[#1a1714] text-white",
+    expandBg: "bg-[#faf9f7]",
   },
 };
 
@@ -436,9 +436,9 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 mt-8">
             {[
               { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Users size={14} className="text-[#b8a88a]" /> },
-              { label: "Hot", value: hot, bg: "bg-rose-50 border border-rose-200", text: "text-rose-700", sub: "text-rose-400", icon: <Flame size={14} className="text-rose-500" /> },
-              { label: "Warm", value: warm, bg: "bg-amber-50 border border-amber-200", text: "text-amber-700", sub: "text-amber-400", icon: <Zap size={14} className="text-amber-500" /> },
-              { label: "New", value: newLeads, bg: "bg-sky-50 border border-sky-200", text: "text-sky-700", sub: "text-sky-400", icon: <TrendingUp size={14} className="text-sky-500" /> },
+              { label: "Hot", value: hot, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Flame size={14} className="text-rose-400" /> },
+              { label: "Warm", value: warm, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Zap size={14} className="text-amber-400" /> },
+              { label: "New", value: newLeads, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <TrendingUp size={14} className="text-[#b8a88a]" /> },
             ].map((stat) => (
               <div key={stat.label} className={`flex items-center gap-3 px-4 py-3 rounded-2xl shadow-sm ${stat.bg}`}>
                 {stat.icon}
@@ -462,10 +462,10 @@ export default function DashboardPage() {
             {/* Section header card */}
             <div className="bg-white rounded-2xl px-5 py-3.5 flex items-center justify-between shadow-sm border border-[#ece8e2]">
               <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-[#2c2825] animate-pulse" />
                 <h2 className="text-sm font-semibold text-[#2c2825]">Today&apos;s Priority Actions</h2>
                 {activeItems.length > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-600 border border-rose-200">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f5f3f0] text-[#5c5550] border border-[#e8e4de]">
                     {activeItems.length} remaining
                   </span>
                 )}
@@ -635,12 +635,12 @@ export default function DashboardPage() {
 
             {/* Hot leads callout */}
             {hot > 0 && (
-              <div className="bg-white border border-rose-200 rounded-2xl p-4 shadow-sm">
+              <div className="bg-white border border-[#e8e4de] rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-xl bg-rose-100 flex items-center justify-center">
-                    <Flame size={14} className="text-rose-500" />
+                  <div className="w-7 h-7 rounded-xl bg-[#f5f3f0] flex items-center justify-center">
+                    <Flame size={14} className="text-rose-400" />
                   </div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Hot Pipeline</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#8c8580]">Hot Pipeline</p>
                 </div>
                 <p className="text-4xl font-bold text-[#2c2825]">{hot}</p>
                 <p className="text-[#8c8580] text-xs mt-1">
@@ -648,9 +648,9 @@ export default function DashboardPage() {
                 </p>
                 {allLeads.length > 0 && (
                   <div className="mt-3">
-                    <div className="h-1.5 bg-rose-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-rose-400"
+                        className="h-full rounded-full bg-[#2c2825]"
                         style={{ width: `${Math.min(100, (hot / allLeads.length) * 100)}%` }}
                       />
                     </div>
@@ -664,12 +664,12 @@ export default function DashboardPage() {
 
             {/* Warm leads card */}
             {warm > 0 && (
-              <div className="bg-white border border-amber-200 rounded-2xl p-4 shadow-sm">
+              <div className="bg-white border border-[#e8e4de] rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <Zap size={14} className="text-amber-500" />
+                  <div className="w-7 h-7 rounded-xl bg-[#f5f3f0] flex items-center justify-center">
+                    <Zap size={14} className="text-amber-400" />
                   </div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Warm Pipeline</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#8c8580]">Warm Pipeline</p>
                 </div>
                 <p className="text-4xl font-bold text-[#2c2825]">{warm}</p>
                 <p className="text-[#8c8580] text-xs mt-1">nurture before they go cold</p>
@@ -681,9 +681,9 @@ export default function DashboardPage() {
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a] mb-3">Quick Access</p>
               <div className="space-y-1">
                 {[
-                  { label: "Pipeline Board", href: "/pipeline", icon: <TrendingUp size={13} />, color: "text-blue-500" },
-                  { label: "Listings", href: "/listings", icon: <Eye size={13} />, color: "text-emerald-500" },
-                  { label: "Integrations", href: "/integrations", icon: <AlertCircle size={13} />, color: "text-amber-500" },
+                  { label: "Pipeline Board", href: "/pipeline", icon: <TrendingUp size={13} />, color: "text-[#b8a88a]" },
+                  { label: "Listings", href: "/listings", icon: <Eye size={13} />, color: "text-[#b8a88a]" },
+                  { label: "Integrations", href: "/integrations", icon: <AlertCircle size={13} />, color: "text-[#b8a88a]" },
                 ].map((item) => (
                   <Link key={item.href} href={item.href}
                     className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#f5f3f0] transition-colors group">
