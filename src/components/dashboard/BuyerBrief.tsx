@@ -218,33 +218,33 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
       )}
 
       {/* ── Showing Availability ──────────────────────────────────────────────── */}
-      <div className="bg-white border border-[#e8e4de] rounded-xl px-4 py-3.5">
+      <div className="bg-violet-50 border border-violet-100 rounded-xl px-4 py-3.5">
         <div className="flex items-center gap-2 mb-2.5">
-          <Star size={12} className="text-[#b8a88a]" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#b8a88a]">Showing Availability</p>
+          <Star size={12} className="text-violet-400" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-violet-500">Showing Availability</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {availabilityHints.map((h) => (
-            <span key={h} className="text-xs text-[#2c2825] bg-[#faf9f7] border border-[#e8e4de] px-3 py-1 rounded-full">{h}</span>
+            <span key={h} className="text-xs font-medium text-violet-700 bg-white border border-violet-200 px-3 py-1 rounded-full">{h}</span>
           ))}
           {["Morning", "Afternoon", "Evening"].map((slot) => (
-            <span key={slot} className="text-xs text-[#8c8580] bg-[#faf9f7] border border-[#e8e4de] px-3 py-1 rounded-full cursor-default hover:border-[#b8a88a] transition-colors">{slot}</span>
+            <span key={slot} className="text-xs text-[#8c8580] bg-white border border-violet-100 px-3 py-1 rounded-full">{slot}</span>
           ))}
         </div>
       </div>
 
-      {/* ── Must-haves + Deal-breakers — neutral ─────────────────────────────── */}
+      {/* ── Must-haves + Deal-breakers ────────────────────────────────────────── */}
       {(answers.mustHaves?.length > 0 || answers.dealBreakers?.length > 0) && (
         <div className="grid grid-cols-2 gap-3">
           {answers.mustHaves?.length > 0 && (
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
               <div className="flex items-center gap-1.5 mb-2.5">
-                <ShieldCheck size={12} className="text-[#b8a88a]" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#b8a88a]">Must Have</p>
+                <ShieldCheck size={12} className="text-emerald-500" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Must Have</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.mustHaves.map((item) => (
-                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#faf9f7] text-[#2c2825] border border-[#e8e4de]">
+                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white text-[#2c2825] border border-emerald-200">
                     ✓ {item}
                   </span>
                 ))}
@@ -252,14 +252,14 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
             </div>
           )}
           {answers.dealBreakers?.length > 0 && (
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
+            <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4">
               <div className="flex items-center gap-1.5 mb-2.5">
-                <XIcon size={12} className="text-[#8c8580]" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#8c8580]">Deal Breakers</p>
+                <XIcon size={12} className="text-rose-400" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-rose-500">Deal Breakers</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.dealBreakers.map((item) => (
-                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#faf9f7] text-[#5c5550] border border-[#e8e4de] line-through decoration-[#8c8580]">
+                  <span key={item} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white text-[#5c5550] border border-rose-200 line-through decoration-rose-300">
                     {item}
                   </span>
                 ))}
