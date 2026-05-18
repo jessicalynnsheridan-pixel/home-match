@@ -1,6 +1,6 @@
 import { StepProps, StepHeader, NavButtons, FieldLabel } from "./shared";
 
-export default function StepNotes({ answers, update, onNext, onBack, onSubmit }: StepProps) {
+export default function StepNotes({ answers, update, onNext, onBack, onSubmit, isSubmitting, submitError }: StepProps) {
   return (
     <div>
       <StepHeader
@@ -40,7 +40,7 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit }:
         </div>
       </div>
 
-      <NavButtons onBack={onBack} onNext={onNext} onSubmit={onSubmit} isFirst={false} isLast />
+      <NavButtons onBack={onBack} onNext={onNext} onSubmit={onSubmit} isFirst={false} isLast isSubmitting={isSubmitting} submitError={submitError} />
     </div>
   );
 }

@@ -33,14 +33,32 @@ const CATEGORY_META: Record<string, { label: string; icon: React.ReactNode; colo
 
 // ─── Integration card ─────────────────────────────────────────────────────────
 
-function IntegrationCard({ integration }: { integration: Integration }) {
+function IntegrationCard({ integration, onDisconnect }: { integration: Integration; onDisconnect?: (id: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const [notified, setNotified] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   function handleNotify() {
     setNotified(true);
     setTimeout(() => setNotified(false), 3000);
   }
+
+  async function handleDisconnect() {
+    if (!confirm(`Disconnect ${integration.name}? You can reconnect at any time.`)) return;
+    setDisconnecting(true);
+    try {
+      const provider = integration.id === "outlook_calendar" ? "microsoft" : integration.id;
+      const res = await fetch("/api/integrations/disconnect", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider }),
+      });
+      if (res.ok) onDisconnect?.(integration.id);
+    } catch { /* ignore */ } finally {
+      setDisconnecting(false);
+    }
+  }
+
   const cat = CATEGORY_META[integration.category];
   const isConnected = integration.status === "connected";
   const isComingSoon = integration.status === "coming_soon";
@@ -51,12 +69,21 @@ function IntegrationCard({ integration }: { integration: Integration }) {
     }`}>
       {/* Connected banner */}
       {isConnected && (
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2.5 flex items-center gap-2">
-          <CheckCircle size={14} className="text-white" />
-          <span className="text-white text-xs font-semibold">Connected</span>
-          {integration.connectedEmail && (
-            <span className="text-white/70 text-xs ml-1">· {integration.connectedEmail}</span>
-          )}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle size={14} className="text-white" />
+            <span className="text-white text-xs font-semibold">Connected</span>
+            {integration.connectedEmail && (
+              <span className="text-white/70 text-xs ml-1">· {integration.connectedEmail}</span>
+            )}
+          </div>
+          <button
+            onClick={handleDisconnect}
+            disabled={disconnecting}
+            className="text-white/70 hover:text-white text-[11px] underline underline-offset-2 transition-colors disabled:opacity-50"
+          >
+            {disconnecting ? "Disconnecting..." : "Disconnect"}
+          </button>
         </div>
       )}
 
@@ -400,7 +427,15 @@ function IntegrationsInner() {
               </div>
               <div className="space-y-3">
                 {items.map((integration) => (
-                  <IntegrationCard key={integration.id} integration={integration} />
+                  <IntegrationCard
+                    key={integration.id}
+                    integration={integration}
+                    onDisconnect={(id) => {
+                      if (id === "gmail") { setGmailConnected(false); setGmailEmail(""); }
+                      if (id === "google_calendar") { setGcalConnected(false); setGcalEmail(""); }
+                      if (id === "outlook" || id === "outlook_calendar") { setMicrosoftConnected(false); setMicrosoftEmail(""); }
+                    }}
+                  />
                 ))}
               </div>
             </div>

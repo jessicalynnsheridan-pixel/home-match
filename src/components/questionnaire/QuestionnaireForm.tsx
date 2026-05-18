@@ -107,6 +107,8 @@ export default function QuestionnaireForm() {
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(INITIAL);
   const [showMoment, setShowMoment] = useState(false);
   const [momentText, setMomentText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const momentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalSteps = STEP_LABELS.length;
@@ -137,32 +139,40 @@ export default function QuestionnaireForm() {
   }
 
   async function submit() {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
       sessionStorage.setItem("homematch_answers", JSON.stringify(answers));
     } catch { /* ignore */ }
 
     const realtorId = searchParams.get("r");
     if (realtorId) {
-      try {
-        const score = scoreAnswers(answers);
-        const matchScore = calcMatchScore(answers, score);
-        const supabase = createClient();
-        await supabase.from("leads").insert({
-          realtor_id: realtorId,
-          answers,
-          score,
-          status: "New Lead",
-          is_priority: score === "Hot",
-          match_score: matchScore,
-        });
-      } catch { /* non-blocking - still redirect */ }
+      const score = scoreAnswers(answers);
+      const matchScore = calcMatchScore(answers, score);
+      const supabase = createClient();
+      const { error } = await supabase.from("leads").insert({
+        realtor_id: realtorId,
+        answers,
+        score,
+        status: "New Lead",
+        is_priority: score === "Hot",
+        match_score: matchScore,
+      });
+
+      if (error) {
+        console.error("Lead insert failed:", error.message);
+        setSubmitError("Something went wrong saving your profile. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     router.push("/results");
   }
 
   const StepComponent = STEP_COMPONENTS[step];
-  const stepProps = { answers, update, onNext: next, onBack: back, onSubmit: submit };
+  const stepProps = { answers, update, onNext: next, onBack: back, onSubmit: submit, isSubmitting, submitError };
 
   return (
     <div className="w-full">

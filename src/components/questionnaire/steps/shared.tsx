@@ -8,6 +8,8 @@ export interface StepProps {
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
+  submitError?: string | null;
 }
 
 export function StepHeader({ title, subtitle }: { title: string; subtitle: string }) {
@@ -21,20 +23,34 @@ export function StepHeader({ title, subtitle }: { title: string; subtitle: strin
 
 export function NavButtons({
   onBack: _onBack, onNext, onSubmit, isFirst: _isFirst, isLast, nextLabel = "Continue",
+  isSubmitting = false, submitError,
 }: {
   onBack: () => void; onNext?: () => void; onSubmit?: () => void;
   isFirst: boolean; isLast: boolean; nextLabel?: string;
+  isSubmitting?: boolean; submitError?: string | null;
 }) {
   return (
     <div className="mt-10">
       {isLast ? (
-        <button
-          onClick={onSubmit}
-          className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
-          style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
-        >
-          Submit my profile ✨
-        </button>
+        <>
+          {submitError && (
+            <p className="text-sm text-rose-600 text-center mb-4 bg-rose-50 border border-rose-100 rounded-xl px-4 py-3">
+              {submitError}
+            </p>
+          )}
+          <button
+            onClick={onSubmit}
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press disabled:opacity-70 disabled:cursor-not-allowed"
+            style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
+          >
+            {isSubmitting ? (
+              <><span className="w-4 h-4 border-2 border-[#1a1512]/30 border-t-[#1a1512] rounded-full animate-spin" /> Submitting...</>
+            ) : (
+              <>Submit my profile ✨</>
+            )}
+          </button>
+        </>
       ) : (
         <button
           onClick={onNext}
