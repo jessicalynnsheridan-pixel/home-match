@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, Settings, Home, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Menu, X, Settings, Home, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
 import { useBranding } from "@/context/BrandingContext";
+import { createClient } from "@/lib/supabase/client";
 
 const buyerFeatures = [
   {
@@ -85,14 +86,39 @@ const DARK_PAGES: string[] = [];
 
 export default function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const { branding } = useBranding();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<"buyers" | "realtors" | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<"buyers" | "realtors" | "account" | null>(null);
+  const [realtorUser, setRealtorUser] = useState<{ name: string; email: string; initials: string } | null>(null);
 
   const isDark = DARK_PAGES.some((p) => pathname.startsWith(p));
 
   const buyerPages = ["/portal", "/listings", "/questionnaire", "/results"];
   const showRealtorPill = buyerPages.some((p) => pathname.startsWith(p));
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const first = user.user_metadata?.first_name ?? "";
+        const last = user.user_metadata?.last_name ?? "";
+        const name = [first, last].filter(Boolean).join(" ") || (user.email ?? "Realtor");
+        const initials = [first.charAt(0), last.charAt(0)].filter(Boolean).join("").toUpperCase() || "R";
+        setRealtorUser({ name, email: user.email ?? "", initials });
+      } else {
+        setRealtorUser(null);
+      }
+    });
+  }, [pathname]);
+
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setRealtorUser(null);
+    router.push("/");
+    router.refresh();
+  }
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
@@ -239,55 +265,91 @@ export default function Navigation() {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
-          {showRealtorPill && (
-            <div className={`flex items-center gap-2 rounded-full px-3 py-1.5 border ${
-              isDark ? "bg-white/8 border-white/12" : "bg-[#f5f3f0] border-[#e8e4de]"
-            }`}>
-              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                isDark ? "bg-[#c9a870] text-[#1a1512]" : "bg-[#2c2825] text-white"
-              }`}>
-                {branding.realtorName.charAt(0)}
+          {realtorUser ? (
+            <>
+              <Link
+                href="/dashboard"
+                className={`flex items-center gap-2 text-sm px-4 py-2.5 rounded-full border transition-colors ${
+                  isActive("/dashboard")
+                    ? "bg-[#2c2825] text-white border-[#2c2825]"
+                    : isDark
+                      ? "text-white/70 border-white/20 hover:text-white hover:border-white/40"
+                      : "text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
+                }`}
+              >
+                <LayoutDashboard size={14} /> Dashboard
+              </Link>
+
+              {/* Account dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setDropdownOpen("account")}
+                onMouseLeave={() => setDropdownOpen(null)}
+              >
+                <button className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full border transition-colors ${
+                  isDark ? "border-white/15 hover:border-white/30" : "border-[#e8e4de] hover:border-[#2c2825]"
+                }`}>
+                  <div className="w-7 h-7 rounded-full bg-[#2c2825] flex items-center justify-center text-white text-xs font-bold">
+                    {realtorUser.initials}
+                  </div>
+                  <span className={`text-sm font-medium ${isDark ? "text-white/80" : "text-[#2c2825]"}`}>
+                    {realtorUser.name.split(" ")[0]}
+                  </span>
+                  <ChevronDown size={12} className={isDark ? "text-white/40" : "text-[#8c8580]"} />
+                </button>
+
+                {dropdownOpen === "account" && (
+                  <div className={`absolute top-full right-0 mt-1 border rounded-2xl shadow-xl p-2 w-52 animate-fade-in z-50 ${
+                    isDark ? "bg-[#1a1612] border-white/10" : "bg-white border-[#e8e4de]"
+                  }`}>
+                    <div className={`px-3 py-2 mb-1 border-b ${isDark ? "border-white/8" : "border-[#f0ece6]"}`}>
+                      <p className={`text-xs font-semibold truncate ${isDark ? "text-white/90" : "text-[#2c2825]"}`}>{realtorUser.name}</p>
+                      <p className={`text-xs truncate ${isDark ? "text-white/35" : "text-[#8c8580]"}`}>{realtorUser.email}</p>
+                    </div>
+                    <Link href="/dashboard" className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${isDark ? "text-white/70 hover:bg-white/6 hover:text-white" : "text-[#2c2825] hover:bg-[#faf9f7]"}`}>
+                      <LayoutDashboard size={14} /> Dashboard
+                    </Link>
+                    <Link href="/admin" className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${isDark ? "text-white/70 hover:bg-white/6 hover:text-white" : "text-[#2c2825] hover:bg-[#faf9f7]"}`}>
+                      <Settings size={14} /> Settings
+                    </Link>
+                    <button onClick={signOut} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors text-left ${isDark ? "text-rose-400 hover:bg-white/6" : "text-rose-600 hover:bg-rose-50"}`}>
+                      <LogOut size={14} /> Sign out
+                    </button>
+                  </div>
+                )}
               </div>
-              <span className={`text-xs font-medium ${isDark ? "text-white/80" : "text-[#2c2825]"}`}>
-                {branding.realtorName.split(" ")[0]}
-              </span>
-              <span className={`text-xs ${isDark ? "text-white/35" : "text-[#8c8580]"}`}>· Your Advisor</span>
-            </div>
+            </>
+          ) : (
+            <>
+              {showRealtorPill && (
+                <div className={`flex items-center gap-2 rounded-full px-3 py-1.5 border ${
+                  isDark ? "bg-white/8 border-white/12" : "bg-[#f5f3f0] border-[#e8e4de]"
+                }`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                    isDark ? "bg-[#c9a870] text-[#1a1512]" : "bg-[#2c2825] text-white"
+                  }`}>
+                    {branding.realtorName.charAt(0)}
+                  </div>
+                  <span className={`text-xs font-medium ${isDark ? "text-white/80" : "text-[#2c2825]"}`}>
+                    {branding.realtorName.split(" ")[0]}
+                  </span>
+                  <span className={`text-xs ${isDark ? "text-white/35" : "text-[#8c8580]"}`}>· Your Advisor</span>
+                </div>
+              )}
+              <Link href="/admin" className={`transition-colors ${isDark ? "text-white/35 hover:text-white/70" : "text-[#8c8580] hover:text-[#2c2825]"}`} title="Admin">
+                <Settings size={18} />
+              </Link>
+              <Link href="/login" className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${isDark ? "text-white/60 border-white/15 hover:text-white hover:border-white/35" : "text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"}`}>
+                Sign In
+              </Link>
+              <Link href="/realtor-signup" className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${isDark ? "text-white/60 border-white/15 hover:text-white hover:border-white/35" : "text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"}`}>
+                Realtor Sign Up
+              </Link>
+              <Link href="/questionnaire" className="inline-flex items-center text-[#1a1512] font-semibold text-sm px-5 py-2.5 rounded-full transition-all btn-press" style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 4px 16px rgba(201,168,112,0.30)" }}>
+                Start Your Home Match
+              </Link>
+            </>
           )}
-          <Link
-            href="/admin"
-            className={`transition-colors ${isDark ? "text-white/35 hover:text-white/70" : "text-[#8c8580] hover:text-[#2c2825]"}`}
-            title="Admin & Branding"
-          >
-            <Settings size={18} />
-          </Link>
-          <Link
-            href="/login"
-            className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${
-              isDark
-                ? "text-white/60 border-white/15 hover:text-white hover:border-white/35"
-                : "text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-            }`}
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/realtor-signup"
-            className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${
-              isDark
-                ? "text-white/60 border-white/15 hover:text-white hover:border-white/35"
-                : "text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-            }`}
-          >
-            Realtor Sign Up
-          </Link>
-          <Link
-            href="/questionnaire"
-            className="inline-flex items-center text-[#1a1512] font-semibold text-sm px-5 py-2.5 rounded-full transition-all btn-press"
-            style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 4px 16px rgba(201,168,112,0.30)" }}
-          >
-            Start Your Home Match
-          </Link>
         </div>
 
         {/* Mobile toggle */}
@@ -401,26 +463,34 @@ export default function Navigation() {
           <div className={`h-px my-1 ${isDark ? "bg-white/8" : "bg-[#e8e4de]"}`} />
 
           {/* Bottom CTAs */}
-          <div className="flex gap-2">
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className={`flex-1 text-sm px-5 py-3 rounded-full text-center mt-1 border ${
-                isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#e8e4de]"
-              }`}
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/realtor-signup"
-              onClick={() => setMobileOpen(false)}
-              className={`flex-1 text-sm px-5 py-3 rounded-full text-center mt-1 border ${
-                isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#2c2825]"
-              }`}
-            >
-              Sign Up
-            </Link>
-          </div>
+          {realtorUser ? (
+            <div className="space-y-2">
+              <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${isDark ? "border-white/10 bg-white/4" : "border-[#e8e4de] bg-white"}`}>
+                <div className="w-8 h-8 rounded-full bg-[#2c2825] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {realtorUser.initials}
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-semibold truncate ${isDark ? "text-white" : "text-[#2c2825]"}`}>{realtorUser.name}</p>
+                  <p className={`text-xs truncate ${isDark ? "text-white/40" : "text-[#8c8580]"}`}>{realtorUser.email}</p>
+                </div>
+              </div>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 w-full text-sm px-5 py-3 rounded-full bg-[#2c2825] text-white font-medium">
+                <LayoutDashboard size={14} /> Go to Dashboard
+              </Link>
+              <button onClick={() => { setMobileOpen(false); signOut(); }} className="w-full text-sm px-5 py-3 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors">
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Link href="/login" onClick={() => setMobileOpen(false)} className={`flex-1 text-sm px-5 py-3 rounded-full text-center mt-1 border ${isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#e8e4de]"}`}>
+                Sign In
+              </Link>
+              <Link href="/realtor-signup" onClick={() => setMobileOpen(false)} className={`flex-1 text-sm px-5 py-3 rounded-full text-center mt-1 border ${isDark ? "text-white/70 border-white/20" : "text-[#2c2825] border-[#2c2825]"}`}>
+                Sign Up
+              </Link>
+            </div>
+          )}
           <Link
             href="/questionnaire"
             onClick={() => setMobileOpen(false)}
