@@ -251,7 +251,7 @@ function IntegrationsInner() {
       logoColor: "#0078D4",
       category: "email",
       description: "Send directly from your Outlook or Microsoft 365 account. Templates open as pre-addressed drafts in Outlook compose.",
-      status: microsoftConnected ? "connected" : "not_connected",
+      status: microsoftConnected ? "connected" : "coming_soon",
       connectedEmail: microsoftEmail,
       features: [
         "Open pre-filled drafts in Outlook compose",
@@ -259,12 +259,6 @@ function IntegrationsInner() {
         "Full Outlook threading",
         "Compatible with brokerage Exchange accounts",
       ],
-      setupSteps: [
-        { label: "Click Connect Microsoft below", detail: "You'll be taken to Microsoft to sign in and grant permission. We request access to send emails and manage calendar events." },
-        { label: "Choose your Microsoft account", detail: "Use the same email your leads will recognise — typically your brokerage Microsoft 365 address." },
-        { label: "You're done", detail: "Templates in the Outreach Hub will have an 'Open in Outlook' button, and reminders can be added to your Outlook Calendar." },
-      ],
-      connectHref: "/api/auth/microsoft",
     },
     {
       id: "google_calendar",
@@ -295,7 +289,7 @@ function IntegrationsInner() {
       logoColor: "#0078D4",
       category: "calendar",
       description: "Sync showings and follow-ups with your Outlook or Microsoft 365 calendar.",
-      status: microsoftConnected ? "connected" : "not_connected",
+      status: microsoftConnected ? "connected" : "coming_soon",
       connectedEmail: microsoftEmail,
       features: [
         "Create events from follow-up reminders",
@@ -303,10 +297,6 @@ function IntegrationsInner() {
         "Events include buyer name, contact, and notes",
         "Works with Exchange, Outlook.com, and M365",
       ],
-      setupSteps: [
-        { label: "Connect Microsoft above", detail: "Outlook Calendar is included in the same Microsoft connection as Outlook email. Connect once and both are active." },
-      ],
-      connectHref: "/api/auth/microsoft",
     },
     {
       id: "claude",
