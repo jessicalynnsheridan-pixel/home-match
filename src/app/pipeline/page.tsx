@@ -92,6 +92,7 @@ export default function PipelinePage() {
   const [realLeads, setRealLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [demoToast, setDemoToast] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -112,9 +113,10 @@ export default function PipelinePage() {
   const leads = loading ? [] : realLeads.length > 0 ? realLeads : mockLeads;
 
   async function moveLeadTo(leadId: string, status: LeadStatus) {
-    // For demo leads, update local mock state display only
+    // Demo leads: show feedback but don't persist
     if (leadId.startsWith("lead-0")) {
-      // demos are read-only from mockLeads; nothing to persist
+      setDemoToast(true);
+      setTimeout(() => setDemoToast(false), 3000);
       return;
     }
     setRealLeads((prev) =>
@@ -138,6 +140,12 @@ export default function PipelinePage() {
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
+      {/* Demo toast */}
+      {demoToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-[#2c2825] text-white text-xs px-5 py-3 rounded-full shadow-lg animate-fade-in">
+          Demo leads are read-only. Add a real lead to move stages.
+        </div>
+      )}
       <div className="max-w-screen-2xl mx-auto px-6 lg:px-8 py-10">
         {/* Header */}
         <div className="mb-8">

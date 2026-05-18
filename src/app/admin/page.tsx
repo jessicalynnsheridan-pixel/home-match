@@ -4,6 +4,7 @@ import { useBranding } from "@/context/BrandingContext";
 import { BrandingConfig } from "@/types";
 import { useState } from "react";
 import { CheckCircle, RotateCcw } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type Field = keyof BrandingConfig;
 
@@ -23,7 +24,14 @@ export default function AdminPage() {
     update({ [field]: value });
   }
 
-  function handleSave() {
+  async function handleSave() {
+    // Explicitly persist current branding to Supabase (belt-and-suspenders —
+    // onChange already calls update() which saves, but the Save button ensures
+    // a full flush even if something was missed)
+    try {
+      const supabase = createClient();
+      await supabase.auth.updateUser({ data: { branding } });
+    } catch { /* ignore - context already saved on change */ }
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }

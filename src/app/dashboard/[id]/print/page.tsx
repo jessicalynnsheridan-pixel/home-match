@@ -1,17 +1,49 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { mockLeads } from "@/data/mockLeads";
 import { mockProperties } from "@/data/mockProperties";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { generateDreamHomeProfile } from "@/lib/matchScore";
 import { Printer } from "lucide-react";
+import { Lead } from "@/types";
+import { createClient } from "@/lib/supabase/client";
 
 export default function PrintProfilePage() {
   const { id } = useParams<{ id: string }>();
-  const lead = mockLeads.find((l) => l.id === id);
+
+  // Try mock leads first, then fall back to Supabase
+  const mockLead = mockLeads.find((l) => l.id === id);
+  const [lead, setLead] = useState<Lead | null>(mockLead ?? null);
+  const [loading, setLoading] = useState(!mockLead);
+
+  useEffect(() => {
+    if (mockLead) return;
+    const supabase = createClient();
+    supabase.from("leads").select("*").eq("id", id).single().then(({ data }) => {
+      if (data) {
+        const row = data as Record<string, unknown>;
+        setLead({
+          id: row.id as string,
+          score: (row.score as Lead["score"]) ?? "Browsing",
+          matchScore: (row.match_score as number) ?? 0,
+          status: (row.status as Lead["status"]) ?? "New Lead",
+          isPriority: (row.is_priority as boolean) ?? false,
+          submittedAt: row.submitted_at as string,
+          realtorNotes: [],
+          reminders: [],
+          savedHomeIds: [],
+          answers: row.answers as Lead["answers"],
+        });
+      }
+      setLoading(false);
+    });
+  }, [id, mockLead]);
+
   const properties = mockProperties.filter((p) => p.leadId === id);
 
+  if (loading) return <div className="p-10 text-[#8c8580]">Loading...</div>;
   if (!lead) return <div className="p-10 text-[#8c8580]">Lead not found.</div>;
 
   const { answers } = lead;

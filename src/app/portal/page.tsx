@@ -122,7 +122,7 @@ function useSavedHomes(fallbackIds: string[]) {
 }
 
 // ─── Realtor Banner ───────────────────────────────────────────────────────────
-function RealtorBanner({ realtorName, message }: { realtorName: string; message: string }) {
+function RealtorBanner({ realtorName, realtorEmail, message }: { realtorName: string; realtorEmail: string; message: string }) {
   return (
     <div className="bg-white border border-[#b8a88a]/30 rounded-2xl p-4 flex items-center gap-4 glow-gold animate-fade-up">
       <div className="w-10 h-10 rounded-full bg-[#2c2825] flex items-center justify-center shrink-0 text-white font-semibold text-sm">
@@ -135,10 +135,13 @@ function RealtorBanner({ realtorName, message }: { realtorName: string; message:
         </p>
         <p className="text-[#8c8580] text-xs leading-relaxed mt-0.5">{message}</p>
       </div>
-      <button className="shrink-0 flex items-center gap-1.5 bg-[#2c2825] text-white text-xs font-medium px-3 py-2 rounded-full hover:bg-[#1a1714] transition-colors btn-press">
+      <a
+        href={`mailto:${realtorEmail}?subject=Home Match - Question for ${realtorName}`}
+        className="shrink-0 flex items-center gap-1.5 bg-[#2c2825] text-white text-xs font-medium px-3 py-2 rounded-full hover:bg-[#1a1714] transition-colors btn-press"
+      >
         <MessageCircle size={12} />
         Message
-      </button>
+      </a>
     </div>
   );
 }
@@ -423,7 +426,7 @@ export default function BuyerPortalPage() {
       <div className="max-w-5xl mx-auto px-6 lg:px-8 py-10 space-y-6">
 
         {/* ── Realtor banner ─────────────────────────────────────────────── */}
-        <RealtorBanner realtorName={branding.realtorName} message={realtorMessage} />
+        <RealtorBanner realtorName={branding.realtorName} realtorEmail={branding.email} message={realtorMessage} />
 
         {/* ── Return trigger / new matches / streak ──────────────────────── */}
         <ReturnBanner count={newMatchCount} streak={streak} realtorName={branding.realtorName} />
@@ -805,10 +808,13 @@ export default function BuyerPortalPage() {
             {branding.tagline || "Your profile is complete. Reach out whenever the time feels right, no pressure, no scripts."}
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <button className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#c9b99b] transition-colors btn-press">
+            <a
+              href={`mailto:${branding.email}?subject=Home Match - Ready to connect`}
+              className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#c9b99b] transition-colors btn-press"
+            >
               <MessageCircle size={14} />
               Message {realtorFirst}
-            </button>
+            </a>
             <Link
               href="/questionnaire"
               className="inline-flex items-center justify-center gap-2 border border-white/20 text-white text-sm px-6 py-2.5 rounded-full hover:border-white/40 transition-colors"

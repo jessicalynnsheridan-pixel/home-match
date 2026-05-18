@@ -35,6 +35,12 @@ const CATEGORY_META: Record<string, { label: string; icon: React.ReactNode; colo
 
 function IntegrationCard({ integration }: { integration: Integration }) {
   const [expanded, setExpanded] = useState(false);
+  const [notified, setNotified] = useState(false);
+
+  function handleNotify() {
+    setNotified(true);
+    setTimeout(() => setNotified(false), 3000);
+  }
   const cat = CATEGORY_META[integration.category];
   const isConnected = integration.status === "connected";
   const isComingSoon = integration.status === "coming_soon";
@@ -88,8 +94,15 @@ function IntegrationCard({ integration }: { integration: Integration }) {
                 <Wifi size={11} /> Active
               </span>
             ) : isComingSoon ? (
-              <button className="text-xs px-4 py-2 rounded-full border border-[#e8e4de] text-[#8c8580] bg-[#f5f3f0] cursor-not-allowed">
-                Notify me
+              <button
+                onClick={handleNotify}
+                className={`text-xs px-4 py-2 rounded-full border transition-colors font-medium ${
+                  notified
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                    : "border-[#e8e4de] text-[#8c8580] bg-[#f5f3f0] hover:border-[#2c2825] hover:text-[#2c2825]"
+                }`}
+              >
+                {notified ? "You're on the list!" : "Notify me"}
               </button>
             ) : (
               <button

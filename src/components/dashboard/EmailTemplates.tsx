@@ -559,7 +559,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
                   <ExternalLink size={12} className="opacity-60" />
                 </button>
                 <a
-                  href={outlookUrl(lead.answers.email, followup.subject, `${followup.body}\n\n[Your name]\n[Your phone]`)}
+                  href={outlookUrl(lead.answers.email, followup.subject, fillRealtor(`${followup.body}\n\n${rName}\n${rPhone}`))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[#2c2825] text-[#2c2825] text-sm font-semibold hover:bg-[#f5f3f0] transition-colors"
@@ -591,7 +591,7 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
-                  <CopyBtn id="fu-body" value={`${followup.body}\n\n[Your name]\n[Your phone]`} copied={copied} onCopy={copy} />
+                  <CopyBtn id="fu-body" value={fillRealtor(`${followup.body}\n\n${rName}\n${rPhone}`)} copied={copied} onCopy={copy} />
                 </div>
                 <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-hidden">
                   {followupExpanded ? followup.body : firstLines(followup.body, 3)}

@@ -53,8 +53,8 @@ const realtorFeatures = [
   },
   {
     icon: Mail,
-    label: "Outreach Hub",
-    sub: "Templates, scripts & emails",
+    label: "Lead Pipeline",
+    sub: "Outreach templates & stages",
     href: "/pipeline",
     color: "#f0fdf4",
     iconColor: "#16a34a",

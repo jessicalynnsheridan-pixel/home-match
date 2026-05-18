@@ -224,7 +224,7 @@ export default function LifestyleLayerPanel({ layer }: Props) {
             <div className="bg-[#2c2825] rounded-2xl px-5 py-5 text-center">
               <p className="text-[#b8a88a] text-xs font-semibold tracking-widest uppercase mb-2">You belong here</p>
               <p className="text-white text-sm leading-relaxed">
-                This isn&apos;t just a home that fits your criteria &mdash; it&apos;s a neighbourhood that fits your life. Buyers who feel this aligned rarely let these go.
+                This isn&apos;t just a home that fits your criteria. It&apos;s a neighbourhood that fits your life. Buyers who feel this aligned rarely let these go.
               </p>
             </div>
           )}
