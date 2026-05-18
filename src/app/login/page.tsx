@@ -32,8 +32,8 @@ function LoginForm() {
       return;
     }
 
-    router.push(next);
-    router.refresh();
+    // Use hard redirect so session cookies are picked up on the next request
+    window.location.href = next;
   }
 
   return (
