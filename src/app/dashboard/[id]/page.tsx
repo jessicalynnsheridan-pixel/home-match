@@ -88,8 +88,24 @@ export default function LeadDetailPage() {
   const readiness = calcBuyerReadiness(answers);
   const intelligence = calcBuyerIntelligence(answers, { submittedAt: lead.submittedAt, status: lead.status });
 
-  function updateStatus(status: LeadStatus) { setLead((p) => p && { ...p, status }); }
-  function togglePriority() { setLead((p) => p && { ...p, isPriority: !p.isPriority }); }
+  async function updateStatus(status: LeadStatus) {
+    setLead((p) => p && { ...p, status });
+    const isMock = mockLeads.some((l) => l.id === id);
+    if (!isMock) {
+      const supabase = createClient();
+      await supabase.from("leads").update({ status }).eq("id", id);
+    }
+  }
+
+  async function togglePriority() {
+    const next = !lead?.isPriority;
+    setLead((p) => p && { ...p, isPriority: next });
+    const isMock = mockLeads.some((l) => l.id === id);
+    if (!isMock) {
+      const supabase = createClient();
+      await supabase.from("leads").update({ is_priority: next }).eq("id", id);
+    }
+  }
 
   function addNote() {
     const text = newNote.trim();
