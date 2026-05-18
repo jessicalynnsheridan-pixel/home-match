@@ -20,7 +20,7 @@ export function StepHeader({ title, subtitle }: { title: string; subtitle: strin
 }
 
 export function NavButtons({
-  onBack, onNext, onSubmit, isFirst, isLast, nextLabel = "Continue",
+  onBack: _onBack, onNext, onSubmit, isFirst: _isFirst, isLast, nextLabel = "Continue",
 }: {
   onBack: () => void; onNext?: () => void; onSubmit?: () => void;
   isFirst: boolean; isLast: boolean; nextLabel?: string;

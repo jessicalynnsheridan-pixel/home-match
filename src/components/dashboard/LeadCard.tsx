@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Lead } from "@/types";
 import { formatCurrency, formatDate, getScoreColor } from "@/lib/utils";
@@ -5,7 +6,7 @@ import { Star, Phone, Mail, MessageSquare, Clock, MapPin, Calendar, DollarSign }
 
 // ─── Playbook ─────────────────────────────────────────────────────────────────
 
-type Playbook = { icon: React.ReactNode; action: string; color: string; bg: string; border: string };
+type Playbook = { icon: ReactNode; action: string; color: string; bg: string; border: string };
 
 function getPlaybook(lead: Lead): Playbook {
   const { answers, score } = lead;

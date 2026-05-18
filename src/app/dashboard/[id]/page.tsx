@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import { mockProperties } from "@/data/mockProperties";
 import { Lead, LeadStatus, RealtorNote, FollowUpReminder, MortgageChecklistItem } from "@/types";
-import { formatCurrency, formatDate, getScoreColor, getStatusColor } from "@/lib/utils";
+import { formatCurrency, formatDate, getScoreColor } from "@/lib/utils";
 import PropertyCard from "@/components/dashboard/PropertyCard";
 import MatchScoreRing from "@/components/dashboard/MatchScoreRing";
 import DreamHomeProfile from "@/components/dashboard/DreamHomeProfile";

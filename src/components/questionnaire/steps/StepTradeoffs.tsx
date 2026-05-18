@@ -60,7 +60,7 @@ const TRADEOFFS: TradeoffDef[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function StepTradeoffs({ answers, update, onNext, onBack }: StepProps) {
+export default function StepTradeoffs({ answers, update, onNext, onBack: _onBack }: StepProps) {
   const [current, setCurrent] = useState(() => {
     // Start from first unanswered tradeoff
     const firstUnanswered = TRADEOFFS.findIndex((t) => answers[t.key] === "");

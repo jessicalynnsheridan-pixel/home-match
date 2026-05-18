@@ -2,42 +2,7 @@
 
 import { Lead } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { Phone, Mail, MessageSquare, Clock, Zap, Home, MapPin, DollarSign, Calendar } from "lucide-react";
-
-// ─── Playbook ─────────────────────────────────────────────────────────────────
-
-type Playbook = { icon: React.ReactNode; action: string; color: string; bg: string; border: string; detail: string };
-
-function getPlaybook(lead: Lead): Playbook {
-  const { answers, score } = lead;
-  const isFinanced = answers.preApprovalStatus === "Yes, fully approved" || answers.preApprovalStatus === "Paying cash";
-  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1–3 months";
-
-  if (score === "Hot" && isASAP && isFinanced) return {
-    icon: <Phone size={13} />,
-    action: "Call within 2 hours",
-    color: "#dc2626", bg: "#fef2f2", border: "#fecaca",
-    detail: "Pre-approved, buying ASAP - window is narrow.",
-  };
-  if (score === "Hot") return {
-    icon: <Mail size={13} />,
-    action: "Email today, call tomorrow",
-    color: "#d97706", bg: "#fffbeb", border: "#fde68a",
-    detail: "High intent. First response sets the relationship.",
-  };
-  if (score === "Warm") return {
-    icon: <MessageSquare size={13} />,
-    action: "Email now, follow up in 5 days",
-    color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    detail: "Engaged but not urgent. Build the relationship.",
-  };
-  return {
-    icon: <Clock size={13} />,
-    action: "Monthly touch - no rush",
-    color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb",
-    detail: "Early stage. Stay top of mind, don't push.",
-  };
-}
+import { Zap, Home, MapPin, DollarSign, Calendar } from "lucide-react";
 
 // ─── Conversation starters ────────────────────────────────────────────────────
 
@@ -146,8 +111,7 @@ function TradeoffBar({ left, right, value }: { left: string; right: string; valu
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function BuyerBrief({ lead }: { lead: Lead }) {
-  const { answers, score, matchScore } = lead;
-  const pb = getPlaybook(lead);
+  const { answers } = lead;
   const starters = getConversationStarters(lead);
 
   const hasTradeoffs =

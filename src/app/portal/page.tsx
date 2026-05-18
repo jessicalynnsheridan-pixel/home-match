@@ -18,7 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import TiltCard from "@/components/ui/TiltCard";
 
-const FALLBACK_LEAD = mockLeads.find((l) => l.id === "lead-001")!;
+const FALLBACK_LEAD = mockLeads.find((l) => l.id === "lead-001") ?? mockLeads[0];
 
 // ─── Affordability math ───────────────────────────────────────────────────────
 function calcMonthlyPayment(price: number, downPct = 0.2, annualRate = 0.055, years = 25) {
@@ -432,8 +432,8 @@ export default function BuyerPortalPage() {
         <div className="gradient-dark-animated rounded-3xl p-8 text-white animate-fade-up relative overflow-hidden">
           {/* Ambient orbs inside the header */}
           <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
-            <div className="absolute top-[-20%] right-[10%] w-64 h-64 rounded-full bg-[#b8a88a]/06 blur-3xl" />
-            <div className="absolute bottom-[-10%] left-[5%] w-48 h-48 rounded-full bg-[#b8a88a]/04 blur-2xl" />
+            <div className="absolute top-[-20%] right-[10%] w-64 h-64 rounded-full bg-[#b8a88a]/[6%] blur-3xl" />
+            <div className="absolute bottom-[-10%] left-[5%] w-48 h-48 rounded-full bg-[#b8a88a]/[4%] blur-2xl" />
           </div>
           <div className="relative z-10">
             <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase mb-3">

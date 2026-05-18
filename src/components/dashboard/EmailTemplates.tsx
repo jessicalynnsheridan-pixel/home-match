@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Lead } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { getPlaybook } from "@/lib/playbook";
 import { Copy, CheckCheck, Zap, Mail, MessageSquare, Phone, Clock, ExternalLink, Calendar, Settings } from "lucide-react";
 import Link from "next/link";
 
@@ -95,80 +96,6 @@ function CalendarBar({ title, detail }: { title: string; detail: string }) {
       </a>
     </div>
   );
-}
-
-// ─── Playbook logic ───────────────────────────────────────────────────────────
-
-function getPlaybook(lead: Lead) {
-  const { answers, score } = lead;
-  const isFinanced = answers.preApprovalStatus === "Yes, fully approved" || answers.preApprovalStatus === "Paying cash";
-  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1–3 months";
-
-  if (score === "Hot" && isASAP && isFinanced) {
-    return {
-      urgency: "critical",
-      color: "#dc2626",
-      bg: "#fef2f2",
-      border: "#fecaca",
-      icon: "🔥",
-      action: "Call within 2 hours",
-      steps: [
-        "Text first: 'Hi [name], saw your profile come through - great taste. Have 2 homes in mind. Quick call today?'",
-        "Follow with the personalized email below if no reply within 3 hours",
-        "They're financed and ready - your window to be first is narrow",
-      ],
-      why: `${answers.firstName} is pre-approved, buying ${answers.timeline?.toLowerCase()}, and fully committed. This lead goes cold fast if a competitor gets there first.`,
-    };
-  }
-
-  if (score === "Hot") {
-    return {
-      urgency: "high",
-      color: "#d97706",
-      bg: "#fffbeb",
-      border: "#fde68a",
-      icon: "⚡",
-      action: "Email today, call tomorrow",
-      steps: [
-        "Send the personalized email now - it references their exact answers so it won't feel automated",
-        "Call or text tomorrow morning if no reply",
-        "Offer a 15-min call, not a full meeting - lower barrier to yes",
-      ],
-      why: `${answers.firstName} scored Hot based on timeline and intent. They're shopping - your first response sets the tone for the whole relationship.`,
-    };
-  }
-
-  if (score === "Warm") {
-    return {
-      urgency: "medium",
-      color: "#0284c7",
-      bg: "#f0f9ff",
-      border: "#bae6fd",
-      icon: "📅",
-      action: "Email now, follow up in 5 days",
-      steps: [
-        "Send the warm nurture email - position yourself as the expert, not the pusher",
-        "Set a 5-day reminder to check in",
-        "Share 1 market insight about their target area - builds trust without pressure",
-      ],
-      why: `${answers.firstName} is on a ${answers.timeline} timeline. Stay warm and top-of-mind - when they're ready to move, you're the obvious call.`,
-    };
-  }
-
-  return {
-    urgency: "low",
-    color: "#6b7280",
-    bg: "#f9fafb",
-    border: "#e5e7eb",
-    icon: "🌱",
-    action: "One thoughtful email, then monthly touch",
-    steps: [
-      "Send the trust-building email - no pressure, all value",
-      "Add to a monthly market update list",
-      "Check back in 6 weeks - circumstances change fast",
-    ],
-    why: `${answers.firstName} is exploring. Don't oversell - be the realtor they remember when they're ready.`,
-  };
 }
 
 // ─── Message generators ───────────────────────────────────────────────────────
@@ -311,6 +238,62 @@ Warmly,`,
   };
 }
 
+// ─── CopyBtn (outside component to avoid remount on every render) ─────────────
+
+function CopyBtn({
+  id,
+  value,
+  copied,
+  onCopy,
+}: {
+  id: string;
+  value: string;
+  copied: string | null;
+  onCopy: (key: string, text: string) => void;
+}) {
+  return (
+    <button
+      onClick={() => onCopy(id, value)}
+      className="flex items-center gap-1 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors"
+    >
+      {copied === id ? <CheckCheck size={12} className="text-emerald-500" /> : <Copy size={12} />}
+      {copied === id ? "Copied" : "Copy"}
+    </button>
+  );
+}
+
+function copyToClipboard(
+  key: string,
+  text: string,
+  setCopied: (k: string | null) => void,
+) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setCopied(key);
+        setTimeout(() => setCopied(null), 2000);
+      })
+      .catch(() => fallbackCopy(key, text, setCopied));
+  } else {
+    fallbackCopy(key, text, setCopied);
+  }
+}
+
+function fallbackCopy(key: string, text: string, setCopied: (k: string | null) => void) {
+  try {
+    const el = document.createElement("textarea");
+    el.value = text;
+    el.style.position = "fixed";
+    el.style.opacity = "0";
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 2000);
+  } catch { /* silent */ }
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 type Tab = "email" | "text" | "call" | "followup";
@@ -324,22 +307,11 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
   const text = buildTextMessage(lead);
   const call = buildCallScript(lead);
   const followup = buildFollowUpEmail(lead);
+  const profileUrl = typeof window !== "undefined" ? window.location.href : "";
 
-  function copy(key: string, text: string) {
-    navigator.clipboard.writeText(text);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 2000);
+  function copy(key: string, value: string) {
+    copyToClipboard(key, value, setCopied);
   }
-
-  const CopyBtn = ({ id, value }: { id: string; value: string }) => (
-    <button
-      onClick={() => copy(id, value)}
-      className="flex items-center gap-1 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors"
-    >
-      {copied === id ? <CheckCheck size={12} className="text-emerald-500" /> : <Copy size={12} />}
-      {copied === id ? "Copied" : "Copy"}
-    </button>
-  );
 
   return (
     <div className="space-y-4">
@@ -347,7 +319,6 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
       {/* ── Action Playbook ────────────────────────────────────────────────── */}
       <div className="rounded-2xl p-5" style={{ background: playbook.bg, border: `1px solid ${playbook.border}` }}>
         <div className="flex items-start gap-3">
-          <span className="text-2xl shrink-0">{playbook.icon}</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <p className="font-semibold text-sm" style={{ color: playbook.color }}>{playbook.action}</p>
@@ -401,7 +372,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Subject</p>
-                  <CopyBtn id="email-subject" value={email.subject} />
+                  <CopyBtn id="email-subject" value={email.subject} copied={copied} onCopy={copy} />
                 </div>
                 <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] font-medium">
                   {email.subject}
@@ -410,7 +381,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
-                  <CopyBtn id="email-body" value={`${email.body}\n\n[Your name]\n[Your phone]`} />
+                  <CopyBtn id="email-body" value={`${email.body}\n\n[Your name]\n[Your phone]`} copied={copied} onCopy={copy} />
                 </div>
                 <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-auto max-h-72">
                   {email.body}
@@ -432,7 +403,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">SMS / iMessage</p>
-                  <CopyBtn id="text-msg" value={text} />
+                  <CopyBtn id="text-msg" value={text} copied={copied} onCopy={copy} />
                 </div>
                 <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-sm text-[#2c2825] leading-relaxed">
                   {text}
@@ -454,7 +425,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Call Opener Script</p>
-                  <CopyBtn id="call-script" value={call} />
+                  <CopyBtn id="call-script" value={call} copied={copied} onCopy={copy} />
                 </div>
                 <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-auto max-h-80">
                   {call}
@@ -475,7 +446,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
                 </a>
                 <CalendarBar
                   title={`Call with ${lead.answers.firstName} ${lead.answers.lastName}`}
-                  detail={`Buyer profile: ${window?.location?.href ?? ""}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} - ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`}
+                  detail={`Buyer profile: ${profileUrl}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} - ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`}
                 />
               </div>
             </>
@@ -487,7 +458,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Subject</p>
-                  <CopyBtn id="fu-subject" value={followup.subject} />
+                  <CopyBtn id="fu-subject" value={followup.subject} copied={copied} onCopy={copy} />
                 </div>
                 <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] font-medium">
                   {followup.subject}
@@ -496,7 +467,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
-                  <CopyBtn id="fu-body" value={`${followup.body}\n\n[Your name]\n[Your phone]`} />
+                  <CopyBtn id="fu-body" value={`${followup.body}\n\n[Your name]\n[Your phone]`} copied={copied} onCopy={copy} />
                 </div>
                 <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-auto max-h-72">
                   {followup.body}

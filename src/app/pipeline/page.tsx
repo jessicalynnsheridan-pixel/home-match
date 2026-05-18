@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { mockLeads } from "@/data/mockLeads";
 import { Lead, LeadStatus } from "@/types";
@@ -10,7 +11,7 @@ import { Star, ArrowRight, Phone, Mail, MessageSquare, Clock } from "lucide-reac
 // ─── Playbook chip ─────────────────────────────────────────────────────────────
 
 type Playbook = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   action: string;
   color: string;
   bg: string;

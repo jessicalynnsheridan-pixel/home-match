@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { CheckCircle, Circle, ExternalLink, Mail, Calendar, MessageSquare, Zap, ChevronDown, ChevronUp, AlertCircle, ArrowRight } from "lucide-react";
-import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -20,6 +19,10 @@ interface Integration {
   connectUrl?: string;
   docsUrl?: string;
 }
+
+// ─── App URL (used in OAuth redirect URIs and webhook URLs) ───────────────────
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
 
 // ─── Integration definitions ──────────────────────────────────────────────────
 
@@ -42,7 +45,7 @@ const INTEGRATIONS: Integration[] = [
       { label: "Choose your Google account", detail: "Use the same account your leads will recognise. Typically your brokerage Google Workspace email." },
       { label: "Done", detail: "Every template in the Outreach Hub will now have an 'Open in Gmail' button that pre-fills the draft." },
     ],
-    connectUrl: "https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/gmail.compose&response_type=code&redirect_uri=https://home-match-six.vercel.app/api/auth/gmail/callback",
+    connectUrl: `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/gmail.compose&response_type=code&redirect_uri=${APP_URL}/api/auth/gmail/callback`,
     docsUrl: "https://support.google.com/mail",
   },
   {
@@ -63,7 +66,7 @@ const INTEGRATIONS: Integration[] = [
       { label: "Sign in with Microsoft", detail: "Use your brokerage Microsoft 365 account or personal Outlook login." },
       { label: "Done", detail: "Templates will show an 'Open in Outlook' button that opens a pre-filled compose window." },
     ],
-    connectUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?scope=Mail.Send&response_type=code&redirect_uri=https://home-match-six.vercel.app/api/auth/outlook/callback",
+    connectUrl: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?scope=Mail.Send&response_type=code&redirect_uri=${APP_URL}/api/auth/outlook/callback`,
     docsUrl: "https://support.microsoft.com/en-us/outlook",
   },
   {
@@ -249,10 +252,10 @@ function IntegrationCard({ integration }: { integration: Integration }) {
               <p className="text-xs text-[#8c8580] mb-1.5">Your webhook URL</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 text-xs bg-[#f0ece6] border border-[#e8e4de] rounded-lg px-3 py-2 text-[#2c2825] truncate">
-                  https://home-match-six.vercel.app/api/webhooks/zapier
+                  {APP_URL}/api/webhooks/zapier
                 </code>
                 <button
-                  onClick={() => navigator.clipboard.writeText("https://home-match-six.vercel.app/api/webhooks/zapier")}
+                  onClick={() => navigator.clipboard.writeText(`${APP_URL}/api/webhooks/zapier`)}
                   className="text-xs px-3 py-2 rounded-lg border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors whitespace-nowrap"
                 >
                   Copy
@@ -403,7 +406,7 @@ export default function IntegrationsPage() {
         {/* Need something custom */}
         <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-2xl p-5 text-center">
           <p className="text-sm font-semibold text-[#2c2825] mb-1">Need a custom integration?</p>
-          <p className="text-xs text-[#8c8580] mb-3">We can connect to Follow Up Boss, LionDesk, BoomTown, Chime, kvCORE, and most CRMs. Email us and we'll build it.</p>
+          <p className="text-xs text-[#8c8580] mb-3">We can connect to Follow Up Boss, LionDesk, BoomTown, Chime, kvCORE, and most CRMs. Email us and we&apos;ll build it.</p>
           <a
             href="mailto:setup@homematch.ca?subject=Custom integration request"
             className="inline-flex items-center gap-1.5 text-xs px-5 py-2.5 rounded-full bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium"
