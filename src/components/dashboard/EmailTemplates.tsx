@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Lead } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { getPlaybook } from "@/lib/playbook";
 import { Copy, CheckCheck, Zap, Mail, MessageSquare, Phone, Clock, ExternalLink, Calendar, Settings } from "lucide-react";
 import Link from "next/link";
 
@@ -298,10 +297,19 @@ function fallbackCopy(key: string, text: string, setCopied: (k: string | null) =
 
 type Tab = "email" | "text" | "call" | "followup";
 
+const TAB_META: { id: Tab; icon: React.ComponentType<{ size?: number; className?: string }>; label: string; badge?: string; description: string }[] = [
+  { id: "email",   icon: Mail,          label: "First Email", badge: "Start here →", description: "Send within 2 hours for Hot leads" },
+  { id: "text",    icon: MessageSquare, label: "Text / SMS",                          description: "5× higher open rate than email" },
+  { id: "call",    icon: Phone,         label: "Call Script",                         description: "Best within 30 min of sign-up" },
+  { id: "followup",icon: Clock,         label: "Follow-up",                           description: "Send 48–72 hrs after no reply" },
+];
+
 export default function EmailTemplates({ lead }: { lead: Lead }) {
   const [tab, setTab] = useState<Tab>("email");
   const [copied, setCopied] = useState<string | null>(null);
-  const playbook = getPlaybook(lead);
+  const [emailExpanded, setEmailExpanded] = useState(false);
+  const [callExpanded, setCallExpanded] = useState(false);
+  const [followupExpanded, setFollowupExpanded] = useState(false);
 
   const email = buildPersonalizedEmail(lead);
   const text = buildTextMessage(lead);
@@ -313,62 +321,101 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
     copyToClipboard(key, value, setCopied);
   }
 
-  return (
-    <div className="space-y-4">
+  // Helper: first N lines of a string, for collapse preview
+  function firstLines(str: string, n: number) {
+    return str.split("\n").slice(0, n).join("\n");
+  }
 
-      {/* ── Action Playbook ────────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5" style={{ background: playbook.bg, border: `1px solid ${playbook.border}` }}>
-        <div className="flex items-start gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="font-semibold text-sm" style={{ color: playbook.color }}>{playbook.action}</p>
-              <span className="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full" style={{ background: playbook.color, color: "#fff", opacity: 0.9 }}>
-                {lead.score}
-              </span>
-            </div>
-            <p className="text-xs text-[#6b6560] mb-3 leading-relaxed">{playbook.why}</p>
-            <ol className="space-y-1.5">
-              {playbook.steps.map((step, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs text-[#2c2825]">
-                  <span className="font-bold shrink-0 mt-0.5" style={{ color: playbook.color }}>{i + 1}.</span>
-                  <span className="leading-relaxed">{step}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
+  const activeTab = TAB_META.find((t) => t.id === tab)!;
+
+  return (
+    <div className="space-y-3">
+
+      {/* ── Lead contact bar ───────────────────────────────────────────────── */}
+      <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-2xl px-4 py-3 flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 text-sm text-[#2c2825] font-medium">
+          <Mail size={13} className="text-[#8c8580] shrink-0" />
+          <span>{lead.answers.email}</span>
+        </div>
+        <span className="text-[#e8e4de] select-none hidden sm:inline">·</span>
+        <div className="flex items-center gap-2 text-sm text-[#2c2825] font-medium">
+          <Phone size={13} className="text-[#8c8580] shrink-0" />
+          <span>{lead.answers.phone}</span>
         </div>
       </div>
 
-      {/* ── Outreach tabs ──────────────────────────────────────────────────── */}
+      {/* ── Outreach card ──────────────────────────────────────────────────── */}
       <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
-        {/* Tab bar */}
-        <div className="flex border-b border-[#e8e4de]">
-          {([
-            { id: "email", icon: Mail, label: "First Email" },
-            { id: "text", icon: MessageSquare, label: "Text / SMS" },
-            { id: "call", icon: Phone, label: "Call Script" },
-            { id: "followup", icon: Clock, label: "Follow-up" },
-          ] as { id: Tab; icon: React.ComponentType<{ size?: number; className?: string }>; label: string }[]).map(({ id, icon: Icon, label }) => (
+
+        {/* Pill tab bar */}
+        <div className="flex gap-1.5 p-3 border-b border-[#e8e4de] bg-[#f5f3f0] flex-wrap">
+          {TAB_META.map(({ id, icon: Icon, label, badge }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-3.5 border-b-2 transition-colors ${
+              className={`relative flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
                 tab === id
-                  ? "border-[#1a1512] text-[#1a1512]"
-                  : "border-transparent text-[#8c8580] hover:text-[#2c2825]"
+                  ? "bg-[#2c2825] text-white shadow-sm"
+                  : "bg-white border border-[#e8e4de] text-[#8c8580] hover:text-[#2c2825] hover:border-[#2c2825]"
               }`}
             >
-              <Icon size={12} />
-              <span className="hidden sm:inline">{label}</span>
+              <Icon size={11} />
+              {label}
+              {badge && (
+                <span className={`ml-0.5 text-[9px] font-semibold tracking-tight ${tab === id ? "text-[#b8a88a]" : "text-[#b8a88a]"}`}>
+                  {badge}
+                </span>
+              )}
             </button>
           ))}
         </div>
 
+        {/* Tab header */}
+        <div className="px-5 pt-4 pb-3 flex items-center gap-2 border-b border-[#e8e4de]">
+          <activeTab.icon size={13} className="text-[#8c8580]" />
+          <span className="text-xs font-semibold text-[#2c2825]">{activeTab.label}</span>
+          <span className="text-[#e8e4de] select-none">·</span>
+          <span className="text-xs text-[#8c8580]">{activeTab.description}</span>
+        </div>
+
         <div className="p-5 space-y-4">
 
-          {/* First Email */}
+          {/* ── First Email ────────────────────────────────────────────────── */}
           {tab === "email" && (
             <>
+              {/* BIG send buttons FIRST */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <a
+                  href={gmailUrl(lead.answers.email, email.subject, `${email.body}\n\n[Your name]\n[Your phone]`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
+                >
+                  <Mail size={15} />
+                  Open in Gmail
+                  <ExternalLink size={12} className="opacity-60" />
+                </a>
+                <a
+                  href={outlookUrl(lead.answers.email, email.subject, `${email.body}\n\n[Your name]\n[Your phone]`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[#2c2825] text-[#2c2825] text-sm font-semibold hover:bg-[#f5f3f0] transition-colors"
+                >
+                  <Mail size={15} />
+                  Open in Outlook
+                  <ExternalLink size={12} className="opacity-40" />
+                </a>
+              </div>
+
+              {/* Zap tip — 1 sentence */}
+              <div className="flex items-center gap-2">
+                <Zap size={12} className="text-[#b8a88a] shrink-0" />
+                <p className="text-xs text-[#8c8580]">
+                  Personalised from {lead.answers.firstName}&apos;s lifestyle answers — reads like you wrote it.
+                </p>
+              </div>
+
+              {/* Subject */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Subject</p>
@@ -378,83 +425,146 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
                   {email.subject}
                 </div>
               </div>
+
+              {/* Body — collapsed by default */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
                   <CopyBtn id="email-body" value={`${email.body}\n\n[Your name]\n[Your phone]`} copied={copied} onCopy={copy} />
                 </div>
-                <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-auto max-h-72">
-                  {email.body}
+                <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-hidden">
+                  {emailExpanded ? email.body : firstLines(email.body, 3)}
                 </pre>
+                <button
+                  onClick={() => setEmailExpanded((v) => !v)}
+                  className="mt-1.5 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors"
+                >
+                  {emailExpanded ? "Hide full template ↑" : "Show full template →"}
+                </button>
               </div>
-              <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
-                <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
-                <p className="text-xs text-[#6b6560] leading-relaxed">
-                  This email references {lead.answers.firstName}&apos;s actual lifestyle answers - their Sunday morning preference, home vibe, and tradeoffs. It&apos;s built to feel like you wrote it, not a CRM.
-                </p>
-              </div>
-              <EmailSendBar to={lead.answers.email} subject={email.subject} body={email.body} />
             </>
           )}
 
-          {/* Text Message */}
+          {/* ── Text / SMS ─────────────────────────────────────────────────── */}
           {tab === "text" && (
             <>
+              {/* BIG send button */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <a
+                  href={smsUrl(lead.answers.phone, text)}
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
+                >
+                  <MessageSquare size={15} />
+                  Open in Messages
+                </a>
+                <div className="flex items-center justify-center sm:justify-start">
+                  <CopyBtn id="text-msg" value={text} copied={copied} onCopy={copy} />
+                </div>
+              </div>
+
+              {/* Zap tip */}
+              <div className="flex items-center gap-2">
+                <Zap size={12} className="text-[#b8a88a] shrink-0" />
+                <p className="text-xs text-[#8c8580]">Works on mobile — on desktop, use Copy and paste into your SMS app.</p>
+              </div>
+
+              {/* Message preview */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">SMS / iMessage</p>
-                  <CopyBtn id="text-msg" value={text} copied={copied} onCopy={copy} />
                 </div>
                 <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-sm text-[#2c2825] leading-relaxed">
                   {text}
                 </div>
               </div>
-              <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
-                <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
-                <p className="text-xs text-[#6b6560] leading-relaxed">
-                  Text has 5x higher open rates than email. Send this first, email second.
-                </p>
-              </div>
-              <SmsSendBar phone={lead.answers.phone} body={text} />
             </>
           )}
 
-          {/* Call Script */}
+          {/* ── Call Script ────────────────────────────────────────────────── */}
           {tab === "call" && (
             <>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[#8c8580] text-xs uppercase tracking-wider">Call Opener Script</p>
-                  <CopyBtn id="call-script" value={call} copied={copied} onCopy={copy} />
-                </div>
-                <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-auto max-h-80">
-                  {call}
-                </pre>
-              </div>
-              <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
-                <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
-                <p className="text-xs text-[#6b6560] leading-relaxed">
-                  Reference their lifestyle answer in the first 30 seconds - it signals you actually read their profile, not just their budget.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
+              {/* BIG call button */}
+              <div className="flex flex-col sm:flex-row gap-2">
                 <a
                   href={`tel:${lead.answers.phone}`}
-                  className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
                 >
-                  <Phone size={11} /> Call {lead.answers.firstName} now
+                  <Phone size={15} />
+                  Call {lead.answers.firstName} now
                 </a>
-                <CalendarBar
-                  title={`Call with ${lead.answers.firstName} ${lead.answers.lastName}`}
-                  detail={`Buyer profile: ${profileUrl}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} - ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`}
-                />
+                <a
+                  href={googleCalendarUrl(
+                    `Call with ${lead.answers.firstName} ${lead.answers.lastName}`,
+                    `Buyer profile: ${profileUrl}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} – ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[#2c2825] text-[#2c2825] text-sm font-semibold hover:bg-[#f5f3f0] transition-colors"
+                >
+                  <Calendar size={14} />
+                  Schedule call
+                </a>
+              </div>
+
+              {/* Zap tip */}
+              <div className="flex items-center gap-2">
+                <Zap size={12} className="text-[#b8a88a] shrink-0" />
+                <p className="text-xs text-[#8c8580]">Name their lifestyle answer in the first 30 seconds — it signals you actually read their profile.</p>
+              </div>
+
+              {/* Script — collapsed */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[#8c8580] text-xs uppercase tracking-wider">Call Script</p>
+                  <CopyBtn id="call-script" value={call} copied={copied} onCopy={copy} />
+                </div>
+                <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-hidden">
+                  {callExpanded ? call : firstLines(call, 3)}
+                </pre>
+                <button
+                  onClick={() => setCallExpanded((v) => !v)}
+                  className="mt-1.5 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors"
+                >
+                  {callExpanded ? "Hide full script ↑" : "Show full script →"}
+                </button>
               </div>
             </>
           )}
 
-          {/* Follow-up */}
+          {/* ── Follow-up ──────────────────────────────────────────────────── */}
           {tab === "followup" && (
             <>
+              {/* BIG send buttons */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <a
+                  href={gmailUrl(lead.answers.email, followup.subject, `${followup.body}\n\n[Your name]\n[Your phone]`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
+                >
+                  <Mail size={15} />
+                  Open in Gmail
+                  <ExternalLink size={12} className="opacity-60" />
+                </a>
+                <a
+                  href={outlookUrl(lead.answers.email, followup.subject, `${followup.body}\n\n[Your name]\n[Your phone]`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[#2c2825] text-[#2c2825] text-sm font-semibold hover:bg-[#f5f3f0] transition-colors"
+                >
+                  <Mail size={15} />
+                  Open in Outlook
+                  <ExternalLink size={12} className="opacity-40" />
+                </a>
+              </div>
+
+              {/* Zap tip */}
+              <div className="flex items-center gap-2">
+                <Zap size={12} className="text-[#b8a88a] shrink-0" />
+                <p className="text-xs text-[#8c8580]">Send 48–72 hrs after no reply — short is better.</p>
+              </div>
+
+              {/* Subject */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Subject</p>
@@ -464,28 +574,52 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
                   {followup.subject}
                 </div>
               </div>
+
+              {/* Body — collapsed */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
                   <CopyBtn id="fu-body" value={`${followup.body}\n\n[Your name]\n[Your phone]`} copied={copied} onCopy={copy} />
                 </div>
-                <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-auto max-h-72">
-                  {followup.body}
+                <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-hidden">
+                  {followupExpanded ? followup.body : firstLines(followup.body, 3)}
                 </pre>
+                <button
+                  onClick={() => setFollowupExpanded((v) => !v)}
+                  className="mt-1.5 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors"
+                >
+                  {followupExpanded ? "Hide full template ↑" : "Show full template →"}
+                </button>
               </div>
-              <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
-                <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
-                <p className="text-xs text-[#6b6560] leading-relaxed">
-                  Send 48-72 hours after your first email if no reply. Short is better - shows confidence, not desperation.
-                </p>
+
+              {/* Calendar schedule */}
+              <div className="flex gap-2 pt-1 flex-wrap">
+                <a
+                  href={googleCalendarUrl(
+                    `Follow-up: ${lead.answers.firstName} ${lead.answers.lastName}`,
+                    `Send follow-up email to ${lead.answers.email}\nSubject: ${followup.subject}`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+                >
+                  <Calendar size={11} /> Remind me (Google)
+                </a>
+                <a
+                  href={outlookCalendarUrl(
+                    `Follow-up: ${lead.answers.firstName} ${lead.answers.lastName}`,
+                    `Send follow-up email to ${lead.answers.email}\nSubject: ${followup.subject}`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+                >
+                  <Calendar size={11} /> Remind me (Outlook)
+                </a>
               </div>
-              <EmailSendBar to={lead.answers.email} subject={followup.subject} body={followup.body} />
-              <CalendarBar
-                title={`Follow-up: ${lead.answers.firstName} ${lead.answers.lastName}`}
-                detail={`Send follow-up email to ${lead.answers.email}\nSubject: ${followup.subject}`}
-              />
             </>
           )}
+
         </div>
       </div>
 
