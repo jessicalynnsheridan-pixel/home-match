@@ -985,9 +985,6 @@ export default function DashboardPage() {
             {/* Schedule widget */}
             <ScheduleWidget leads={allLeads} />
 
-            {/* Revenue forecast */}
-            <RevenueWidget leads={allLeads} />
-
             {/* Hot leads callout */}
             {hot > 0 && (
               <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 shadow-sm">
