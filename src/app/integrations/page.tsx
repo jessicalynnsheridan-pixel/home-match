@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, Circle, ExternalLink, Mail, Calendar, MessageSquare, Zap, ChevronDown, ChevronUp, AlertCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, Circle, ExternalLink, Mail, Calendar, ChevronDown, ChevronUp, AlertCircle, Sparkles } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -11,7 +11,7 @@ interface Integration {
   id: string;
   name: string;
   logo: string;
-  category: "email" | "calendar" | "sms" | "automation";
+  category: "email" | "calendar" | "ai";
   description: string;
   status: ConnectionStatus;
   features: string[];
@@ -20,7 +20,7 @@ interface Integration {
   docsUrl?: string;
 }
 
-// ─── App URL (used in OAuth redirect URIs and webhook URLs) ───────────────────
+// ─── App URL (used in OAuth redirect URIs) ────────────────────────────────────
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
 
@@ -32,7 +32,7 @@ const INTEGRATIONS: Integration[] = [
     name: "Gmail",
     logo: "G",
     category: "email",
-    description: "Send outreach emails directly from your Gmail account. Templates auto-fill in a pre-addressed draft — one click to send.",
+    description: "Send outreach emails directly from your Gmail account. Templates auto-fill in a pre-addressed draft - one click to send.",
     status: "not_connected",
     features: [
       "Open pre-filled drafts in Gmail compose",
@@ -41,7 +41,7 @@ const INTEGRATIONS: Integration[] = [
       "Works with Google Workspace accounts",
     ],
     setupSteps: [
-      { label: "Click Connect Gmail", detail: "You'll be redirected to Google to authorise access. We only request permission to compose emails — we never read your inbox." },
+      { label: "Click Connect Gmail", detail: "You'll be redirected to Google to authorise access. We only request permission to compose emails - we never read your inbox." },
       { label: "Choose your Google account", detail: "Use the same account your leads will recognise. Typically your brokerage Google Workspace email." },
       { label: "Done", detail: "Every template in the Outreach Hub will now have an 'Open in Gmail' button that pre-fills the draft." },
     ],
@@ -62,7 +62,7 @@ const INTEGRATIONS: Integration[] = [
       "Compatible with brokerage Exchange accounts",
     ],
     setupSteps: [
-      { label: "Click Connect Outlook", detail: "You'll be redirected to Microsoft to authorise access. We request compose-only permissions — no inbox access." },
+      { label: "Click Connect Outlook", detail: "You'll be redirected to Microsoft to authorise access. We request compose-only permissions - no inbox access." },
       { label: "Sign in with Microsoft", detail: "Use your brokerage Microsoft 365 account or personal Outlook login." },
       { label: "Done", detail: "Templates will show an 'Open in Outlook' button that opens a pre-filled compose window." },
     ],
@@ -74,7 +74,7 @@ const INTEGRATIONS: Integration[] = [
     name: "Google Calendar",
     logo: "📅",
     category: "calendar",
-    description: "Auto-create calendar events for follow-ups, showings, and call reminders. Set a reminder in the app — it appears in your calendar.",
+    description: "Auto-create calendar events for follow-ups, showings, and call reminders. Set a reminder in the app - it appears in your calendar.",
     status: "not_connected",
     features: [
       "Create showing appointments with one click",
@@ -83,7 +83,7 @@ const INTEGRATIONS: Integration[] = [
       "Events include buyer profile link in notes",
     ],
     setupSteps: [
-      { label: "Click Connect Google Calendar", detail: "Authorise calendar access. We request permission to create events — we never read or delete existing events." },
+      { label: "Click Connect Google Calendar", detail: "Authorise calendar access. We request permission to create events - we never read or delete existing events." },
       { label: "Select your calendar", detail: "Choose which calendar to add events to. Most realtors use a dedicated 'Clients' or 'Work' calendar." },
       { label: "Done", detail: "Every follow-up reminder and 'Schedule Showing' action will offer one-click calendar creation." },
     ],
@@ -110,51 +110,25 @@ const INTEGRATIONS: Integration[] = [
     connectUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?scope=Calendars.ReadWrite&response_type=code",
   },
   {
-    id: "sms_twilio",
-    name: "SMS via Twilio",
-    logo: "💬",
-    category: "sms",
-    description: "Send text messages to leads directly from the app using a dedicated business number. Templates auto-fill with buyer-specific content.",
+    id: "claude",
+    name: "Claude AI",
+    logo: "✦",
+    category: "ai",
+    description: "Let Claude draft personalized outreach, rewrite emails in your voice, and surface conversation starters from every buyer's profile - directly inside the Outreach Hub.",
     status: "coming_soon",
     features: [
-      "Dedicated local area code number for your business",
-      "Pre-filled SMS templates from the Outreach Hub",
-      "Two-way SMS — see replies in the lead profile",
-      "Opt-out handling built in",
+      "AI-drafted emails tailored to each buyer's exact answers",
+      "Rewrite any template in your personal tone and style",
+      "One-click conversation starters from buyer profile data",
+      "Instant lead summaries before every call",
     ],
-    setupSteps: [
-      { label: "Enter your Twilio credentials", detail: "Account SID + Auth Token from your Twilio console. A number is auto-provisioned." },
-      { label: "Verify your business number", detail: "Takes about 2 minutes. The number will be local to your area code." },
-      { label: "Done", detail: "SMS templates in the Outreach Hub will have a 'Send Text' button that fires instantly." },
-    ],
-  },
-  {
-    id: "zapier",
-    name: "Zapier",
-    logo: "⚡",
-    category: "automation",
-    description: "Connect Home Match to 6,000+ apps. Auto-add leads to your CRM, trigger drip campaigns, notify your team in Slack — no code needed.",
-    status: "not_connected",
-    features: [
-      "New lead -> add to Follow Up Boss / HubSpot / Salesforce",
-      "New lead -> send Slack notification to your team",
-      "Stage change -> trigger email sequence in Mailchimp",
-      "Showing booked -> create Zoom meeting link",
-    ],
-    setupSteps: [
-      { label: "Copy your webhook URL below", detail: "This is your unique endpoint. Zapier will send data here when triggered." },
-      { label: "Create a new Zap in Zapier", detail: "Choose 'Webhooks by Zapier' as the trigger, paste your URL, and choose your action app." },
-      { label: "Test and activate", detail: "Submit a test lead and watch it flow into your connected apps automatically." },
-    ],
-    docsUrl: "https://zapier.com/apps/webhook/integrations",
   },
 ];
 
 const CATEGORY_META: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  email: { label: "Email", icon: <Mail size={13} />, color: "text-blue-600 bg-blue-50 border-blue-200" },
+  email:    { label: "Email",    icon: <Mail size={13} />,     color: "text-blue-600 bg-blue-50 border-blue-200" },
   calendar: { label: "Calendar", icon: <Calendar size={13} />, color: "text-violet-600 bg-violet-50 border-violet-200" },
-  sms: { label: "SMS", icon: <MessageSquare size={13} />, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
-  automation: { label: "Automation", icon: <Zap size={13} />, color: "text-amber-600 bg-amber-50 border-amber-200" },
+  ai:       { label: "AI",       icon: <Sparkles size={13} />, color: "text-amber-600 bg-amber-50 border-amber-200" },
 };
 
 // ─── Integration card ─────────────────────────────────────────────────────────
@@ -246,24 +220,6 @@ function IntegrationCard({ integration }: { integration: Integration }) {
             ))}
           </div>
 
-          {/* Special: Zapier webhook URL */}
-          {integration.id === "zapier" && (
-            <div className="mb-4">
-              <p className="text-xs text-[#8c8580] mb-1.5">Your webhook URL</p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-[#f0ece6] border border-[#e8e4de] rounded-lg px-3 py-2 text-[#2c2825] truncate">
-                  {APP_URL}/api/webhooks/zapier
-                </code>
-                <button
-                  onClick={() => navigator.clipboard.writeText(`${APP_URL}/api/webhooks/zapier`)}
-                  className="text-xs px-3 py-2 rounded-lg border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors whitespace-nowrap"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-          )}
-
           <div className="flex items-center gap-3">
             {integration.connectUrl && (
               <a
@@ -290,7 +246,7 @@ function IntegrationCard({ integration }: { integration: Integration }) {
           <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5">
             <AlertCircle size={13} className="text-amber-600 shrink-0 mt-0.5" />
             <p className="text-xs text-amber-700">
-              Full in-app OAuth is coming soon. For now, clicking Connect opens the authorisation page — email us at{" "}
+              Full in-app OAuth is coming soon. For now, clicking Connect opens the authorisation page - email us at{" "}
               <strong>setup@homematch.ca</strong> and we will complete the connection within 24 hours.
             </p>
           </div>
@@ -304,8 +260,8 @@ function IntegrationCard({ integration }: { integration: Integration }) {
 
 export default function IntegrationsPage() {
   const connected = INTEGRATIONS.filter((i) => i.status === "connected").length;
-  const categories = ["email", "calendar", "sms", "automation"] as const;
-  const categoryLabels = { email: "Email", calendar: "Calendar", sms: "SMS", automation: "Automation" };
+  const categories = ["email", "calendar", "ai"] as const;
+  const categoryLabels = { email: "Email", calendar: "Calendar", ai: "AI" };
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
@@ -316,7 +272,7 @@ export default function IntegrationsPage() {
           <p className="text-[#b8a88a] text-xs font-semibold uppercase tracking-widest mb-1">Settings</p>
           <h1 className="text-2xl font-semibold text-[#2c2825] mb-2">Integrations</h1>
           <p className="text-[#8c8580] text-sm leading-relaxed">
-            Connect your email, calendar, and tools so you can send outreach, schedule showings, and automate follow-ups without leaving the app.
+            Connect your email, calendar, and AI tools so you can send outreach, schedule showings, and close more leads without leaving the app.
           </p>
         </div>
 
@@ -342,9 +298,9 @@ export default function IntegrationsPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-4">How it works</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { step: "1", title: "Connect your tools", detail: "Link Gmail or Outlook, your calendar, and SMS in under 5 minutes." },
-              { step: "2", title: "Open any lead", detail: "Click Outreach. Templates are pre-filled with the buyer's profile data." },
-              { step: "3", title: "Hit send", detail: "One click opens a ready-to-send draft in your connected email app. No copy-paste." },
+              { step: "1", title: "Connect your tools", detail: "Link Gmail or Outlook and your calendar in under 5 minutes." },
+              { step: "2", title: "Open any lead", detail: "Click Outreach. Templates are pre-filled with the buyer's exact profile data." },
+              { step: "3", title: "Hit send", detail: "One click opens a ready-to-send draft in your email app. Claude can rewrite it in your voice first." },
             ].map((s) => (
               <div key={s.step} className="flex gap-3">
                 <div className="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
@@ -376,32 +332,6 @@ export default function IntegrationsPage() {
             </div>
           );
         })}
-
-        {/* Zapier pre-built zaps */}
-        <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-base">⚡</span>
-            <p className="text-sm font-semibold text-[#2c2825]">Pre-built Zaps</p>
-          </div>
-          <p className="text-xs text-[#8c8580] mb-4">One-click templates to connect Home Match to your existing tools. Requires a free Zapier account.</p>
-          <div className="space-y-2">
-            {[
-              { label: "New Lead -> Follow Up Boss", detail: "Auto-creates a contact in FUB when a buyer submits their profile" },
-              { label: "New Lead -> Slack notification", detail: "Pings your team channel the moment a new lead comes in" },
-              { label: "New Lead -> Google Contacts", detail: "Adds the buyer to your Google Contacts automatically" },
-              { label: "Stage: Showing Booked -> Zoom meeting", detail: "Creates a Zoom link and emails it to the buyer" },
-              { label: "Hot Lead -> SMS via Twilio", detail: "Texts you immediately when a Hot lead submits" },
-            ].map((zap) => (
-              <div key={zap.label} className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-[#e8e4de] hover:border-[#2c2825] transition-colors group">
-                <div>
-                  <p className="text-sm font-medium text-[#2c2825]">{zap.label}</p>
-                  <p className="text-xs text-[#8c8580]">{zap.detail}</p>
-                </div>
-                <ArrowRight size={13} className="text-[#b8b4b0] group-hover:text-[#2c2825] transition-colors shrink-0" />
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Need something custom */}
         <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-2xl p-5 text-center">
