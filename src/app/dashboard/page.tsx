@@ -194,58 +194,83 @@ function ActionQueueItem({
       >
         <div className="flex items-center gap-3 px-4 py-4">
           {/* Colored left indicator */}
-          <div className={`w-1 h-10 rounded-full shrink-0 ${s.leftBar}`} />
+          <div className={`w-1 self-stretch rounded-full shrink-0 ${s.leftBar}`} />
 
           {/* Avatar */}
           <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${s.iconBg}`}>
             {initials || "?"}
           </div>
 
-          {/* Text */}
+          {/* Text + mobile actions */}
           <div className="flex-1 min-w-0">
-            <p className={`text-sm font-semibold text-[#1a1714] truncate ${isChecked ? "line-through opacity-50" : ""}`}>
-              {item.label}
-            </p>
+            {/* Top row: name + desktop CTAs + chevron */}
+            <div className="flex items-center gap-2">
+              <p className={`flex-1 text-sm font-semibold text-[#1a1714] truncate ${isChecked ? "line-through opacity-50" : ""}`}>
+                {item.label}
+              </p>
+
+              {/* Badge — hidden on mobile, shown on sm+ */}
+              <span className={`hidden sm:inline-flex shrink-0 text-[10px] font-bold px-2.5 py-1 rounded-full ${s.badge}`}>
+                {s.badgeLabel}
+              </span>
+
+              {/* CTA buttons — hidden on mobile */}
+              {item.icon === "call" && item.phone && (
+                <a
+                  href={`tel:${item.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`hidden sm:flex items-center gap-1.5 shrink-0 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
+                >
+                  <Phone size={11} /> Call
+                </a>
+              )}
+              {item.emailAddr && item.icon !== "call" && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message); }}
+                  className={`hidden sm:flex items-center gap-1.5 shrink-0 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
+                >
+                  <Mail size={11} /> Email
+                </button>
+              )}
+
+              {/* Checkbox */}
+              <button
+                onClick={(e) => { e.stopPropagation(); onToggleCheck(); }}
+                className="shrink-0 w-6 h-6 rounded-lg border-2 border-white/70 flex items-center justify-center hover:border-emerald-400 transition-colors bg-white/50"
+                aria-label={isChecked ? "Mark incomplete" : "Mark complete"}
+              >
+                {isChecked && <Check size={12} className="text-emerald-600" />}
+              </button>
+
+              <ChevronDown size={14} className={`shrink-0 text-[#9c9590] transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+            </div>
+
+            {/* Sub text */}
             <p className="text-xs text-[#6b6560] mt-0.5 truncate">{item.sub}</p>
-          </div>
 
-          {/* Right side */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${s.badge}`}>
-              {s.badgeLabel}
-            </span>
-
-            {item.icon === "call" && item.phone && (
-              <a
-                href={`tel:${item.phone}`}
-                onClick={(e) => e.stopPropagation()}
-                className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
-              >
-                <Phone size={11} /> Call
-              </a>
-            )}
-            {item.emailAddr && item.icon !== "call" && (
-              <a
-                href={gmailUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
-              >
-                <Mail size={11} /> Email
-              </a>
-            )}
-
-            {/* Checkbox */}
-            <button
-              onClick={(e) => { e.stopPropagation(); onToggleCheck(); }}
-              className="shrink-0 w-6 h-6 rounded-lg border-2 border-white/70 flex items-center justify-center hover:border-emerald-400 transition-colors bg-white/50"
-              aria-label={isChecked ? "Mark incomplete" : "Mark complete"}
-            >
-              {isChecked && <Check size={12} className="text-emerald-600" />}
-            </button>
-
-            <ChevronDown size={14} className={`text-[#9c9590] transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+            {/* Mobile-only bottom row: badge + CTA */}
+            <div className="flex items-center gap-2 mt-2.5 sm:hidden">
+              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${s.badge}`}>
+                {s.badgeLabel}
+              </span>
+              {item.icon === "call" && item.phone && (
+                <a
+                  href={`tel:${item.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
+                >
+                  <Phone size={11} /> Call
+                </a>
+              )}
+              {item.emailAddr && item.icon !== "call" && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message); }}
+                  className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
+                >
+                  <Mail size={11} /> Email
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -392,7 +417,7 @@ export default function DashboardPage() {
                 <Sparkles size={13} className="text-[#b8a88a]" />
                 <span className="text-[#b8a88a] text-xs font-medium tracking-wide">{formatDate()}</span>
               </div>
-              <h1 className="text-3xl font-bold text-[#1a1714] mb-1">{getGreeting(realtorName)}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1a1714] mb-1">{getGreeting(realtorName)}</h1>
               <p className="text-[#8c8580] text-sm">
                 {activeItems.length > 0
                   ? `You have ${activeItems.length} priority action${activeItems.length !== 1 ? "s" : ""} today`
@@ -407,8 +432,8 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Stat pills */}
-          <div className="flex gap-3 mt-8 flex-wrap">
+          {/* Stat pills — 2×2 on mobile, row on desktop */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 mt-8">
             {[
               { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Users size={14} className="text-[#b8a88a]" /> },
               { label: "Hot", value: hot, bg: "bg-rose-50 border border-rose-200", text: "text-rose-700", sub: "text-rose-400", icon: <Flame size={14} className="text-rose-500" /> },
