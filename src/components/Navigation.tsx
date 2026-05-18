@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Settings, Home, Sparkles, ClipboardList, HelpCircle, LayoutDashboard, List, Building2, UserPlus } from "lucide-react";
+import { Menu, X, Settings, Home, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug } from "lucide-react";
 import { useBranding } from "@/context/BrandingContext";
 
 const buyerFeatures = [
@@ -41,11 +41,43 @@ const buyerFeatures = [
   },
 ];
 
-const realtorLinks = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Pipeline", href: "/pipeline", icon: List },
-  { label: "Listings", href: "/listings", icon: Building2 },
-  { label: "Integrations", href: "/integrations", icon: Settings },
+const realtorFeatures = [
+  {
+    icon: Flame,
+    label: "Today's Priorities",
+    sub: "Hot leads & tasks due now",
+    href: "/dashboard",
+    color: "#fef3e8",
+    iconColor: "#d97706",
+  },
+  {
+    icon: List,
+    label: "Lead Pipeline",
+    sub: "All leads by stage",
+    href: "/pipeline",
+    color: "#eff6ff",
+    iconColor: "#2563eb",
+  },
+  {
+    icon: Mail,
+    label: "Outreach Hub",
+    sub: "Templates, scripts & emails",
+    href: "/dashboard",
+    color: "#f0fdf4",
+    iconColor: "#16a34a",
+  },
+  {
+    icon: Building2,
+    label: "Your Listings",
+    sub: "Active properties",
+    href: "/listings",
+    color: "#f5f0e8",
+    iconColor: "#b8956a",
+  },
+];
+
+const realtorUtility = [
+  { label: "Integrations", href: "/integrations", icon: Plug },
   { label: "For Realtors", href: "/for-realtors", icon: UserPlus },
 ];
 
@@ -155,22 +187,51 @@ export default function Navigation() {
               For Realtors
             </button>
             {dropdownOpen === "realtors" && (
-              <div className={`absolute top-full left-0 mt-1 border rounded-xl shadow-lg py-1.5 min-w-44 animate-fade-in z-50 ${
+              <div className={`absolute top-full left-0 mt-1 border rounded-2xl shadow-xl p-2 w-72 animate-fade-in z-50 ${
                 isDark ? "bg-[#1a1612] border-white/10" : "bg-white border-[#e8e4de]"
               }`}>
-                {realtorLinks.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className={`block px-4 py-2 text-sm transition-colors ${
-                      isActive(l.href)
-                        ? isDark ? "text-white font-medium" : "text-[#2c2825] font-medium"
-                        : isDark ? "text-white/55 hover:text-white hover:bg-white/5" : "text-[#8c8580] hover:text-[#2c2825] hover:bg-[#faf9f7]"
-                    }`}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+                {realtorFeatures.map((f) => {
+                  const Icon = f.icon;
+                  const active = isActive(f.href);
+                  return (
+                    <Link
+                      key={f.label}
+                      href={f.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
+                        active
+                          ? isDark ? "bg-white/8" : "bg-[#f5f3f0]"
+                          : isDark ? "hover:bg-white/6" : "hover:bg-[#faf9f7]"
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : f.color }}>
+                        <Icon size={15} style={{ color: isDark ? "rgba(255,255,255,0.5)" : f.iconColor }} />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium leading-none mb-0.5 ${
+                          active
+                            ? isDark ? "text-white" : "text-[#2c2825]"
+                            : isDark ? "text-white/80" : "text-[#2c2825]"
+                        }`}>{f.label}</p>
+                        <p className={`text-xs ${isDark ? "text-white/35" : "text-[#8c8580]"}`}>{f.sub}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
+                <div className={`mx-2 my-1 h-px ${isDark ? "bg-white/8" : "bg-[#e8e4de]"}`} />
+                {realtorUtility.map((l) => {
+                  const Icon = l.icon;
+                  return (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition-colors ${
+                        isDark ? "text-white/40 hover:text-white/70 hover:bg-white/5" : "text-[#8c8580] hover:text-[#2c2825] hover:bg-[#faf9f7]"
+                      }`}
+                    >
+                      <Icon size={13} /> {l.label}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -272,25 +333,58 @@ export default function Navigation() {
           {/* Divider */}
           <div className={`h-px my-1 ${isDark ? "bg-white/8" : "bg-[#e8e4de]"}`} />
 
-          {/* Realtor links - compact */}
+          {/* Realtor features - card grid */}
           <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1 mt-1 ${isDark ? "text-[#c9a870]/70" : "text-[#b8a88a]"}`}>
             For Realtors
           </p>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {realtorLinks.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setMobileOpen(false)}
-                className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
-                  isDark
-                    ? "text-white/60 border-white/12 hover:text-white hover:border-white/25"
-                    : "text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"
-                }`}
-              >
-                {l.label}
-              </Link>
-            ))}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {realtorFeatures.map((f) => {
+              const Icon = f.icon;
+              const active = isActive(f.href);
+              return (
+                <Link
+                  key={f.label}
+                  href={f.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex flex-col gap-2 p-3 rounded-xl border transition-all ${
+                    active
+                      ? isDark
+                        ? "bg-white/8 border-white/15"
+                        : "bg-white border-[#d8d4ce]"
+                      : isDark
+                        ? "bg-white/4 border-white/8 hover:bg-white/8"
+                        : "bg-white border-[#e8e4de] hover:border-[#d8d4ce]"
+                  }`}
+                >
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: isDark ? "rgba(255,255,255,0.08)" : f.color }}>
+                    <Icon size={14} style={{ color: isDark ? "rgba(255,255,255,0.5)" : f.iconColor }} />
+                  </div>
+                  <div>
+                    <p className={`text-xs font-semibold leading-tight ${isDark ? "text-white/90" : "text-[#2c2825]"}`}>{f.label}</p>
+                    <p className={`text-[10px] leading-tight mt-0.5 ${isDark ? "text-white/30" : "text-[#8c8580]"}`}>{f.sub}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="flex gap-2 mb-3">
+            {realtorUtility.map((l) => {
+              const Icon = l.icon;
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+                    isDark
+                      ? "text-white/50 border-white/12 hover:text-white hover:border-white/25"
+                      : "text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"
+                  }`}
+                >
+                  <Icon size={12} /> {l.label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Divider */}
