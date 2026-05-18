@@ -73,7 +73,7 @@ function MultiChipField({
   return (
     <div>
       <FieldLabel>{label}</FieldLabel>
-      <p className="text-[#8c8580] text-xs mb-3">{hint}</p>
+      <p className="text-white/40 text-xs mb-3">{hint}</p>
 
       <div className="flex flex-wrap gap-2 mb-4">
         {suggestions.map((s) => {
@@ -83,11 +83,13 @@ function MultiChipField({
               key={s}
               type="button"
               onClick={() => onToggle(s)}
-              className={`px-4 py-2 rounded-full text-sm border transition-all ${
-                active
-                  ? "bg-[#2c2825] text-white border-[#2c2825]"
-                  : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-              }`}
+              className="px-4 py-2 rounded-full text-sm transition-all btn-press"
+              style={{
+                background: active ? "rgba(184,168,138,0.90)" : "rgba(255,255,255,0.07)",
+                border: active ? "1.5px solid rgba(184,168,138,0.8)" : "1.5px solid rgba(255,255,255,0.10)",
+                color: active ? "#1a1512" : "rgba(255,255,255,0.70)",
+                fontWeight: active ? 600 : 400,
+              }}
             >
               {active ? <span className="flex items-center gap-1.5">{s} <X size={11} /></span> : s}
             </button>
@@ -102,12 +104,12 @@ function MultiChipField({
           onChange={(e) => setCustom(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addCustom()}
           placeholder="Add your own..."
-          className="flex-1 border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-white"
+          className="flex-1 bg-white/8 border border-white/12 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#b8a88a] focus:bg-white/12 transition-all"
         />
         <button
           type="button"
           onClick={addCustom}
-          className="border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] hover:border-[#2c2825] transition-colors bg-white"
+          className="bg-white/8 border border-white/12 rounded-xl px-4 py-2.5 text-sm text-white/70 hover:border-[#b8a88a] hover:text-white transition-all"
         >
           Add
         </button>
@@ -123,7 +125,13 @@ function MultiChipField({
                 key={s}
                 type="button"
                 onClick={() => onToggle(s)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm bg-[#2c2825] text-white border border-[#2c2825]"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm"
+                style={{
+                  background: "rgba(184,168,138,0.90)",
+                  border: "1.5px solid rgba(184,168,138,0.8)",
+                  color: "#1a1512",
+                  fontWeight: 600,
+                }}
               >
                 {s} <X size={11} />
               </button>
@@ -146,8 +154,8 @@ export default function StepLifestyle({ answers, update, onNext, onBack, onSubmi
   return (
     <div>
       <StepHeader
-        title="Lifestyle & priorities."
-        subtitle="Select everything that matters. We'll use this to match you with the right homes."
+        title="What makes a home feel like yours?"
+        subtitle="Your must-haves and deal-breakers are how we find homes that deserve your time, not just homes that are available."
       />
 
       <div className="space-y-8">

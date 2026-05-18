@@ -1,279 +1,234 @@
 "use client";
 
-import { StepProps, StepHeader, NavButtons } from "./shared";
+import { useState } from "react";
+import { StepProps } from "./shared";
+import { ArrowRight } from "lucide-react";
 
-// ─── Feeling cards ─────────────────────────────────────────────────────────
+// ─── Data ────────────────────────────────────────────────────────────────────
 
 const HOME_FEELINGS = [
-  { label: "Peaceful retreat", emoji: "🌿", description: "Calm, private, a place to exhale" },
-  { label: "Social hub", emoji: "🥂", description: "Built for gathering, hosting, connection" },
-  { label: "Creative sanctuary", emoji: "🎨", description: "Inspired, unique, full of personality" },
-  { label: "Family nest", emoji: "🏡", description: "Safe, warm, room to grow together" },
-  { label: "Modern haven", emoji: "✨", description: "Clean lines, smart design, elevated living" },
-  { label: "Adventure base", emoji: "🌲", description: "Close to nature, trails, and the outdoors" },
+  { label: "Peaceful retreat",      emoji: "🌿", bg: "linear-gradient(145deg, #4a7c59 0%, #2d5a3d 100%)" },
+  { label: "Social hub",            emoji: "🥂", bg: "linear-gradient(145deg, #c87941 0%, #9a5228 100%)" },
+  { label: "Creative sanctuary",    emoji: "🎨", bg: "linear-gradient(145deg, #4a6f9c 0%, #2d4f7a 100%)" },
+  { label: "Family nest",           emoji: "🏡", bg: "linear-gradient(145deg, #b89040 0%, #8a6820 100%)" },
+  { label: "Modern haven",          emoji: "✨", bg: "linear-gradient(145deg, #5a5248 0%, #302c28 100%)" },
+  { label: "Adventure base",        emoji: "🌲", bg: "linear-gradient(145deg, #3d6b4a 0%, #234030 100%)" },
 ];
 
 const SUNDAY_MOODS = [
-  { label: "Coffee in a sunny kitchen", emoji: "☕" },
-  { label: "Hosting brunch in the backyard", emoji: "🌸" },
-  { label: "Reading by a fireplace", emoji: "📖" },
-  { label: "Long walk to a local cafe", emoji: "🚶" },
-  { label: "Quiet morning, no neighbours in sight", emoji: "🌅" },
-  { label: "Kids playing while I cook", emoji: "👨‍👩‍👧" },
+  { label: "Coffee in a sunny kitchen",           emoji: "☕" },
+  { label: "Hosting brunch in the backyard",      emoji: "🌸" },
+  { label: "Reading by a fireplace",              emoji: "📖" },
+  { label: "Quiet morning, no neighbours",        emoji: "🌅" },
+  { label: "Kids playing while I cook",           emoji: "👨‍👩‍👧" },
 ];
-
-const FRUSTRATIONS = [
-  { label: "No outdoor space", emoji: "🌳" },
-  { label: "Too much noise", emoji: "🔊" },
-  { label: "Not enough room to breathe", emoji: "📦" },
-  { label: "No character or warmth", emoji: "🧱" },
-  { label: "Bad location for my lifestyle", emoji: "📍" },
-  { label: "Can't host the way I want", emoji: "🚫" },
-  { label: "Too far from what matters", emoji: "🛣️" },
-  { label: "No place to work from home", emoji: "💻" },
-];
-
-const HOSTING_OPTIONS = [
-  { value: "Hosting haven", label: "Hosting haven", emoji: "🥂", desc: "I love having people over — space for entertaining matters" },
-  { value: "Private sanctuary", label: "Private sanctuary", emoji: "🛋️", desc: "My home is my escape — I value quiet and privacy" },
-  { value: "Balance of both", label: "Balance of both", emoji: "⚖️", desc: "I like the option to host, but need my peace too" },
-] as const;
 
 const STYLE_OPTIONS = [
-  { value: "Modern & minimal", label: "Modern & minimal", emoji: "🪟", desc: "Clean, airy, everything in its place" },
-  { value: "Warm & cozy", label: "Warm & cozy", emoji: "🕯️", desc: "Natural materials, soft textures, lived-in comfort" },
-  { value: "Classic elegance", label: "Classic elegance", emoji: "🏛️", desc: "Timeless architecture, craftsmanship, traditional details" },
-  { value: "Bold & unique", label: "Bold & unique", emoji: "🎭", desc: "Character, personality, nothing cookie-cutter" },
+  { value: "Modern & minimal",  emoji: "🪟", bg: "linear-gradient(145deg, #5a6268 0%, #3a4248 100%)" },
+  { value: "Warm & cozy",       emoji: "🕯️", bg: "linear-gradient(145deg, #b88040 0%, #8a5c20 100%)" },
+  { value: "Classic elegance",  emoji: "🏛️", bg: "linear-gradient(145deg, #7a6858 0%, #4e4038 100%)" },
+  { value: "Bold & unique",     emoji: "🎭", bg: "linear-gradient(145deg, #8c4a3c 0%, #5c2820 100%)" },
 ] as const;
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
-function FeelingCard({
-  item,
-  selected,
-  onToggle,
+function VibeCard({
+  emoji, label, bg, selected, onToggle, delay,
 }: {
-  item: typeof HOME_FEELINGS[number];
-  selected: boolean;
-  onToggle: () => void;
+  emoji: string; label: string; bg: string;
+  selected: boolean; onToggle: () => void; delay: number;
 }) {
   return (
     <button
       type="button"
       onClick={onToggle}
-      className={`relative text-left p-4 rounded-2xl border-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-        selected
-          ? "border-[#2c2825] bg-[#2c2825] text-white shadow-md"
-          : "border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#b8a88a]"
-      }`}
+      className="relative rounded-2xl text-left transition-all duration-200 btn-press animate-fade-up overflow-hidden"
+      style={{
+        background: bg,
+        animationDelay: `${delay}s`,
+        minHeight: 192,
+        boxShadow: selected
+          ? "0 0 0 2.5px rgba(184,168,138,1), 0 8px 32px rgba(0,0,0,0.5), 0 0 40px rgba(184,168,138,0.3)"
+          : "0 4px 20px rgba(0,0,0,0.35)",
+        transform: selected ? "scale(1.02)" : "scale(1)",
+      }}
     >
-      <span className="text-2xl mb-2 block">{item.emoji}</span>
-      <p className={`font-semibold text-sm mb-1 ${selected ? "text-white" : "text-[#2c2825]"}`}>
-        {item.label}
-      </p>
-      <p className={`text-xs leading-relaxed ${selected ? "text-white/70" : "text-[#8c8580]"}`}>
-        {item.description}
-      </p>
+      {/* Inner gloss */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/20 pointer-events-none" />
+
+      <div className="relative z-10 p-5 h-full flex flex-col justify-between" style={{ minHeight: 160 }}>
+        <span className="text-4xl block">{emoji}</span>
+        <p className="font-bold text-base text-white leading-snug mt-4">{label}</p>
+      </div>
+
       {selected && (
-        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[#b8a88a] flex items-center justify-center">
+        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-[#b8a88a] flex items-center justify-center shadow animate-scale-in">
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-        </span>
+        </div>
       )}
     </button>
   );
 }
 
-function MoodChip({
-  item,
-  selected,
-  onToggle,
-}: {
-  item: typeof SUNDAY_MOODS[number];
-  selected: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-sm transition-all duration-150 ${
-        selected
-          ? "bg-[#2c2825] text-white border-[#2c2825] shadow-sm"
-          : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#b8a88a]"
-      }`}
-    >
-      <span>{item.emoji}</span>
-      {item.label}
-    </button>
-  );
-}
-
-function SelectCard({
-  emoji,
-  label,
-  desc,
-  selected,
-  onClick,
-}: {
-  emoji: string;
-  label: string;
-  desc: string;
-  selected: boolean;
-  onClick: () => void;
+function SundayChip({ emoji, label, selected, onClick }: {
+  emoji: string; label: string; selected: boolean; onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`text-left p-4 rounded-xl border-2 transition-all duration-150 ${
+      className={`flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border text-left transition-all duration-150 btn-press ${
         selected
-          ? "border-[#2c2825] bg-[#2c2825] text-white"
-          : "border-[#e8e4de] bg-white hover:border-[#b8a88a]"
+          ? "bg-[#b8a88a] border-[#b8a88a] text-[#1e1a17]"
+          : "bg-white/8 border-white/12 text-white/80 hover:bg-white/14 hover:border-white/20"
       }`}
     >
-      <span className="text-xl block mb-1">{emoji}</span>
-      <p className={`font-medium text-sm mb-0.5 ${selected ? "text-white" : "text-[#2c2825]"}`}>
-        {label}
-      </p>
-      <p className={`text-xs ${selected ? "text-white/70" : "text-[#8c8580]"}`}>{desc}</p>
+      <span className="text-xl shrink-0">{emoji}</span>
+      <span className="text-sm leading-snug">{label}</span>
     </button>
   );
 }
 
-// ─── Step Component ─────────────────────────────────────────────────────────
+function StyleTile({ value, emoji, bg, selected, onClick, delay }: {
+  value: string; emoji: string; bg: string;
+  selected: boolean; onClick: () => void; delay: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative rounded-xl overflow-hidden text-left transition-all duration-200 btn-press animate-fade-up"
+      style={{
+        background: bg,
+        animationDelay: `${delay}s`,
+        minHeight: 110,
+        boxShadow: selected
+          ? "0 0 0 2.5px rgba(184,168,138,1), 0 8px 24px rgba(0,0,0,0.4)"
+          : "0 3px 14px rgba(0,0,0,0.3)",
+        transform: selected ? "scale(1.02)" : "scale(1)",
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-black/20 pointer-events-none" />
+      <div className="relative z-10 p-4 flex flex-col justify-between" style={{ minHeight: 110 }}>
+        <span className="text-2xl">{emoji}</span>
+        <p className="text-white font-semibold text-xs leading-snug mt-3">{value}</p>
+      </div>
+      {selected && (
+        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-[#b8a88a] flex items-center justify-center animate-scale-in">
+          <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
+            <path d="M1 3.5L3 5.5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      )}
+    </button>
+  );
+}
 
-export default function StepVibe({ answers, update, onNext, onBack, onSubmit }: StepProps) {
+// ─── Step ────────────────────────────────────────────────────────────────────
+
+export default function StepVibe({ answers, update, onNext }: StepProps) {
+  const [phase, setPhase] = useState<"feeling" | "sunday" | "style">("feeling");
+
   function toggleFeeling(label: string) {
     const current = answers.homeFeeling;
-    const next = current.includes(label)
-      ? current.filter((f) => f !== label)
-      : [...current, label];
+    const alreadyHad = current.includes(label);
+    const next = alreadyHad ? current.filter((f) => f !== label) : [...current, label];
     update("homeFeeling", next);
+    if (!alreadyHad && phase === "feeling") {
+      setTimeout(() => setPhase("sunday"), 250);
+    }
   }
 
-  function toggleFrustration(label: string) {
-    const current = answers.currentFrustration;
-    const next = current.includes(label)
-      ? current.filter((f) => f !== label)
-      : [...current, label];
-    update("currentFrustration", next);
-  }
+  const hasFeelings = answers.homeFeeling.length > 0;
 
   return (
     <div>
-      <StepHeader
-        title="Let's start with the feeling."
-        subtitle="Not the square footage. Not the price. How do you want your future home to make you feel?"
-      />
-
-      {/* Feeling cards */}
+      {/* ── Question 1: Core feeling ────────────────────────────────────────── */}
       <div className="mb-10">
-        <p className="text-sm font-medium text-[#2c2825] mb-1">
-          What feeling should your home give you?
+        <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
+          <span className="text-white">How do you want to feel</span><br />
+          <span className="text-gradient-gold">when you walk in?</span>
+        </h2>
+        <p className="text-white/45 text-sm mb-8">
+          Don&apos;t overthink it, tap everything that resonates.
         </p>
-        <p className="text-xs text-[#8c8580] mb-4">Choose all that resonate. There&apos;s no wrong answer.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {HOME_FEELINGS.map((item) => (
-            <FeelingCard
+
+        <div className="grid grid-cols-2 gap-3">
+          {HOME_FEELINGS.map((item, i) => (
+            <VibeCard
               key={item.label}
-              item={item}
+              {...item}
               selected={answers.homeFeeling.includes(item.label)}
               onToggle={() => toggleFeeling(item.label)}
+              delay={i * 0.05}
             />
           ))}
         </div>
       </div>
 
-      {/* Sunday morning */}
-      <div className="mb-10">
-        <p className="text-sm font-medium text-[#2c2825] mb-1">
-          What does your dream Sunday morning look like?
-        </p>
-        <p className="text-xs text-[#8c8580] mb-4">Pick the one that feels most like you.</p>
-        <div className="flex flex-wrap gap-2">
-          {SUNDAY_MOODS.map((item) => (
-            <MoodChip
-              key={item.label}
-              item={item}
-              selected={answers.sundayMorning === item.label}
-              onToggle={() =>
-                update("sundayMorning", answers.sundayMorning === item.label ? "" : item.label)
-              }
-            />
-          ))}
+      {/* ── Question 2: Sunday morning ───────────────────────────────────────── */}
+      {phase !== "feeling" && (
+        <div className="mb-10 animate-slide-up">
+          <h3 className="text-xl font-semibold text-white mb-2">
+            Your ideal Sunday morning?
+          </h3>
+          <p className="text-white/40 text-xs mb-5">Pick the one that&apos;s most you.</p>
+          <div className="space-y-2">
+            {SUNDAY_MOODS.map((item) => (
+              <SundayChip
+                key={item.label}
+                emoji={item.emoji}
+                label={item.label}
+                selected={answers.sundayMorning === item.label}
+                onClick={() => {
+                  const picking = answers.sundayMorning !== item.label;
+                  update("sundayMorning", picking ? item.label : "");
+                  if (picking && phase === "sunday") {
+                    setTimeout(() => setPhase("style"), 250);
+                  }
+                }}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Hosting vs privacy */}
-      <div className="mb-10">
-        <p className="text-sm font-medium text-[#2c2825] mb-1">
-          Hosting space or private sanctuary?
-        </p>
-        <p className="text-xs text-[#8c8580] mb-4">Your home should fit how you actually live.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {HOSTING_OPTIONS.map((opt) => (
-            <SelectCard
-              key={opt.value}
-              emoji={opt.emoji}
-              label={opt.label}
-              desc={opt.desc}
-              selected={answers.hostingVsPrivacy === opt.value}
-              onClick={() => update("hostingVsPrivacy", opt.value)}
-            />
-          ))}
+      {/* ── Question 3: Aesthetic ────────────────────────────────────────────── */}
+      {phase === "style" && (
+        <div className="mb-10 animate-slide-up">
+          <h3 className="text-xl font-semibold text-white mb-2">
+            Your home&apos;s aesthetic?
+          </h3>
+          <p className="text-white/40 text-xs mb-5">Where does your eye naturally land?</p>
+          <div className="grid grid-cols-2 gap-3">
+            {STYLE_OPTIONS.map((opt, i) => (
+              <StyleTile
+                key={opt.value}
+                {...opt}
+                selected={answers.modernVsCozy === opt.value}
+                onClick={() => update("modernVsCozy", opt.value)}
+                delay={i * 0.05}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Style */}
-      <div className="mb-10">
-        <p className="text-sm font-medium text-[#2c2825] mb-1">
-          What style feels like home to you?
-        </p>
-        <p className="text-xs text-[#8c8580] mb-4">Modern & minimal or warm & cozy? Both are perfect.</p>
-        <div className="grid grid-cols-2 gap-3">
-          {STYLE_OPTIONS.map((opt) => (
-            <SelectCard
-              key={opt.value}
-              emoji={opt.emoji}
-              label={opt.label}
-              desc={opt.desc}
-              selected={answers.modernVsCozy === opt.value}
-              onClick={() => update("modernVsCozy", opt.value)}
-            />
-          ))}
+      {/* ── Continue ─────────────────────────────────────────────────────────── */}
+      {hasFeelings && (
+        <div className="animate-fade-up">
+          <button
+            onClick={onNext}
+            className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
+            style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
+          >
+            {answers.modernVsCozy ? "Looks good, continue" : answers.sundayMorning ? "Keep going →" : "That's my vibe"}
+            <ArrowRight size={15} />
+          </button>
         </div>
-      </div>
-
-      {/* Current frustration */}
-      <div className="mb-2">
-        <p className="text-sm font-medium text-[#2c2825] mb-1">
-          What frustrates you most about where you live now?
-        </p>
-        <p className="text-xs text-[#8c8580] mb-4">
-          This helps us filter out what you&apos;re trying to leave behind.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {FRUSTRATIONS.map((item) => (
-            <MoodChip
-              key={item.label}
-              item={item}
-              selected={answers.currentFrustration.includes(item.label)}
-              onToggle={() => toggleFrustration(item.label)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <NavButtons
-        onBack={onBack}
-        onNext={onNext}
-        onSubmit={onSubmit}
-        isFirst={true}
-        isLast={false}
-        nextLabel="Continue →"
-      />
+      )}
     </div>
   );
 }
