@@ -69,7 +69,7 @@ export const mockLeads: Lead[] = [
       preApprovalStatus: "Yes, fully approved",
       ownershipStatus: "Own (need to sell first)",
       mortgageChecklist: [
-        ...DEFAULT_MORTGAGE_CHECKLIST.map((i, idx) => ({ ...i, completed: idx < 6 })),
+        ...DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: false })),
       ],
       additionalNotes:
         "Relocating from Vancouver. Need to close within 90 days ideally. Very particular about finishes, love modern farmhouse aesthetic.",
@@ -137,7 +137,7 @@ export const mockLeads: Lead[] = [
       investmentOrPersonal: "Personal use",
       preApprovalStatus: "Yes, fully approved",
       ownershipStatus: "Renting",
-      mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: true })),
+      mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: false })),
       additionalNotes: "Has a golden retriever. Needs fenced yard or very close to park.",
     },
   },
@@ -191,7 +191,7 @@ export const mockLeads: Lead[] = [
       investmentOrPersonal: "Personal use",
       preApprovalStatus: "In progress",
       ownershipStatus: "Renting",
-      mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i, idx) => ({ ...i, completed: idx < 3 })),
+      mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: false })),
       additionalNotes: "Two young kids. Education is the top priority. Flexible on finishes.",
     },
   },
@@ -238,7 +238,7 @@ export const mockLeads: Lead[] = [
       investmentOrPersonal: "Both",
       preApprovalStatus: "Paying cash",
       ownershipStatus: "Own (can buy independently)",
-      mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: true })),
+      mortgageChecklist: DEFAULT_MORTGAGE_CHECKLIST.map((i) => ({ ...i, completed: false })),
       additionalNotes:
         "Looking for a forever home. Willing to do a full renovation if the lot and location are right.",
     },
