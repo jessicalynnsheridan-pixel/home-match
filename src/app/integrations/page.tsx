@@ -176,45 +176,46 @@ function IntegrationsInner() {
   const [gmailEmail, setGmailEmail] = useState("");
   const [gcalConnected, setGcalConnected] = useState(false);
   const [gcalEmail, setGcalEmail] = useState("");
-  const [toast, setToast] = useState<{ type: "connected" | "error"; provider: "gmail" | "gcal" } | null>(null);
+  const [microsoftConnected, setMicrosoftConnected] = useState(false);
+  const [microsoftEmail, setMicrosoftEmail] = useState("");
+  const [claudeEnabled, setClaudeEnabled] = useState(false);
+  const [toast, setToast] = useState<{ type: "connected" | "error"; label: string } | null>(null);
 
   useEffect(() => {
-    // Load integration statuses from the realtor_integrations table
     const supabase = createClient();
 
+    // Load DB-backed integration statuses
     supabase
       .from("realtor_integrations")
       .select("provider, email, connected_at")
-      .in("provider", ["gmail", "google_calendar"])
+      .in("provider", ["gmail", "google_calendar", "microsoft"])
       .then(({ data }) => {
         if (!data) return;
         for (const row of data) {
-          if (row.provider === "gmail") {
-            setGmailConnected(true);
-            setGmailEmail(row.email ?? "");
-          }
-          if (row.provider === "google_calendar") {
-            setGcalConnected(true);
-            setGcalEmail(row.email ?? "");
-          }
+          if (row.provider === "gmail") { setGmailConnected(true); setGmailEmail(row.email ?? ""); }
+          if (row.provider === "google_calendar") { setGcalConnected(true); setGcalEmail(row.email ?? ""); }
+          if (row.provider === "microsoft") { setMicrosoftConnected(true); setMicrosoftEmail(row.email ?? ""); }
         }
       });
 
-    // Show toast if redirected back from OAuth
-    const gmailResult = searchParams.get("gmail");
-    const gcalResult = searchParams.get("gcal");
+    // Load server-side integration status (Claude AI)
+    fetch("/api/integrations/status")
+      .then((r) => r.json())
+      .then(({ claudeEnabled }) => setClaudeEnabled(claudeEnabled))
+      .catch(() => {});
 
-    if (gmailResult === "connected") {
-      setToast({ type: "connected", provider: "gmail" });
+    // Show toast if redirected back from OAuth
+    const p = searchParams.get("gmail") ?? searchParams.get("gcal") ?? searchParams.get("microsoft");
+    const label =
+      searchParams.get("gmail") ? "Gmail" :
+      searchParams.get("gcal") ? "Google Calendar" :
+      searchParams.get("microsoft") ? "Microsoft" : "";
+
+    if (p === "connected") {
+      setToast({ type: "connected", label });
       setTimeout(() => setToast(null), 5000);
-    } else if (gmailResult === "error") {
-      setToast({ type: "error", provider: "gmail" });
-      setTimeout(() => setToast(null), 5000);
-    } else if (gcalResult === "connected") {
-      setToast({ type: "connected", provider: "gcal" });
-      setTimeout(() => setToast(null), 5000);
-    } else if (gcalResult === "error") {
-      setToast({ type: "error", provider: "gcal" });
+    } else if (p === "error") {
+      setToast({ type: "error", label });
       setTimeout(() => setToast(null), 5000);
     }
   }, [searchParams]);
@@ -250,7 +251,8 @@ function IntegrationsInner() {
       logoColor: "#0078D4",
       category: "email",
       description: "Send directly from your Outlook or Microsoft 365 account. Templates open as pre-addressed drafts in Outlook compose.",
-      status: "not_connected",
+      status: microsoftConnected ? "connected" : "not_connected",
+      connectedEmail: microsoftEmail,
       features: [
         "Open pre-filled drafts in Outlook compose",
         "Works with personal Outlook and Microsoft 365",
@@ -258,8 +260,11 @@ function IntegrationsInner() {
         "Compatible with brokerage Exchange accounts",
       ],
       setupSteps: [
-        { label: "Coming soon", detail: "Outlook OAuth is in progress. Gmail is available now." },
+        { label: "Click Connect Microsoft below", detail: "You'll be taken to Microsoft to sign in and grant permission. We request access to send emails and manage calendar events." },
+        { label: "Choose your Microsoft account", detail: "Use the same email your leads will recognise — typically your brokerage Microsoft 365 address." },
+        { label: "You're done", detail: "Templates in the Outreach Hub will have an 'Open in Outlook' button, and reminders can be added to your Outlook Calendar." },
       ],
+      connectHref: "/api/auth/microsoft",
     },
     {
       id: "google_calendar",
@@ -290,13 +295,18 @@ function IntegrationsInner() {
       logoColor: "#0078D4",
       category: "calendar",
       description: "Sync showings and follow-ups with your Outlook or Microsoft 365 calendar.",
-      status: "coming_soon",
+      status: microsoftConnected ? "connected" : "not_connected",
+      connectedEmail: microsoftEmail,
       features: [
         "Create events from follow-up reminders",
         "Showing bookings appear in your calendar",
         "Events include buyer name, contact, and notes",
         "Works with Exchange, Outlook.com, and M365",
       ],
+      setupSteps: [
+        { label: "Connect Microsoft above", detail: "Outlook Calendar is included in the same Microsoft connection as Outlook email. Connect once and both are active." },
+      ],
+      connectHref: "/api/auth/microsoft",
     },
     {
       id: "claude",
@@ -305,12 +315,16 @@ function IntegrationsInner() {
       logoColor: "#D97706",
       category: "ai",
       description: "Let Claude draft personalized outreach, rewrite emails in your voice, and surface conversation starters from every buyer's profile.",
-      status: "coming_soon",
+      status: claudeEnabled ? "connected" : "not_connected",
+      connectedEmail: claudeEnabled ? "Powered by Anthropic" : undefined,
       features: [
         "AI-drafted emails tailored to each buyer's answers",
         "Rewrite any template in your personal tone",
         "One-click conversation starters from profile data",
         "Instant lead summaries before every call",
+      ],
+      setupSteps: claudeEnabled ? [] : [
+        { label: "No setup needed on your end", detail: "Claude AI is configured by the HomeMatch team. Once enabled, AI features appear automatically throughout the app." },
       ],
     },
   ];
@@ -328,9 +342,9 @@ function IntegrationsInner() {
           toast.type === "connected" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
         }`}>
           {toast.type === "connected" ? (
-            <><CheckCircle size={16} /> {toast.provider === "gmail" ? "Gmail" : "Google Calendar"} connected successfully!</>
+            <><CheckCircle size={16} /> {toast.label} connected successfully!</>
           ) : (
-            <>Something went wrong. Please try again.</>
+            <>{toast.label ? `${toast.label}: ` : ""}Something went wrong. Please try again.</>
           )}
         </div>
       )}
