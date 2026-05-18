@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StepProps } from "./shared";
-import { ArrowRight } from "lucide-react";
 
 type StyleValue = "" | "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique";
 
@@ -65,6 +64,13 @@ function Chip({ label, selected, onClick }: { label: string; selected: boolean; 
 export default function StepVibe({ answers, update, onNext }: StepProps) {
   const [slide, setSlide] = useState(0);
 
+  // ── Slide 0: auto-advance 850ms after last chip tap (debounce) ────────────
+  useEffect(() => {
+    if (slide !== 0 || answers.homeFeeling.length === 0) return;
+    const timer = setTimeout(() => setSlide(1), 850);
+    return () => clearTimeout(timer);
+  }, [answers.homeFeeling.length, slide]);
+
   function toggleFeeling(label: string) {
     const current = answers.homeFeeling;
     const next = current.includes(label)
@@ -75,11 +81,13 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
 
   function pickSunday(label: string) {
     update("sundayMorning", label);
-    setTimeout(() => setSlide(2), 220);
+    setTimeout(() => setSlide(2), 280);
   }
 
+  // ── Slide 2: auto-advance 300ms after pick ────────────────────────────────
   function pickStyle(value: StyleValue) {
     update("modernVsCozy", value);
+    setTimeout(() => onNext(), 300);
   }
 
   // ── Slide progress dots ───────────────────────────────────────────────────
@@ -110,7 +118,7 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
         <p className="text-[#8c8580] text-sm">Pick everything that feels right.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-8">
+      <div className="grid grid-cols-2 gap-2 mb-6">
         {HOME_FEELINGS.map((label) => (
           <Chip
             key={label}
@@ -121,15 +129,11 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
         ))}
       </div>
 
-      {answers.homeFeeling.length > 0 && (
-        <button
-          onClick={() => setSlide(1)}
-          className="w-full flex items-center justify-center gap-2 text-white font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
-          style={{ background: "#1a1512", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}
-        >
-          Continue <ArrowRight size={15} />
-        </button>
-      )}
+      <div className="h-5 flex items-center justify-center">
+        {answers.homeFeeling.length > 0 && (
+          <p className="text-[#b8b4b0] text-xs animate-fade-in">Moving on in a moment...</p>
+        )}
+      </div>
     </div>
   );
 
@@ -170,7 +174,7 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
         <p className="text-[#8c8580] text-sm">One pick, gut instinct.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-8">
+      <div className="grid grid-cols-2 gap-2 mb-6">
         {STYLE_OPTIONS.map((value) => (
           <Chip
             key={value}
@@ -181,15 +185,11 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
         ))}
       </div>
 
-      {answers.modernVsCozy && (
-        <button
-          onClick={onNext}
-          className="w-full flex items-center justify-center gap-2 text-white font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
-          style={{ background: "#1a1512", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}
-        >
-          Continue <ArrowRight size={15} />
-        </button>
-      )}
+      <div className="h-5 flex items-center justify-center">
+        {answers.modernVsCozy && (
+          <p className="text-[#b8b4b0] text-xs animate-fade-in">Moving on...</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
+"use client";
+
 import { BuyingTimeline } from "@/types";
 import { StepProps } from "./shared";
 import { formatCurrency } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
 
 const TIMELINES: { value: BuyingTimeline; emoji: string; sub: string }[] = [
   { value: "ASAP",           emoji: "🔥", sub: "I'm actively searching now" },
@@ -12,6 +13,11 @@ const TIMELINES: { value: BuyingTimeline; emoji: string; sub: string }[] = [
 ];
 
 export default function StepTimeline({ answers, update, onNext }: StepProps) {
+  function pickTimeline(value: BuyingTimeline) {
+    update("timeline", value);
+    setTimeout(onNext, 1400);
+  }
+
   return (
     <div>
       <div className="mb-10">
@@ -30,7 +36,7 @@ export default function StepTimeline({ answers, update, onNext }: StepProps) {
             <button
               key={t.value}
               type="button"
-              onClick={() => update("timeline", t.value)}
+              onClick={() => pickTimeline(t.value)}
               className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-150 btn-press"
               style={{
                 background: selected
@@ -102,13 +108,11 @@ export default function StepTimeline({ answers, update, onNext }: StepProps) {
         </div>
       </div>
 
-      <button
-        onClick={onNext}
-        className="w-full flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm py-4 rounded-2xl transition-all btn-press"
-        style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30), 0 2px 8px rgba(201,168,112,0.18)" }}
-      >
-        Continue <ArrowRight size={15} />
-      </button>
+      <div className="h-6 flex items-center justify-center">
+        {answers.timeline && (
+          <p className="text-[#b8b4b0] text-xs animate-fade-in">Moving on in a moment...</p>
+        )}
+      </div>
     </div>
   );
 }
