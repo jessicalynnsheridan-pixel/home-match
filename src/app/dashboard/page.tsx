@@ -597,7 +597,12 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
 }
 
 // ─── Smart Insights Bar ───────────────────────────────────────────────────────
-function SmartInsightsBar({ leads }: { leads: Lead[] }) {
+function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
+  leads: Lead[];
+  onScoreFilter: (f: LeadScore | "All") => void;
+  onStatusFilter: (f: LeadStatus | "All") => void;
+  onSearch: (q: string) => void;
+}) {
   const now = Date.now();
 
   const coldLeads = leads.filter((l) => {
@@ -615,16 +620,18 @@ function SmartInsightsBar({ leads }: { leads: Lead[] }) {
     return sum + avg * 0.025;
   }, 0);
 
-  const insights: { icon: React.ReactNode; text: string; sub: string; color: string; bg: string }[] = [];
+  const insights: { icon: React.ReactNode; text: string; sub: string; color: string; bg: string; action: string; onClick: () => void }[] = [];
 
   if (coldLeads.length > 0) {
     const fmt = atRiskCommission >= 1000 ? `$${Math.round(atRiskCommission / 1000)}K` : `$${Math.round(atRiskCommission)}`;
     insights.push({
       icon: <ShieldAlert size={14} className="text-rose-500" />,
       text: `${coldLeads.length} lead${coldLeads.length > 1 ? "s" : ""} going cold`,
-      sub: `${fmt} commission at risk · Re-engage now`,
+      sub: `${fmt} commission at risk`,
       color: "text-rose-700",
       bg: "bg-rose-50 border-rose-200",
+      action: "Show them →",
+      onClick: () => { onScoreFilter(coldLeads[0].score as LeadScore); onStatusFilter("All"); },
     });
   }
 
@@ -632,9 +639,11 @@ function SmartInsightsBar({ leads }: { leads: Lead[] }) {
     insights.push({
       icon: <Target size={14} className="text-emerald-600" />,
       text: `${offerLeads.length} lead${offerLeads.length > 1 ? "s" : ""} at Offer Stage`,
-      sub: "You're close — keep the momentum going",
+      sub: "You're close — keep momentum",
       color: "text-emerald-700",
       bg: "bg-emerald-50 border-emerald-200",
+      action: "View leads →",
+      onClick: () => { onStatusFilter("Offer Stage"); onScoreFilter("All"); },
     });
   }
 
@@ -642,9 +651,11 @@ function SmartInsightsBar({ leads }: { leads: Lead[] }) {
     insights.push({
       icon: <Flame size={14} className="text-amber-500" />,
       text: `${hotLeads.length} hot lead${hotLeads.length > 1 ? "s" : ""} need attention`,
-      sub: "Reach out this week before they go elsewhere",
+      sub: "Reach out before they go elsewhere",
       color: "text-amber-700",
       bg: "bg-amber-50 border-amber-200",
+      action: "Show hot leads →",
+      onClick: () => { onScoreFilter("Hot"); onStatusFilter("All"); },
     });
   }
 
@@ -658,6 +669,8 @@ function SmartInsightsBar({ leads }: { leads: Lead[] }) {
       sub: `Timeline: ${urgentTimeline.answers.timeline} · ${urgentTimeline.answers.preferredCity || "local"}`,
       color: "text-violet-700",
       bg: "bg-violet-50 border-violet-200",
+      action: "Find them →",
+      onClick: () => { onSearch(urgentTimeline.answers.firstName ?? ""); onScoreFilter("All"); onStatusFilter("All"); },
     });
   }
 
@@ -665,22 +678,29 @@ function SmartInsightsBar({ leads }: { leads: Lead[] }) {
     insights.push({
       icon: <Activity size={14} className="text-sky-500" />,
       text: "Pipeline looking healthy",
-      sub: "No urgent actions right now — great work",
+      sub: "No urgent actions right now",
       color: "text-sky-700",
       bg: "bg-sky-50 border-sky-200",
+      action: "View all →",
+      onClick: () => { onScoreFilter("All"); onStatusFilter("All"); },
     });
   }
 
   return (
     <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
       {insights.map((ins, i) => (
-        <div key={i} className={`flex items-start gap-2.5 shrink-0 border rounded-xl px-4 py-3 min-w-[220px] max-w-[260px] ${ins.bg}`}>
+        <button
+          key={i}
+          onClick={ins.onClick}
+          className={`flex items-start gap-2.5 shrink-0 border rounded-xl px-4 py-3 min-w-[220px] max-w-[260px] text-left cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.99] transition-all duration-150 ${ins.bg}`}
+        >
           <div className="mt-0.5 shrink-0">{ins.icon}</div>
-          <div>
+          <div className="flex-1 min-w-0">
             <p className={`text-xs font-semibold ${ins.color}`}>{ins.text}</p>
             <p className="text-[10px] text-[#8c8580] mt-0.5 leading-relaxed">{ins.sub}</p>
+            <p className={`text-[11px] font-bold mt-2 ${ins.color}`}>{ins.action}</p>
           </div>
-        </div>
+        </button>
       ))}
     </div>
   );
@@ -1049,7 +1069,12 @@ export default function DashboardPage() {
 
             {/* ── Smart Insights ────────────────────────────────────────── */}
             {!loading && allLeads.length > 0 && (
-              <SmartInsightsBar leads={allLeads} />
+              <SmartInsightsBar
+                leads={allLeads}
+                onScoreFilter={setScoreFilter}
+                onStatusFilter={setStatusFilter}
+                onSearch={setSearch}
+              />
             )}
 
             {/* ── All Leads ─────────────────────────────────────────────── */}
