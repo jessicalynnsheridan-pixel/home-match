@@ -48,8 +48,8 @@ function VibeCard({
         animationDelay: `${delay}s`,
         minHeight: 192,
         boxShadow: selected
-          ? "0 0 0 2.5px rgba(184,168,138,1), 0 8px 32px rgba(0,0,0,0.5), 0 0 40px rgba(184,168,138,0.3)"
-          : "0 4px 20px rgba(0,0,0,0.35)",
+          ? "0 0 0 2.5px rgba(184,168,138,1)"
+          : "none",
         transform: selected ? "scale(1.02)" : "scale(1)",
       }}
     >
@@ -105,8 +105,8 @@ function StyleTile({ value, emoji, bg, selected, onClick, delay }: {
         animationDelay: `${delay}s`,
         minHeight: 110,
         boxShadow: selected
-          ? "0 0 0 2.5px rgba(184,168,138,1), 0 8px 24px rgba(0,0,0,0.4)"
-          : "0 3px 14px rgba(0,0,0,0.3)",
+          ? "0 0 0 2.5px rgba(184,168,138,1)"
+          : "none",
         transform: selected ? "scale(1.02)" : "scale(1)",
       }}
     >
@@ -148,11 +148,11 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
       {/* ── Question 1: Core feeling ────────────────────────────────────────── */}
       <div className="mb-10">
         <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-3">
-          <span className="text-[#2c2825]">How do you want to feel</span><br />
-          <span className="text-gradient-gold">when you walk in?</span>
+          <span className="text-[#2c2825]">How should home</span><br />
+          <span className="text-gradient-gold">make you feel?</span>
         </h2>
         <p className="text-[#8c8580] text-sm mb-8">
-          Don&apos;t overthink it, tap everything that resonates.
+          Tap everything that resonates.
         </p>
 
         <div className="grid grid-cols-2 gap-3">
