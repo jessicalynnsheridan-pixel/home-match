@@ -258,11 +258,11 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
             <div style={{ background: "#ffe4e6", border: "1px solid #fda4af", borderRadius: "16px", padding: "16px" }}>
               <div className="flex items-center gap-1.5 mb-2.5">
                 <XIcon size={12} style={{ color: "#e11d48" }} />
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#9f1239" }}>Do Not Want</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#9f1239" }}>Does Not Want</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {answers.dealBreakers.map((item) => (
-                  <span key={item} className="text-[11px] font-semibold px-2.5 py-1 rounded-full line-through" style={{ background: "#fda4af", color: "#881337", textDecorationColor: "#e11d48" }}>
+                  <span key={item} className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: "#fda4af", color: "#881337" }}>
                     {item}
                   </span>
                 ))}
