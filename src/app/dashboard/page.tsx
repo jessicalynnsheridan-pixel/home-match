@@ -1369,7 +1369,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Automations */}
-            <AutomationsWidget leads={allLeads} />
+            <AutomationsWidget leads={allLeads} realtorName={realtorName} />
 
             {/* Showing Request Inbox */}
             <ShowingInboxWidget realtorId={realtorId} />

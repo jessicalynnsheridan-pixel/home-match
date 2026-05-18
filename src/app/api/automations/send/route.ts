@@ -24,6 +24,28 @@ function formatBudget(min?: number, max?: number) {
   return "Not specified";
 }
 
+// ─── Wrap custom plain-text into branded HTML ─────────────────────────────────
+
+function wrapInHtml(subject: string, text: string, realtorName: string): string {
+  const paragraphs = text
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p style="font-size:14px;color:#5c5550;line-height:1.8;margin:0 0 16px;font-family:Georgia,serif">${p.replace(/\n/g, "<br/>")}</p>`)
+    .join("");
+  return `
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#2c2825;background:#ffffff">
+      <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
+        <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
+        <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">${subject}</h1>
+      </div>
+      <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
+        ${paragraphs}
+        <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:8px">Sent via HomeMatch · Reply directly to reach ${realtorName}</p>
+      </div>
+    </div>`;
+}
+
 function emailDay1(realtorName: string, answers: LeadAnswers) {
   const first = answers.firstName ?? "there";
   const city = answers.preferredCity ?? "your target area";
@@ -114,8 +136,8 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json() as { leadId: string; type: AutomationType };
-  const { leadId, type } = body;
+  const body = await request.json() as { leadId: string; type: AutomationType; subject?: string; customText?: string };
+  const { leadId, type, subject: customSubject, customText } = body;
   if (!leadId || !type) return NextResponse.json({ error: "Missing leadId or type" }, { status: 400 });
 
   const resendKey = process.env.RESEND_API_KEY;
@@ -148,13 +170,20 @@ export async function POST(request: NextRequest) {
     user.email?.split("@")[0] ??
     "Your agent";
 
-  // Build email
-  const builders: Record<AutomationType, () => { subject: string; html: string }> = {
-    day1: () => emailDay1(realtorName, answers),
-    day3: () => emailDay3(realtorName, answers),
-    day7: () => emailDay7(realtorName, answers),
-  };
-  const { subject, html } = builders[type]();
+  // Build email — prefer custom text from frontend (edited by realtor), fall back to template
+  let subject: string;
+  let html: string;
+  if (customText && customSubject) {
+    subject = customSubject;
+    html = wrapInHtml(customSubject, customText, realtorName);
+  } else {
+    const builders: Record<AutomationType, () => { subject: string; html: string }> = {
+      day1: () => emailDay1(realtorName, answers),
+      day3: () => emailDay3(realtorName, answers),
+      day7: () => emailDay7(realtorName, answers),
+    };
+    ({ subject, html } = builders[type]());
+  }
 
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? "HomeMatch <onboarding@resend.dev>";
 
