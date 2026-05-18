@@ -349,7 +349,12 @@ export default function RealtorSignupPage() {
 
             <p className="text-center text-[#8c8580] text-xs leading-relaxed">
               By submitting, you agree to our Terms of Service and Privacy Policy.
-              Your RECO license number is used to verify registration.
+            </p>
+            <p className="text-center text-sm text-[#8c8580]">
+              Already have an account?{" "}
+              <Link href="/login" className="text-[#2c2825] font-medium hover:underline">
+                Sign in
+              </Link>
             </p>
           </form>
         )}
