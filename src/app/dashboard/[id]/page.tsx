@@ -39,11 +39,46 @@ function getPlaybook(lead: Lead): Playbook {
   return { icon: <Clock size={13} />, action: "Monthly touch - no rush", color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" };
 }
 
+// Persist mock lead overrides across navigation (localStorage)
+function getMockOverrides(): Record<string, Partial<Lead>> {
+  try { return JSON.parse(localStorage.getItem("hm_mock_overrides") ?? "{}"); } catch { return {}; }
+}
+function saveMockOverride(id: string, patch: Partial<Lead>) {
+  try {
+    const all = getMockOverrides();
+    all[id] = { ...all[id], ...patch };
+    localStorage.setItem("hm_mock_overrides", JSON.stringify(all));
+  } catch { /* ignore */ }
+}
+
+// Persist notes and reminders per lead (localStorage, works for both mock and real leads)
+function getLeadNotes(id: string): RealtorNote[] {
+  try { return JSON.parse(localStorage.getItem(`hm_notes_${id}`) ?? "[]"); } catch { return []; }
+}
+function saveLeadNotes(id: string, notes: RealtorNote[]) {
+  try { localStorage.setItem(`hm_notes_${id}`, JSON.stringify(notes)); } catch { /* ignore */ }
+}
+function getLeadReminders(id: string): FollowUpReminder[] {
+  try { return JSON.parse(localStorage.getItem(`hm_reminders_${id}`) ?? "[]"); } catch { return []; }
+}
+function saveLeadReminders(id: string, reminders: FollowUpReminder[]) {
+  try { localStorage.setItem(`hm_reminders_${id}`, JSON.stringify(reminders)); } catch { /* ignore */ }
+}
+
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
-  const initialLead = mockLeads.find((l) => l.id === id);
+  const baseMockLead = mockLeads.find((l) => l.id === id);
+  // Apply any previously saved overrides so status changes survive navigation
+  const initialLead = baseMockLead
+    ? {
+        ...baseMockLead,
+        ...(typeof window !== "undefined" ? getMockOverrides()[id] ?? {} : {}),
+        realtorNotes: typeof window !== "undefined" ? getLeadNotes(id) : baseMockLead.realtorNotes,
+        reminders: typeof window !== "undefined" ? getLeadReminders(id) : baseMockLead.reminders,
+      }
+    : undefined;
   const [lead, setLead] = useState<Lead | null>(initialLead ?? null);
   const [realtorName, setRealtorName] = useState<string>("");
   const [realtorPhone, setRealtorPhone] = useState<string>("");
@@ -74,8 +109,8 @@ export default function LeadDetailPage() {
           status: (row.status as Lead["status"]) ?? "New Lead",
           isPriority: (row.is_priority as boolean) ?? false,
           submittedAt: row.submitted_at as string,
-          realtorNotes: [],
-          reminders: [],
+          realtorNotes: getLeadNotes(row.id as string),
+          reminders: getLeadReminders(row.id as string),
           savedHomeIds: [],
           answers: row.answers as Lead["answers"],
         });
@@ -107,16 +142,17 @@ export default function LeadDetailPage() {
     setLead((p) => p && { ...p, status });
     setStatusSaved(false);
     const isMock = mockLeads.some((l) => l.id === id);
-    if (!isMock) {
+    if (isMock) {
+      saveMockOverride(id, { status });
+      setStatusSaved(true);
+      setTimeout(() => setStatusSaved(false), 2000);
+    } else {
       const supabase = createClient();
       const { error } = await supabase.from("leads").update({ status }).eq("id", id);
       if (!error) {
         setStatusSaved(true);
         setTimeout(() => setStatusSaved(false), 2000);
       }
-    } else {
-      setStatusSaved(true);
-      setTimeout(() => setStatusSaved(false), 2000);
     }
   }
 
@@ -124,7 +160,9 @@ export default function LeadDetailPage() {
     const next = !lead?.isPriority;
     setLead((p) => p && { ...p, isPriority: next });
     const isMock = mockLeads.some((l) => l.id === id);
-    if (!isMock) {
+    if (isMock) {
+      saveMockOverride(id, { isPriority: next });
+    } else {
       const supabase = createClient();
       await supabase.from("leads").update({ is_priority: next }).eq("id", id);
     }
@@ -134,16 +172,30 @@ export default function LeadDetailPage() {
     const text = newNote.trim();
     if (!text) return;
     const note: RealtorNote = { id: `note-${Date.now()}`, text, createdAt: new Date().toISOString() };
-    setLead((p) => p ? { ...p, realtorNotes: [...p.realtorNotes, note] } : p);
+    setLead((p) => {
+      if (!p) return p;
+      const updated = [...p.realtorNotes, note];
+      saveLeadNotes(p.id, updated);
+      return { ...p, realtorNotes: updated };
+    });
     setNewNote("");
   }
 
-  function deleteNote(id: string) {
-    setLead((p) => p ? { ...p, realtorNotes: p.realtorNotes.filter((n) => n.id !== id) } : p);
+  function deleteNote(noteId: string) {
+    setLead((p) => {
+      if (!p) return p;
+      const updated = p.realtorNotes.filter((n) => n.id !== noteId);
+      saveLeadNotes(p.id, updated);
+      return { ...p, realtorNotes: updated };
+    });
   }
 
   function updateReminders(reminders: FollowUpReminder[]) {
-    setLead((p) => p ? { ...p, reminders } : p);
+    setLead((p) => {
+      if (!p) return p;
+      saveLeadReminders(p.id, reminders);
+      return { ...p, reminders };
+    });
   }
 
   function updateChecklist(items: MortgageChecklistItem[]) {

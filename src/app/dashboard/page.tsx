@@ -55,7 +55,7 @@ function formatDate() {
 }
 
 function quickGmailUrl(to: string, subject: string, body: string) {
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function quickSmsUrl(phone: string, body: string) {
@@ -262,9 +262,9 @@ function ActionQueueItem({
               <Copy size={11} /> Copy text
             </button>
             {isEmailType && gmailUrl ? (
-              <a href={gmailUrl} target="_blank" rel="noopener noreferrer"
+              <a href={gmailUrl}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium">
-                <ExternalLink size={11} /> Open in Gmail
+                <ExternalLink size={11} /> Open Draft
               </a>
             ) : smsUrl ? (
               <a href={smsUrl}
@@ -315,7 +315,7 @@ export default function DashboardPage() {
   }, []);
 
   const shareableLink = realtorId
-    ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app"}/?r=${realtorId}`
+    ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app"}/questionnaire?r=${realtorId}`
     : "";
 
   function copyLink() {

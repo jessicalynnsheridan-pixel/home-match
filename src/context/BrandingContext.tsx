@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { BrandingConfig } from "@/types";
 import { getRealtorAttribution, attributionToBrandingPatch } from "@/lib/realtorAttribution";
+import { createClient } from "@/lib/supabase/client";
 
 const DEFAULTS: BrandingConfig = {
   agencyName: "Home Match Realty",
@@ -32,25 +33,32 @@ const BrandingContext = createContext<BrandingContextValue>({
 export function BrandingProvider({ children }: { children: ReactNode }) {
   const [branding, setBranding] = useState<BrandingConfig>(DEFAULTS);
 
-  // Hydrate from localStorage on mount.
-  // Priority: explicit branding override > realtor attribution > defaults.
-  // Wrapped in setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
+  // Hydrate on mount.
+  // Priority: Supabase user metadata > localStorage fallback > realtor attribution > defaults.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      // 1. Start with defaults
+    const timer = setTimeout(async () => {
       let resolved: BrandingConfig = DEFAULTS;
 
-      // 2. Layer in realtor attribution if present (invite link, QR, etc.)
+      // 1. Layer in realtor attribution if present (invite link, QR, etc.)
       const attribution = getRealtorAttribution();
       if (attribution) {
         resolved = { ...resolved, ...attributionToBrandingPatch(attribution) };
       }
 
-      // 3. Layer in explicit branding override (realtor-customised settings)
+      // 2. Layer in localStorage fallback (for unauthenticated or offline)
       const stored = localStorage.getItem("homematch_branding");
       if (stored) {
         try { resolved = { ...resolved, ...JSON.parse(stored) }; } catch { /* ignore */ }
       }
+
+      // 3. Layer in Supabase user metadata (authoritative for logged-in realtors)
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.user_metadata?.branding) {
+          resolved = { ...resolved, ...user.user_metadata.branding };
+        }
+      } catch { /* ignore - not logged in */ }
 
       setBranding(resolved);
     }, 0);
@@ -60,13 +68,17 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   function update(patch: Partial<BrandingConfig>) {
     setBranding((prev) => {
       const next = { ...prev, ...patch };
+      // Always save to localStorage as immediate fallback
       localStorage.setItem("homematch_branding", JSON.stringify(next));
+      // Persist to Supabase user metadata (best-effort, non-blocking)
+      createClient().auth.updateUser({ data: { branding: next } }).catch(() => { /* ignore */ });
       return next;
     });
   }
 
   function reset() {
     localStorage.removeItem("homematch_branding");
+    createClient().auth.updateUser({ data: { branding: null } }).catch(() => { /* ignore */ });
     setBranding(DEFAULTS);
   }
 
