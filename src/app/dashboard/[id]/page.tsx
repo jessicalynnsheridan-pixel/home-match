@@ -12,6 +12,7 @@ import DreamHomeProfile from "@/components/dashboard/DreamHomeProfile";
 import FollowUpReminders from "@/components/dashboard/FollowUpReminders";
 import EmailTemplates from "@/components/dashboard/EmailTemplates";
 import MortgageChecklist from "@/components/dashboard/MortgageChecklist";
+import BuyerBrief from "@/components/dashboard/BuyerBrief";
 import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, Info } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { calcBuyerIntelligence } from "@/lib/buyerIntelligence";
@@ -22,7 +23,7 @@ const STATUS_OPTIONS: LeadStatus[] = [
   "New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed",
 ];
 
-type Tab = "profile" | "intelligence" | "email" | "checklist";
+type Tab = "brief" | "profile" | "intelligence" | "email" | "checklist";
 
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +32,7 @@ export default function LeadDetailPage() {
   const initialLead = mockLeads.find((l) => l.id === id);
   const [lead, setLead] = useState<Lead | null>(initialLead ?? null);
   const [newNote, setNewNote] = useState("");
-  const [tab, setTab] = useState<Tab>("profile");
+  const [tab, setTab] = useState<Tab>("brief");
 
   const properties = mockProperties.filter((p) => p.leadId === id);
 
@@ -74,9 +75,10 @@ export default function LeadDetailPage() {
   }
 
   const TABS: { id: Tab; label: string; badge?: string }[] = [
+    { id: "brief", label: "Buyer Brief" },
     { id: "profile", label: "Full Profile" },
     { id: "intelligence", label: "Buyer Intelligence", badge: intelligence.style.type },
-    { id: "email", label: "Email Templates" },
+    { id: "email", label: "Outreach Hub" },
     { id: "checklist", label: "Mortgage Checklist" },
   ];
 
@@ -209,6 +211,9 @@ export default function LeadDetailPage() {
                 </button>
               ))}
             </div>
+
+            {/* Tab: Buyer Brief */}
+            {tab === "brief" && <BuyerBrief lead={lead} />}
 
             {/* Tab: Full Profile */}
             {tab === "profile" && (
