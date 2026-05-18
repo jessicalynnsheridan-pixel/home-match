@@ -16,11 +16,12 @@ const HOME_FEELINGS = [
 ];
 
 const SUNDAY_MOODS = [
-  "Coffee in a sunny kitchen",
-  "Hosting brunch in the backyard",
-  "Reading by a fireplace",
-  "Quiet morning, no neighbours",
-  "Kids playing while I cook",
+  { label: "Total quiet",       bg: "#4a4540" },
+  { label: "Hosting people",    bg: "#c87941" },
+  { label: "Outside with kids", bg: "#4a7c59" },
+  { label: "Solo, no plans",    bg: "#4a6f9c" },
+  { label: "Getting out",       bg: "#7a6858" },
+  { label: "Slow & cozy",       bg: "#8c4a3c" },
 ];
 
 type StyleValue = "" | "Modern & minimal" | "Warm & cozy" | "Classic elegance" | "Bold & unique";
@@ -119,22 +120,32 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
         <p className="text-[#8c8580] text-sm">Tap one.</p>
       </div>
 
-      <div className="space-y-2.5">
-        {SUNDAY_MOODS.map((label) => {
-          const selected = answers.sundayMorning === label;
+      <div className="grid grid-cols-2 gap-2.5">
+        {SUNDAY_MOODS.map((item) => {
+          const selected = answers.sundayMorning === item.label;
           return (
             <button
-              key={label}
+              key={item.label}
               type="button"
-              onClick={() => pickSunday(label)}
-              className="w-full text-left px-5 py-4 rounded-2xl border text-sm font-medium transition-all duration-150 btn-press"
+              onClick={() => pickSunday(item.label)}
+              className="relative rounded-2xl text-left transition-all duration-150 btn-press"
               style={{
-                background: selected ? "#1a1512" : "#ffffff",
-                border: selected ? "1.5px solid #1a1512" : "1.5px solid #e0dbd4",
-                color: selected ? "#ffffff" : "#2c2825",
+                background: item.bg,
+                minHeight: 110,
+                outline: selected ? "2.5px solid #1a1512" : "2.5px solid transparent",
+                outlineOffset: "2px",
               }}
             >
-              {label}
+              <div className="p-4 flex flex-col justify-end h-full" style={{ minHeight: 110 }}>
+                <p className="font-semibold text-sm text-white">{item.label}</p>
+              </div>
+              {selected && (
+                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white flex items-center justify-center">
+                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                    <path d="M1 3.5L3 5.5L8 1" stroke="#1a1512" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              )}
             </button>
           );
         })}
