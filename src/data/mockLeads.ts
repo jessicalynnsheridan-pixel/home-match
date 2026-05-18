@@ -38,7 +38,7 @@ export const mockLeads: Lead[] = [
     ],
     answers: {
       homeFeeling: ["Peaceful retreat", "Family nest"],
-      sundayMorning: "Quiet morning, no neighbours in sight",
+      sundayMorning: "Total quiet",
       currentFrustration: ["Too much noise", "No outdoor space"],
       hostingVsPrivacy: "Balance of both",
       modernVsCozy: "Classic elegance",
@@ -87,7 +87,7 @@ export const mockLeads: Lead[] = [
     reminders: [],
     answers: {
       homeFeeling: ["Social hub", "Modern haven"],
-      sundayMorning: "Hosting brunch with friends in a beautiful space",
+      sundayMorning: "Hosting people",
       currentFrustration: ["Not enough space to entertain", "Condo fees eating my budget"],
       hostingVsPrivacy: "Hosting haven",
       modernVsCozy: "Modern & minimal",
@@ -149,7 +149,7 @@ export const mockLeads: Lead[] = [
     ],
     answers: {
       homeFeeling: ["Family nest", "Peaceful retreat"],
-      sundayMorning: "Morning run then coffee in the backyard",
+      sundayMorning: "Getting out",
       currentFrustration: ["Not enough bedrooms for growing family", "No backyard"],
       hostingVsPrivacy: "Balance of both",
       modernVsCozy: "Warm & cozy",

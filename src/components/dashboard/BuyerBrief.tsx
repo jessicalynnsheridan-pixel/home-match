@@ -182,9 +182,15 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
     availabilityHints.push("Prefers weekday showings");
   } else if (answers.sundayMorning === "Getting out" || answers.sundayMorning === "Outside with kids") {
     availabilityHints.push("Flexible — weekends work");
+  } else if (answers.sundayMorning === "Hosting people" || answers.sundayMorning === "Solo, no plans") {
+    availabilityHints.push("Weekends likely busy — book ahead");
   }
   if (answers.timeline === "ASAP" || answers.timeline === "1–3 months") {
     availabilityHints.push("Urgently available");
+  } else if (answers.timeline === "3–6 months") {
+    availabilityHints.push("Flexible timeline");
+  } else if (answers.timeline === "6–12 months" || answers.timeline === "Just exploring") {
+    availabilityHints.push("No rush — schedule when ready");
   }
   if (availabilityHints.length === 0) availabilityHints.push("Contact to confirm availability");
 
