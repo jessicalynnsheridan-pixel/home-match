@@ -174,30 +174,47 @@ function IntegrationsInner() {
   const searchParams = useSearchParams();
   const [gmailConnected, setGmailConnected] = useState(false);
   const [gmailEmail, setGmailEmail] = useState("");
-  const [toast, setToast] = useState<"connected" | "error" | null>(null);
+  const [gcalConnected, setGcalConnected] = useState(false);
+  const [gcalEmail, setGcalEmail] = useState("");
+  const [toast, setToast] = useState<{ type: "connected" | "error"; provider: "gmail" | "gcal" } | null>(null);
 
   useEffect(() => {
-    // Load Gmail connection status from the realtor_integrations table (server-side tokens)
+    // Load integration statuses from the realtor_integrations table
     const supabase = createClient();
+
     supabase
       .from("realtor_integrations")
-      .select("email, connected_at")
-      .eq("provider", "gmail")
-      .maybeSingle()
+      .select("provider, email, connected_at")
+      .in("provider", ["gmail", "google_calendar"])
       .then(({ data }) => {
-        if (data) {
-          setGmailConnected(true);
-          setGmailEmail(data.email ?? "");
+        if (!data) return;
+        for (const row of data) {
+          if (row.provider === "gmail") {
+            setGmailConnected(true);
+            setGmailEmail(row.email ?? "");
+          }
+          if (row.provider === "google_calendar") {
+            setGcalConnected(true);
+            setGcalEmail(row.email ?? "");
+          }
         }
       });
 
     // Show toast if redirected back from OAuth
-    const result = searchParams.get("gmail");
-    if (result === "connected") {
-      setToast("connected");
+    const gmailResult = searchParams.get("gmail");
+    const gcalResult = searchParams.get("gcal");
+
+    if (gmailResult === "connected") {
+      setToast({ type: "connected", provider: "gmail" });
       setTimeout(() => setToast(null), 5000);
-    } else if (result === "error") {
-      setToast("error");
+    } else if (gmailResult === "error") {
+      setToast({ type: "error", provider: "gmail" });
+      setTimeout(() => setToast(null), 5000);
+    } else if (gcalResult === "connected") {
+      setToast({ type: "connected", provider: "gcal" });
+      setTimeout(() => setToast(null), 5000);
+    } else if (gcalResult === "error") {
+      setToast({ type: "error", provider: "gcal" });
       setTimeout(() => setToast(null), 5000);
     }
   }, [searchParams]);
@@ -251,13 +268,20 @@ function IntegrationsInner() {
       logoColor: "#4285F4",
       category: "calendar",
       description: "Auto-create calendar events for follow-ups, showings, and call reminders directly from the app.",
-      status: "coming_soon",
+      status: gcalConnected ? "connected" : "not_connected",
+      connectedEmail: gcalEmail,
       features: [
         "Create showing appointments with one click",
         "Follow-up reminders sync to your calendar",
         "Invite buyers to events directly",
         "Events include buyer profile link in notes",
       ],
+      setupSteps: [
+        { label: "Click Connect Google Calendar below", detail: "You'll be taken to Google to sign in and grant permission. We only request access to create and manage calendar events." },
+        { label: "Choose your Google account", detail: "Use the same Google account you use for your calendar. Works with personal Gmail and Google Workspace." },
+        { label: "You're done", detail: "Follow-up reminders and showings can be added directly to your Google Calendar from any lead's profile." },
+      ],
+      connectHref: "/api/auth/google-calendar",
     },
     {
       id: "outlook_calendar",
@@ -301,12 +325,10 @@ function IntegrationsInner() {
       {/* Toast notifications */}
       {toast && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3.5 rounded-2xl shadow-lg text-sm font-medium flex items-center gap-2.5 transition-all ${
-          toast === "connected"
-            ? "bg-emerald-600 text-white"
-            : "bg-red-600 text-white"
+          toast.type === "connected" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
         }`}>
-          {toast === "connected" ? (
-            <><CheckCircle size={16} /> Gmail connected successfully!</>
+          {toast.type === "connected" ? (
+            <><CheckCircle size={16} /> {toast.provider === "gmail" ? "Gmail" : "Google Calendar"} connected successfully!</>
           ) : (
             <>Something went wrong. Please try again.</>
           )}
