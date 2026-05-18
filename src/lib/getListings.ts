@@ -112,7 +112,7 @@ export async function getListings(): Promise<Listing[]> {
       });
 
       if (!res.ok) {
-        console.error(`[RESO] ${res.status} ${res.statusText} — falling back to mock data`);
+        console.error(`[RESO] ${res.status} ${res.statusText} - falling back to mock data`);
         return niagaraListings;
       }
 
@@ -120,7 +120,7 @@ export async function getListings(): Promise<Listing[]> {
       const records: ResoRecord[] = Array.isArray(json.value) ? json.value : [];
       return records.map(mapResoRecord);
     } catch (err) {
-      console.error("[RESO] Fetch failed — falling back to mock data:", err);
+      console.error("[RESO] Fetch failed - falling back to mock data:", err);
       return niagaraListings;
     }
   }

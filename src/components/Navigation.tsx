@@ -233,7 +233,7 @@ export default function Navigation() {
           isDark ? "border-white/10 bg-[#141210]" : "border-[#e8e4de] bg-[#faf9f7]"
         }`}>
 
-          {/* Buyer features — card grid */}
+          {/* Buyer features - card grid */}
           <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1 ${isDark ? "text-[#c9a870]/70" : "text-[#b8a88a]"}`}>
             For Buyers
           </p>
@@ -271,7 +271,7 @@ export default function Navigation() {
           {/* Divider */}
           <div className={`h-px my-1 ${isDark ? "bg-white/8" : "bg-[#e8e4de]"}`} />
 
-          {/* Realtor links — compact */}
+          {/* Realtor links - compact */}
           <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1 mt-1 ${isDark ? "text-[#c9a870]/70" : "text-[#b8a88a]"}`}>
             For Realtors
           </p>

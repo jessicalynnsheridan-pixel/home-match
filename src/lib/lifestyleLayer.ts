@@ -180,28 +180,28 @@ const AMENITY_POOLS: Record<NeighbourhoodCategory, AmenityItem[]> = {
 
 const SUNDAY_ENERGY: Record<NeighbourhoodCategory, string[]> = {
   village: [
-    "Sunday here unfolds slowly on purpose. You take your coffee to the front porch, hear the church bells from a few blocks away, and find yourself in no particular hurry. The village has a rhythm that resists urgency — wine country mornings weren't designed to be rushed.",
+    "Sunday here unfolds slowly on purpose. You take your coffee to the front porch, hear the church bells from a few blocks away, and find yourself in no particular hurry. The village has a rhythm that resists urgency - wine country mornings weren't designed to be rushed.",
     "The bakery opens at eight, but there's no reason to be there before nine. A slow walk through tree-lined streets, maybe a stop at the market, and suddenly it's noon and you've done exactly what you needed to. NOTL has a way of making leisure feel earned.",
   ],
   waterfront: [
     "The morning starts with the sound of water. You'll make your coffee and take it outside without thinking about it, watching the light change on the lake before the rest of the world has woken up. There's nowhere else you'd rather be at 7am.",
-    "Open the back door and the lake is already there, doing what it does. No alarm required. The kind of Sunday morning that makes you wonder why you ever lived anywhere else — calm, wide open, entirely yours.",
+    "Open the back door and the lake is already there, doing what it does. No alarm required. The kind of Sunday morning that makes you wonder why you ever lived anywhere else - calm, wide open, entirely yours.",
   ],
   escarpment: [
-    "Drive up the escarpment before 9am and you'll have the view to yourself — the whole Niagara Peninsula spread out below, a thermos in hand. By afternoon you might find yourself at a winery tasting room without having planned it. That's just how Sundays work here.",
-    "The mornings are quiet in a way that feels like a decision. Trail before breakfast, coffee after, maybe a stop at the farm stand on the way home. Wine country doesn't demand anything of you on a Sunday — that's the whole point.",
+    "Drive up the escarpment before 9am and you'll have the view to yourself - the whole Niagara Peninsula spread out below, a thermos in hand. By afternoon you might find yourself at a winery tasting room without having planned it. That's just how Sundays work here.",
+    "The mornings are quiet in a way that feels like a decision. Trail before breakfast, coffee after, maybe a stop at the farm stand on the way home. Wine country doesn't demand anything of you on a Sunday - that's the whole point.",
   ],
   urban: [
     "Two blocks to a good coffee, a farmers' market twice a month, and a trail system most of the neighbourhood hasn't discovered yet. Sunday morning is a walk, a latte, and whatever sounds good after that. The city gives you options without demanding anything.",
     "The Saturday-night energy has settled by morning, and what's left is a neighbourhood that actually likes itself. Regulars at the café, trail runners on the creek path, the kind of Sunday that feels both easy and full.",
   ],
   suburban_family: [
-    "The kind of Sunday where you end up talking to three different neighbours without planning to. Kids on bikes, someone's dog making the rounds, a coffee on the front step. Community isn't an amenity here — it's just the street.",
+    "The kind of Sunday where you end up talking to three different neighbours without planning to. Kids on bikes, someone's dog making the rounds, a coffee on the front step. Community isn't an amenity here - it's just the street.",
     "Slow start, no agenda. The park fills up by 10, the farmers' market by 11. You'll bump into someone you know. This is the kind of neighbourhood where that happens regularly, and it never gets old.",
   ],
   rural: [
-    "Quiet here isn't the absence of noise — it's the presence of something else. Sunday might mean your own garden, a trail through old-growth forest ten minutes away, a drive for coffee that takes long enough to feel like a ritual. No rush, no agenda, no performance.",
-    "The trail is empty before 8am. The coffee shop opens at 9 and it feels like a reward. This is rural Ontario living at its most honest — space, air, and a kind of peace that suburban life keeps promising but rarely delivers.",
+    "Quiet here isn't the absence of noise - it's the presence of something else. Sunday might mean your own garden, a trail through old-growth forest ten minutes away, a drive for coffee that takes long enough to feel like a ritual. No rush, no agenda, no performance.",
+    "The trail is empty before 8am. The coffee shop opens at 9 and it feels like a reward. This is rural Ontario living at its most honest - space, air, and a kind of peace that suburban life keeps promising but rarely delivers.",
   ],
 };
 
@@ -307,7 +307,7 @@ const LIFESTYLE_STATEMENTS: Record<NeighbourhoodCategory, string[]> = {
   waterfront:      ["For the buyer who measures quality of life in mornings, not commute times.", "For people who believe water changes everything."],
   escarpment:      ["For the buyer who wants nature woven into everyday life.", "For people who think weekends should feel like vacations."],
   urban:           ["For the buyer who wants everything within walking distance.", "For people who want a neighbourhood with a personality."],
-  suburban_family: ["For the buyer who's building more than a home — they're building a family's story.", "For people who know community is the real amenity."],
+  suburban_family: ["For the buyer who's building more than a home - they're building a family's story.", "For people who know community is the real amenity."],
   rural:           ["For the buyer who knows what they're looking for: space, quiet, and room to be.", "For people who are done with density."],
 };
 

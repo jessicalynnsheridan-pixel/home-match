@@ -80,7 +80,7 @@ export interface QuestionnaireAnswers {
   bedrooms: number;
   bathrooms: number;
 
-  // Step 0 – Emotional Vibe (new — shown before contact info)
+  // Step 0 – Emotional Vibe (new - shown before contact info)
   homeFeeling: string[];          // e.g. "Peaceful retreat", "Social hub"
   sundayMorning: string;          // e.g. "Coffee in a sunny kitchen"
   currentFrustration: string[];   // e.g. "No outdoor space"

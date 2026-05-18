@@ -17,7 +17,7 @@ function getPlaybook(lead: Lead): Playbook {
     icon: <Phone size={13} />,
     action: "Call within 2 hours",
     color: "#dc2626", bg: "#fef2f2", border: "#fecaca",
-    detail: "Pre-approved, buying ASAP — window is narrow.",
+    detail: "Pre-approved, buying ASAP - window is narrow.",
   };
   if (score === "Hot") return {
     icon: <Mail size={13} />,
@@ -33,7 +33,7 @@ function getPlaybook(lead: Lead): Playbook {
   };
   return {
     icon: <Clock size={13} />,
-    action: "Monthly touch — no rush",
+    action: "Monthly touch - no rush",
     color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb",
     detail: "Early stage. Stay top of mind, don't push.",
   };
@@ -48,12 +48,12 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
   // Vibe-based openers
   if (answers.sundayMorning) {
     const map: Record<string, { hook: string; why: string }> = {
-      "Hosting people":    { hook: `"I pulled a few homes with open-plan living you'd love to host in — want me to send them over?"`, why: "Sunday morning = hosting. Lead with that." },
-      "Total quiet":       { hook: `"You mentioned wanting quiet — I've got a couple of dead-end streets with zero through-traffic. Interested?"`, why: "They value calm over convenience. Don't pitch busy areas." },
-      "Outside with kids": { hook: `"There's a place in [neighbourhood] with a huge yard and a park two doors down — thinking of you immediately."`, why: "Family & outdoor space is their anchor priority." },
-      "Solo, no plans":    { hook: `"One of these homes has a private patio that's basically made for a slow morning and good coffee."`, why: "They value personal retreat space — paint that picture." },
+      "Hosting people":    { hook: `"I pulled a few homes with open-plan living you'd love to host in - want me to send them over?"`, why: "Sunday morning = hosting. Lead with that." },
+      "Total quiet":       { hook: `"You mentioned wanting quiet - I've got a couple of dead-end streets with zero through-traffic. Interested?"`, why: "They value calm over convenience. Don't pitch busy areas." },
+      "Outside with kids": { hook: `"There's a place in [neighbourhood] with a huge yard and a park two doors down - thinking of you immediately."`, why: "Family & outdoor space is their anchor priority." },
+      "Solo, no plans":    { hook: `"One of these homes has a private patio that's basically made for a slow morning and good coffee."`, why: "They value personal retreat space - paint that picture." },
       "Getting out":       { hook: `"How important is walkability to you? A couple of these are five minutes from everything."`, why: "They want to be embedded in the neighbourhood, not just in it." },
-      "Slow & cozy":       { hook: `"I have a listing with the coziest reading nook — genuinely thought of you when I saw it."`, why: "Emotional, comfort-driven buyer. Sell feeling, not square footage." },
+      "Slow & cozy":       { hook: `"I have a listing with the coziest reading nook - genuinely thought of you when I saw it."`, why: "Emotional, comfort-driven buyer. Sell feeling, not square footage." },
     };
     const match = map[answers.sundayMorning];
     if (match) starters.push(match);
@@ -62,12 +62,12 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
   // Tradeoff-based insight
   if (answers.tradeoffQuietVsEnergy === "Quiet & calm") {
     starters.push({
-      hook: `"I'm ruling out anything near a main road for you — even if the price looks good, it won't feel right."`,
+      hook: `"I'm ruling out anything near a main road for you - even if the price looks good, it won't feel right."`,
       why: "They explicitly chose quiet over energy. Proactively filtering builds massive trust.",
     });
   } else if (answers.tradeoffQuietVsEnergy === "Buzz & energy") {
     starters.push({
-      hook: `"Are you open to [urban area]? It's got a lot happening — walkable, busy, great vibe."`,
+      hook: `"Are you open to [urban area]? It's got a lot happening - walkable, busy, great vibe."`,
       why: "Energy seekers respond to lifestyle descriptions, not just location stats.",
     });
   }
@@ -75,7 +75,7 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
   if (answers.tradeoffNewVsCharacter === "Character home") {
     starters.push({
       hook: `"Any interest in older homes with original details? Hardwood, crown moulding, that kind of character?"`,
-      why: "Character buyers often don't find what they want on MLS — position yourself as the one who knows where to look.",
+      why: "Character buyers often don't find what they want on MLS - position yourself as the one who knows where to look.",
     });
   } else if (answers.tradeoffNewVsCharacter === "New build") {
     starters.push({
@@ -86,7 +86,7 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
 
   if (answers.tradeoffPrivacyVsWalkability === "Privacy") {
     starters.push({
-      hook: `"You mentioned privacy matters — I'm looking at homes with good setbacks and tree cover. Anything in particular that matters most?"`,
+      hook: `"You mentioned privacy matters - I'm looking at homes with good setbacks and tree cover. Anything in particular that matters most?"`,
       why: "Privacy buyers often have a specific need (backyard, no overlooking neighbours). Draw it out.",
     });
   }
@@ -94,7 +94,7 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
   // Budget / pre-approval
   if (answers.preApprovalStatus === "Not yet" || answers.preApprovalStatus === "In progress") {
     starters.push({
-      hook: `"Have you had a chance to connect with a mortgage broker? Happy to make an intro — it makes your offer much stronger."`,
+      hook: `"Have you had a chance to connect with a mortgage broker? Happy to make an intro - it makes your offer much stronger."`,
       why: "Helping with financing = becoming indispensable before they even see a home.",
     });
   }
@@ -102,7 +102,7 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
   // Must-haves hook
   if (answers.mustHaves && answers.mustHaves.length > 0) {
     starters.push({
-      hook: `"You flagged [${answers.mustHaves.slice(0, 2).join(", ")}] as non-negotiables — I'm holding firm on those. Sound right?"`,
+      hook: `"You flagged [${answers.mustHaves.slice(0, 2).join(", ")}] as non-negotiables - I'm holding firm on those. Sound right?"`,
       why: "Repeating their must-haves back shows you actually read their profile. Rare. Memorable.",
     });
   }
@@ -110,7 +110,7 @@ function getConversationStarters(lead: Lead): { hook: string; why: string }[] {
   // Notes
   if (answers.additionalNotes) {
     starters.push({
-      hook: `"You mentioned: '${answers.additionalNotes.slice(0, 80)}${answers.additionalNotes.length > 80 ? "…" : ""}' — tell me more about that."`,
+      hook: `"You mentioned: '${answers.additionalNotes.slice(0, 80)}${answers.additionalNotes.length > 80 ? "…" : ""}' - tell me more about that."`,
       why: "They took time to write this. Referencing it signals you paid attention.",
     });
   }
@@ -160,13 +160,13 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
   return (
     <div className="space-y-4">
 
-      {/* At a glance — 4 stat pills */}
+      {/* At a glance - 4 stat pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { icon: <DollarSign size={13} />, label: "Budget", value: `${formatCurrency(answers.budgetMin)}–${formatCurrency(answers.budgetMax)}` },
-          { icon: <Calendar size={13} />, label: "Timeline", value: answers.timeline || "—" },
-          { icon: <MapPin size={13} />, label: "Location", value: answers.preferredCity || "—" },
-          { icon: <Home size={13} />, label: "Property", value: answers.propertyType ? `${answers.propertyType} · ${answers.bedrooms}bd` : "—" },
+          { icon: <Calendar size={13} />, label: "Timeline", value: answers.timeline || "-" },
+          { icon: <MapPin size={13} />, label: "Location", value: answers.preferredCity || "-" },
+          { icon: <Home size={13} />, label: "Property", value: answers.propertyType ? `${answers.propertyType} · ${answers.bedrooms}bd` : "-" },
         ].map(({ icon, label, value }) => (
           <div key={label} className="bg-white border border-[#e8e4de] rounded-xl px-4 py-3">
             <div className="flex items-center gap-1.5 text-[#8c8580] mb-1">

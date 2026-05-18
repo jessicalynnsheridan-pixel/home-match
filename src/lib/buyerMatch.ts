@@ -365,7 +365,7 @@ export function calcBuyerCompatibility(
   if (bc === "well within") highlights.push("Priced well within your budget with room to negotiate");
   else if (bc === "within") highlights.push("Falls within your stated budget range");
   else if (bc === "at the top of") highlights.push("Near the top of your budget, but within reach");
-  else if (bc === "slightly over") highlights.push("Slightly above your budget — worth discussing");
+  else if (bc === "slightly over") highlights.push("Slightly above your budget - worth discussing");
 
   if (locationScore >= 15) highlights.push(`Located in ${listing.city}, your preferred area`);
   if (locationScore >= 20) highlights.push(`In ${listing.neighbourhood}, one of your listed neighbourhoods`);

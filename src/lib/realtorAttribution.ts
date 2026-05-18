@@ -9,7 +9,7 @@
  * - Track which leads came from which realtor
  * - Route questionnaire completions to the right dashboard
  *
- * The buyer never sees this mechanism — they just see a personalised experience.
+ * The buyer never sees this mechanism - they just see a personalised experience.
  */
 
 export interface RealtorAttribution {
@@ -73,7 +73,7 @@ export function clearRealtorAttribution(): void {
 
 // ─── Apply to BrandingConfig ───────────────────────────────────────────────────
 // Returns a partial BrandingConfig patch based on attribution data.
-// Merges gracefully with defaults — only overrides what we know.
+// Merges gracefully with defaults - only overrides what we know.
 export function attributionToBrandingPatch(attr: RealtorAttribution) {
   return {
     realtorName: attr.name,

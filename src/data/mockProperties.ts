@@ -1,6 +1,6 @@
 import { PropertyRecommendation } from "@/types";
 
-// Mock property recommendations — swap image URLs for real ones or connect to MLS later
+// Mock property recommendations - swap image URLs for real ones or connect to MLS later
 export const mockProperties: PropertyRecommendation[] = [
   {
     id: "prop-001",

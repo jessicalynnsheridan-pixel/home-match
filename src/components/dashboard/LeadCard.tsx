@@ -67,7 +67,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
           <p className="text-[10px] font-semibold" style={{ color: pb.color }}>{pb.action}</p>
         </div>
 
-        {/* Key facts — compact 2-column */}
+        {/* Key facts - compact 2-column */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3">
           <div className="flex items-center gap-1">
             <DollarSign size={10} className="text-[#b8b4b0] shrink-0" />
@@ -75,15 +75,15 @@ export default function LeadCard({ lead }: { lead: Lead }) {
           </div>
           <div className="flex items-center gap-1">
             <Calendar size={10} className="text-[#b8b4b0] shrink-0" />
-            <p className="text-xs text-[#2c2825] truncate">{answers.timeline || "—"}</p>
+            <p className="text-xs text-[#2c2825] truncate">{answers.timeline || "-"}</p>
           </div>
           <div className="flex items-center gap-1">
             <MapPin size={10} className="text-[#b8b4b0] shrink-0" />
-            <p className="text-xs text-[#2c2825] truncate">{answers.preferredCity || "—"}</p>
+            <p className="text-xs text-[#2c2825] truncate">{answers.preferredCity || "-"}</p>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[#b8b4b0] text-[10px] shrink-0">🏠</span>
-            <p className="text-xs text-[#2c2825] truncate">{answers.propertyType || "—"} · {answers.bedrooms}bd</p>
+            <p className="text-xs text-[#2c2825] truncate">{answers.propertyType || "-"} · {answers.bedrooms}bd</p>
           </div>
         </div>
 

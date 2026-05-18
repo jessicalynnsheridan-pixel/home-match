@@ -35,7 +35,7 @@ function getPlaybook(lead: Lead): Playbook {
   if (score === "Hot" && isASAP && isFinanced) return { icon: <Phone size={13} />, action: "Call within 2 hours", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
   if (score === "Hot") return { icon: <Mail size={13} />, action: "Email today, call tomorrow", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
   if (score === "Warm") return { icon: <MessageSquare size={13} />, action: "Email now, follow up in 5 days", color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" };
-  return { icon: <Clock size={13} />, action: "Monthly touch — no rush", color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" };
+  return { icon: <Clock size={13} />, action: "Monthly touch - no rush", color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" };
 }
 
 export default function LeadDetailPage() {

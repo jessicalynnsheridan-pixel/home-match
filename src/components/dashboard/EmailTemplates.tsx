@@ -21,9 +21,9 @@ function getPlaybook(lead: Lead) {
       icon: "🔥",
       action: "Call within 2 hours",
       steps: [
-        "Text first: 'Hi [name], saw your profile come through — great taste. Have 2 homes in mind. Quick call today?'",
+        "Text first: 'Hi [name], saw your profile come through - great taste. Have 2 homes in mind. Quick call today?'",
         "Follow with the personalized email below if no reply within 3 hours",
-        "They're financed and ready — your window to be first is narrow",
+        "They're financed and ready - your window to be first is narrow",
       ],
       why: `${answers.firstName} is pre-approved, buying ${answers.timeline?.toLowerCase()}, and fully committed. This lead goes cold fast if a competitor gets there first.`,
     };
@@ -38,11 +38,11 @@ function getPlaybook(lead: Lead) {
       icon: "⚡",
       action: "Email today, call tomorrow",
       steps: [
-        "Send the personalized email now — it references their exact answers so it won't feel automated",
+        "Send the personalized email now - it references their exact answers so it won't feel automated",
         "Call or text tomorrow morning if no reply",
-        "Offer a 15-min call, not a full meeting — lower barrier to yes",
+        "Offer a 15-min call, not a full meeting - lower barrier to yes",
       ],
-      why: `${answers.firstName} scored Hot based on timeline and intent. They're shopping — your first response sets the tone for the whole relationship.`,
+      why: `${answers.firstName} scored Hot based on timeline and intent. They're shopping - your first response sets the tone for the whole relationship.`,
     };
   }
 
@@ -55,11 +55,11 @@ function getPlaybook(lead: Lead) {
       icon: "📅",
       action: "Email now, follow up in 5 days",
       steps: [
-        "Send the warm nurture email — position yourself as the expert, not the pusher",
+        "Send the warm nurture email - position yourself as the expert, not the pusher",
         "Set a 5-day reminder to check in",
-        "Share 1 market insight about their target area — builds trust without pressure",
+        "Share 1 market insight about their target area - builds trust without pressure",
       ],
-      why: `${answers.firstName} is on a ${answers.timeline} timeline. Stay warm and top-of-mind — when they're ready to move, you're the obvious call.`,
+      why: `${answers.firstName} is on a ${answers.timeline} timeline. Stay warm and top-of-mind - when they're ready to move, you're the obvious call.`,
     };
   }
 
@@ -71,11 +71,11 @@ function getPlaybook(lead: Lead) {
     icon: "🌱",
     action: "One thoughtful email, then monthly touch",
     steps: [
-      "Send the trust-building email — no pressure, all value",
+      "Send the trust-building email - no pressure, all value",
       "Add to a monthly market update list",
-      "Check back in 6 weeks — circumstances change fast",
+      "Check back in 6 weeks - circumstances change fast",
     ],
-    why: `${answers.firstName} is exploring. Don't oversell — be the realtor they remember when they're ready.`,
+    why: `${answers.firstName} is exploring. Don't oversell - be the realtor they remember when they're ready.`,
   };
 }
 
@@ -97,9 +97,9 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
   // Build the lifestyle hook from emotional answers
   let lifestyleHook = "";
   if (sunday) {
-    lifestyleHook = `You mentioned ${sunday.toLowerCase()} as your ideal Sunday — that tells me a lot about the kind of home that's actually going to feel right for you.`;
+    lifestyleHook = `You mentioned ${sunday.toLowerCase()} as your ideal Sunday - that tells me a lot about the kind of home that's actually going to feel right for you.`;
   } else if (feeling) {
-    lifestyleHook = `You're looking for something ${feeling} — not just a property that checks boxes, but a home that actually fits the life you're building.`;
+    lifestyleHook = `You're looking for something ${feeling} - not just a property that checks boxes, but a home that actually fits the life you're building.`;
   }
 
   // Build the insight line from tradeoffs
@@ -110,7 +110,7 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
   if (outdoor) insights.push("outdoor space over interior finishes");
 
   const insightLine = insights.length
-    ? `You also told us you'd choose ${insights.slice(0, 2).join(" and ")} — that helps me filter out a lot of the noise before I even show you anything.`
+    ? `You also told us you'd choose ${insights.slice(0, 2).join(" and ")} - that helps me filter out a lot of the noise before I even show you anything.`
     : "";
 
   // Must-haves line
@@ -120,12 +120,12 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
 
   // Notes callback
   const notesLine = answers.additionalNotes
-    ? `I also read your note: "${answers.additionalNotes.slice(0, 120)}${answers.additionalNotes.length > 120 ? "..." : ""}" — that context is genuinely useful.`
+    ? `I also read your note: "${answers.additionalNotes.slice(0, 120)}${answers.additionalNotes.length > 120 ? "..." : ""}" - that context is genuinely useful.`
     : "";
 
   // Finance line
   const financeLine = preApproved
-    ? `With your financing already in place, we're not waiting on anything — we can move when the right home shows up.`
+    ? `With your financing already in place, we're not waiting on anything - we can move when the right home shows up.`
     : answers.preApprovalStatus === "In progress"
     ? `Once your pre-approval comes through, we'll be in a great position to move quickly.`
     : "";
@@ -144,11 +144,11 @@ ${notesLine}
 
 I'm looking specifically in ${location}, within your ${budget} range. ${financeLine}
 
-I have a couple of properties already in mind that I think are worth a conversation. Nothing that will waste your time — I've already filtered based on what you told us matters most.
+I have a couple of properties already in mind that I think are worth a conversation. Nothing that will waste your time - I've already filtered based on what you told us matters most.
 
 Would you be open to a 15-minute call this week? I can walk you through what I've found and we can go from there.
 
-No pressure either way — just wanted to reach out as a real person, not an automated email.
+No pressure either way - just wanted to reach out as a real person, not an automated email.
 
 Warmly,`
     .split("\n")
@@ -157,7 +157,7 @@ Warmly,`
     .trim();
 
   return {
-    subject: `${name} — I've reviewed your profile and have a few homes in mind`,
+    subject: `${name} - I've reviewed your profile and have a few homes in mind`,
     body,
   };
 }
@@ -169,10 +169,10 @@ function buildTextMessage(lead: Lead): string {
   const feeling = answers.homeFeeling?.[0]?.toLowerCase();
 
   if (answers.timeline === "ASAP" || answers.timeline === "1–3 months") {
-    return `Hi ${name}, it's [Your Name] from Home Match. I've reviewed your profile — ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
+    return `Hi ${name}, it's [Your Name] from Home Match. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
   }
 
-  return `Hi ${name}, it's [Your Name]. I came across your Home Match profile — sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
+  return `Hi ${name}, it's [Your Name]. I came across your Home Match profile - sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
 }
 
 function buildCallScript(lead: Lead): string {
@@ -183,16 +183,16 @@ function buildCallScript(lead: Lead): string {
   const sunday = answers.sundayMorning;
 
   return `OPENING (first 20 seconds)
-"Hi ${name}, it's [Your Name] — I'm a realtor connected through Home Match. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
+"Hi ${name}, it's [Your Name] - I'm a realtor connected through Home Match. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
 
-IF YES — PERSONALISE IMMEDIATELY
-"I read through your answers and I have to say — you were really specific, which I appreciate. You mentioned wanting something ${feeling}${sunday ? `, and ${sunday.toLowerCase()} as your ideal Sunday vibe` : ""}. That tells me exactly what to look for."
+IF YES - PERSONALISE IMMEDIATELY
+"I read through your answers and I have to say - you were really specific, which I appreciate. You mentioned wanting something ${feeling}${sunday ? `, and ${sunday.toLowerCase()} as your ideal Sunday vibe` : ""}. That tells me exactly what to look for."
 
 THE PIVOT
-"I've actually already flagged a couple of properties in ${location} that I think fit what you described — not just on paper, but for the lifestyle you're after. Can I send you a quick overview today?"
+"I've actually already flagged a couple of properties in ${location} that I think fit what you described - not just on paper, but for the lifestyle you're after. Can I send you a quick overview today?"
 
 IF THEY PUSH BACK
-"Totally understand. I'll send you an email with what I have in mind — no commitment, just a starting point. Does [email] still work?"
+"Totally understand. I'll send you an email with what I have in mind - no commitment, just a starting point. Does [email] still work?"
 
 CLOSING
 "Perfect. I'll send that over by [time]. And if you want to just reply with any feedback, I'll refine from there. Look forward to working with you."`;
@@ -204,14 +204,14 @@ function buildFollowUpEmail(lead: Lead): { subject: string; body: string } {
   const location = answers.preferredCity || "your target area";
 
   return {
-    subject: `Following up — ${name}, still thinking about you`,
+    subject: `Following up - ${name}, still thinking about you`,
     body: `Hi ${name},
 
 Just following up on my note from earlier this week. I wanted to make sure it didn't get lost.
 
 I've been keeping a close eye on ${location} and a couple of things have come up that match what you described in your profile.
 
-If now isn't the right time, that's completely fine — I'll keep your profile active and reach out when something genuinely strong comes through.
+If now isn't the right time, that's completely fine - I'll keep your profile active and reach out when something genuinely strong comes through.
 
 But if you did want to chat, I'm easy to reach. A 10-minute call is all it takes to know whether it's worth pursuing.
 
@@ -327,7 +327,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
                 <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#6b6560] leading-relaxed">
-                  This email references {lead.answers.firstName}&apos;s actual lifestyle answers — their Sunday morning preference, home vibe, and tradeoffs. It&apos;s built to feel like you wrote it, not a CRM.
+                  This email references {lead.answers.firstName}&apos;s actual lifestyle answers - their Sunday morning preference, home vibe, and tradeoffs. It&apos;s built to feel like you wrote it, not a CRM.
                 </p>
               </div>
             </>
@@ -369,7 +369,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
                 <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#6b6560] leading-relaxed">
-                  The key is personalising within the first 30 seconds. Reference their lifestyle answer immediately — it signals you actually read their profile, not just their budget.
+                  The key is personalising within the first 30 seconds. Reference their lifestyle answer immediately - it signals you actually read their profile, not just their budget.
                 </p>
               </div>
             </>
@@ -399,7 +399,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
                 <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#6b6560] leading-relaxed">
-                  Send this 48–72 hours after the first email if no reply. Short is better — shows confidence, not desperation.
+                  Send this 48–72 hours after the first email if no reply. Short is better - shows confidence, not desperation.
                 </p>
               </div>
             </>

@@ -69,7 +69,7 @@ export default function StepTimeline({ answers, update, onNext }: StepProps) {
             <p className="text-[#8c8580] text-xs mb-0.5">Min</p>
             <p className="text-[#2c2825] font-bold text-xl">{formatCurrency(answers.budgetMin)}</p>
           </div>
-          <div className="text-[#b8b4b0] text-lg font-light">—</div>
+          <div className="text-[#b8b4b0] text-lg font-light">-</div>
           <div className="text-right">
             <p className="text-[#8c8580] text-xs mb-0.5">Max</p>
             <p className="text-[#2c2825] font-bold text-xl">{formatCurrency(answers.budgetMax)}</p>

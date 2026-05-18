@@ -54,7 +54,7 @@ function getPlaybook(lead: Lead): Playbook {
   }
   return {
     icon: <Clock size={11} />,
-    action: "Monthly touch — no rush",
+    action: "Monthly touch - no rush",
     color: "#6b7280",
     bg: "#f9fafb",
     border: "#e5e7eb",

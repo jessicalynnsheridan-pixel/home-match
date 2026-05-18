@@ -538,7 +538,7 @@ export const niagaraListings: Listing[] = [
     taxes: 3740,
   },
 
-  // ── LUXURY — NOTL ESTATE ───────────────────────────────────────────────
+  // ── LUXURY - NOTL ESTATE ───────────────────────────────────────────────
   {
     id: "lst-015",
     mlsNumber: "X9344991",
