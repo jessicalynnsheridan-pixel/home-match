@@ -3,19 +3,11 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Settings, Home, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import { Menu, X, Settings, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
 import { useBranding } from "@/context/BrandingContext";
 import { createClient } from "@/lib/supabase/client";
 
 const buyerFeatures = [
-  {
-    icon: Home,
-    label: "My Home Hub",
-    sub: "Your matches, profile & updates",
-    href: "/portal",
-    color: "#e8f0e8",
-    iconColor: "#4a7c59",
-  },
   {
     icon: Sparkles,
     label: "My Matches",

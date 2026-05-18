@@ -1,12 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { mockLeads } from "@/data/mockLeads";
 import { Lead, LeadStatus } from "@/types";
 import { formatCurrency, getScoreColor } from "@/lib/utils";
 import Link from "next/link";
 import { Star, ArrowRight, Phone, Mail, MessageSquare, Clock } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── Playbook chip ─────────────────────────────────────────────────────────────
 
@@ -72,14 +73,55 @@ const STAGE_META: Record<LeadStatus, { label: string; description: string; color
   "Closed":         { label: "Closed",          description: "Deal complete",           color: "border-emerald-200 bg-emerald-50", dot: "bg-emerald-400" },
 };
 
+function mapSupabaseLead(row: Record<string, unknown>): Lead {
+  return {
+    id: row.id as string,
+    score: (row.score as Lead["score"]) ?? "Browsing",
+    matchScore: (row.match_score as number) ?? 0,
+    status: (row.status as Lead["status"]) ?? "New Lead",
+    isPriority: (row.is_priority as boolean) ?? false,
+    submittedAt: row.submitted_at as string,
+    realtorNotes: [],
+    reminders: [],
+    savedHomeIds: [],
+    answers: row.answers as Lead["answers"],
+  };
+}
+
 export default function PipelinePage() {
-  const [leads, setLeads] = useState<Lead[]>(mockLeads);
+  const [realLeads, setRealLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
   const [dragging, setDragging] = useState<string | null>(null);
 
-  function moveLeadTo(leadId: string, status: LeadStatus) {
-    setLeads((prev) =>
+  useEffect(() => {
+    const supabase = createClient();
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("leads")
+        .select("*")
+        .eq("realtor_id", user.id)
+        .order("submitted_at", { ascending: false });
+      if (data) setRealLeads(data.map(mapSupabaseLead));
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const leads = loading ? [] : realLeads.length > 0 ? realLeads : mockLeads;
+
+  async function moveLeadTo(leadId: string, status: LeadStatus) {
+    // For demo leads, update local mock state display only
+    if (leadId.startsWith("lead-0")) {
+      // demos are read-only from mockLeads; nothing to persist
+      return;
+    }
+    setRealLeads((prev) =>
       prev.map((l) => (l.id === leadId ? { ...l, status } : l))
     );
+    const supabase = createClient();
+    await supabase.from("leads").update({ status }).eq("id", leadId);
   }
 
   function handleDragStart(e: React.DragEvent, leadId: string) {
@@ -110,7 +152,14 @@ export default function PipelinePage() {
 
         {/* Kanban columns */}
         <div className="flex gap-4 overflow-x-auto pb-6">
-          {STAGES.map((stage) => {
+          {loading && (
+            <div className="flex gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex-shrink-0 w-72 h-64 rounded-2xl bg-[#f0ece6] animate-pulse" />
+              ))}
+            </div>
+          )}
+          {!loading && STAGES.map((stage) => {
             const meta = STAGE_META[stage];
             const stageLeads = leads.filter((l) => l.status === stage);
 

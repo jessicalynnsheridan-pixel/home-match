@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, Bell, ChevronDown, CheckCircle2, ExternalLink } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
@@ -77,8 +77,6 @@ type ActionItem = {
 function generateQuickMessage(item: ActionItem, lead: Lead, realtorName: string): string {
   const name = lead.answers.firstName;
   const city = lead.answers.preferredCity || "your area";
-  const timeline = lead.answers.timeline || "";
-  const propType = lead.answers.propertyType || "property";
   const from = realtorName || "Your Name";
 
   if (item.icon === "call" || item.icon === "email") {
@@ -90,6 +88,8 @@ function generateQuickMessage(item: ActionItem, lead: Lead, realtorName: string)
     return `Hi ${name}, it's ${from} from Home Match. ${hook} — I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
   }
   if (item.icon === "new") {
+    const propType = lead.answers.propertyType || "property";
+    const timeline = lead.answers.timeline || "";
     return `New profile submitted: ${name} is looking for a ${propType} in ${city}. Budget and timeline look ${timeline === "ASAP" || timeline === "1–3 months" ? "urgent" : "solid"}. Open their profile to review and reach out.`;
   }
   return `Hi ${name}, it's ${from}. Just following up — still keeping an eye out for ${city} properties that match what you described. Anything new on your end?`;
@@ -119,10 +119,37 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
   return items.sort((a, b) => order[a.priority] - order[b.priority]).slice(0, 5);
 }
 
-const PRIORITY_STYLES = {
-  urgent: { dot: "bg-rose-500", bg: "bg-rose-50 border-rose-200", text: "text-rose-700", label: "Urgent", border: "border-l-4 border-rose-400" },
-  high:   { dot: "bg-amber-500", bg: "bg-amber-50 border-amber-200", text: "text-amber-700", label: "Today", border: "border-l-4 border-amber-400" },
-  medium: { dot: "bg-blue-400", bg: "bg-blue-50 border-blue-200", text: "text-blue-700", label: "This week", border: "border-l-4 border-blue-300" },
+const PRIORITY_CONFIG = {
+  urgent: {
+    cardBg: "bg-gradient-to-r from-rose-50 to-red-50",
+    border: "border border-rose-200",
+    leftBar: "bg-rose-500",
+    badge: "bg-rose-500 text-white",
+    badgeLabel: "Urgent",
+    iconBg: "bg-rose-100 text-rose-600",
+    ctaBg: "bg-rose-600 hover:bg-rose-700 text-white",
+    expandBg: "bg-rose-50/60",
+  },
+  high: {
+    cardBg: "bg-gradient-to-r from-amber-50 to-orange-50",
+    border: "border border-amber-200",
+    leftBar: "bg-amber-400",
+    badge: "bg-amber-500 text-white",
+    badgeLabel: "Today",
+    iconBg: "bg-amber-100 text-amber-600",
+    ctaBg: "bg-amber-600 hover:bg-amber-700 text-white",
+    expandBg: "bg-amber-50/60",
+  },
+  medium: {
+    cardBg: "bg-gradient-to-r from-blue-50 to-indigo-50",
+    border: "border border-blue-200",
+    leftBar: "bg-blue-400",
+    badge: "bg-blue-500 text-white",
+    badgeLabel: "This week",
+    iconBg: "bg-blue-100 text-blue-600",
+    ctaBg: "bg-blue-600 hover:bg-blue-700 text-white",
+    expandBg: "bg-blue-50/60",
+  },
 };
 
 function ActionQueueItem({
@@ -140,15 +167,11 @@ function ActionQueueItem({
   onToggleCheck: () => void;
   onToggleExpand: () => void;
 }) {
-  const s = PRIORITY_STYLES[item.priority];
+  const s = PRIORITY_CONFIG[item.priority];
   const message = generateQuickMessage(item, item.lead, realtorName);
   const isEmailType = item.icon === "email" || (item.icon === "followup" && item.emailAddr);
   const gmailUrl = item.emailAddr
-    ? quickGmailUrl(
-        item.emailAddr,
-        `Homes in ${item.lead.answers.preferredCity || "your area"} — Home Match`,
-        message
-      )
+    ? quickGmailUrl(item.emailAddr, `Homes in ${item.lead.answers.preferredCity || "your area"} — Home Match`, message)
     : "";
   const smsUrl = item.phone ? quickSmsUrl(item.phone, message) : "";
 
@@ -157,94 +180,101 @@ function ActionQueueItem({
     navigator.clipboard.writeText(message);
   }
 
+  const initials = `${item.lead.answers.firstName?.[0] ?? ""}${item.lead.answers.lastName?.[0] ?? ""}`.toUpperCase();
+
   return (
-    <div className={`${s.border} ${isChecked ? "opacity-50" : ""} transition-opacity`}>
+    <div className={`rounded-2xl overflow-hidden transition-all ${s.border} ${isChecked ? "opacity-40 scale-[0.99]" : ""}`}>
+      {/* Card row */}
       <div
-        className="flex items-center gap-3 px-4 py-3.5 hover:bg-[#faf9f7] transition-colors cursor-pointer"
+        className={`${s.cardBg} cursor-pointer`}
         onClick={onToggleExpand}
       >
-        {/* Checkbox */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleCheck(); }}
-          className="shrink-0 w-5 h-5 rounded border border-[#d4cfc9] flex items-center justify-center hover:border-[#2c2825] transition-colors bg-white"
-          aria-label={isChecked ? "Mark incomplete" : "Mark complete"}
-        >
-          {isChecked && <Check size={11} className="text-emerald-600" />}
-        </button>
+        <div className="flex items-center gap-3 px-4 py-4">
+          {/* Colored left indicator */}
+          <div className={`w-1 h-10 rounded-full shrink-0 ${s.leftBar}`} />
 
-        <div className="flex-1 min-w-0">
-          <p className={`text-sm font-medium text-[#2c2825] truncate ${isChecked ? "line-through text-[#b8b4b0]" : ""}`}>
-            {item.label}
-          </p>
-          <p className="text-xs text-[#8c8580] mt-0.5">{item.sub}</p>
-        </div>
+          {/* Avatar */}
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${s.iconBg}`}>
+            {initials || "?"}
+          </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${s.bg} ${s.text}`}>{s.label}</span>
-          {item.icon === "call" && item.phone && (
-            <a
-              href={`tel:${item.phone}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium"
+          {/* Text */}
+          <div className="flex-1 min-w-0">
+            <p className={`text-sm font-semibold text-[#1a1714] truncate ${isChecked ? "line-through opacity-50" : ""}`}>
+              {item.label}
+            </p>
+            <p className="text-xs text-[#6b6560] mt-0.5 truncate">{item.sub}</p>
+          </div>
+
+          {/* Right side */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${s.badge}`}>
+              {s.badgeLabel}
+            </span>
+
+            {item.icon === "call" && item.phone && (
+              <a
+                href={`tel:${item.phone}`}
+                onClick={(e) => e.stopPropagation()}
+                className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
+              >
+                <Phone size={11} /> Call
+              </a>
+            )}
+            {item.emailAddr && item.icon !== "call" && (
+              <a
+                href={gmailUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
+              >
+                <Mail size={11} /> Email
+              </a>
+            )}
+
+            {/* Checkbox */}
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleCheck(); }}
+              className="shrink-0 w-6 h-6 rounded-lg border-2 border-white/70 flex items-center justify-center hover:border-emerald-400 transition-colors bg-white/50"
+              aria-label={isChecked ? "Mark incomplete" : "Mark complete"}
             >
-              <Phone size={11} /> Call
-            </a>
-          )}
-          {item.emailAddr && item.icon !== "call" && (
-            <a
-              href={gmailUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
-            >
-              <Mail size={11} /> Email
-            </a>
-          )}
-          <ChevronDown
-            size={14}
-            className={`text-[#b8b4b0] transition-transform ${isExpanded ? "rotate-180" : ""}`}
-          />
+              {isChecked && <Check size={12} className="text-emerald-600" />}
+            </button>
+
+            <ChevronDown size={14} className={`text-[#9c9590] transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+          </div>
         </div>
       </div>
 
       {/* Expanded message panel */}
       {isExpanded && (
-        <div className="px-4 pb-4 pt-1 bg-[#faf9f7] border-t border-[#f0ece6]">
-          <p className="text-xs text-[#5c5550] leading-relaxed bg-white border border-[#e8e4de] rounded-xl px-3 py-2.5 mb-3">
+        <div className={`px-5 pb-4 pt-3 ${s.expandBg} border-t border-white/60`}>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6b6560] mb-2">Prepared message</p>
+          <p className="text-xs text-[#3c3835] leading-relaxed bg-white/80 border border-white/60 rounded-xl px-3.5 py-3 mb-3 backdrop-blur-sm">
             {message}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#e8e4de] bg-white text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
             >
-              <Copy size={11} /> Copy
+              <Copy size={11} /> Copy text
             </button>
-
             {isEmailType && gmailUrl ? (
-              <a
-                href={gmailUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#e8e4de] bg-white text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
-              >
+              <a href={gmailUrl} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium">
                 <ExternalLink size={11} /> Open in Gmail
               </a>
             ) : smsUrl ? (
-              <a
-                href={smsUrl}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#e8e4de] bg-white text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium"
-              >
+              <a href={smsUrl}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium">
                 <ExternalLink size={11} /> Open in Messages
               </a>
             ) : null}
-
-            <Link
-              href={`/dashboard/${item.leadId}`}
-              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg text-[#b8a88a] hover:text-[#8c6a3e] transition-colors font-medium ml-auto"
-            >
-              View Full Profile <ChevronRight size={11} />
+            <Link href={`/dashboard/${item.leadId}`}
+              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg text-[#b8a88a] hover:text-[#8c6a3e] transition-colors font-medium ml-auto">
+              Full profile <ChevronRight size={11} />
             </Link>
           </div>
         </div>
@@ -266,18 +296,20 @@ export default function DashboardPage() {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
+  const [loading, setLoading] = useState(true);
   const demoLeads = mockLeads;
-  const allLeads = [...realLeads, ...demoLeads];
+  const allLeads = loading ? [] : realLeads.length > 0 ? realLeads : demoLeads;
 
   useEffect(() => {
     const supabase = createClient();
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) { setLoading(false); return; }
       setRealtorId(user.id);
       setRealtorName((user.user_metadata?.first_name as string) ?? "");
       const { data } = await supabase.from("leads").select("*").eq("realtor_id", user.id).order("submitted_at", { ascending: false });
       if (data) setRealLeads(data.map(mapSupabaseLead));
+      setLoading(false);
     }
     load();
   }, []);
@@ -306,9 +338,10 @@ export default function DashboardPage() {
     return true;
   }
 
+  const showingDemos = !loading && realLeads.length === 0;
   const filteredReal = realLeads.filter(filterLead);
-  const filteredDemo = demoLeads.filter(filterLead);
-  const filtered = [...filteredReal, ...filteredDemo];
+  const filteredDemo = showingDemos ? demoLeads.filter(filterLead) : [];
+  const filtered = showingDemos ? filteredDemo : filteredReal;
 
   const hot = allLeads.filter((l) => l.score === "Hot").length;
   const warm = allLeads.filter((l) => l.score === "Warm").length;
@@ -325,7 +358,6 @@ export default function DashboardPage() {
       else next.add(id);
       return next;
     });
-    // collapse when checking off
     setExpandedItems((prev) => {
       const next = new Set(prev);
       next.delete(id);
@@ -342,177 +374,288 @@ export default function DashboardPage() {
     });
   }
 
-  // suppress unused router warning — kept for potential future use
   void router;
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
-      <div className="max-w-6xl mx-auto px-5 lg:px-8 py-8">
+    <div className="min-h-screen bg-[#f5f3f0]">
 
-        {/* ── Morning briefing header ──────────────────────────────────── */}
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold text-[#2c2825]">{getGreeting(realtorName)}</h1>
-            <p className="text-[#8c8580] text-sm mt-0.5">{formatDate()} · Here&apos;s what needs your attention today</p>
-          </div>
-          <button
-            onClick={() => exportLeads(filtered)}
-            className="flex items-center gap-1.5 border border-[#e8e4de] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white"
-          >
-            <Download size={12} /> Export
-          </button>
-        </div>
-
-        {/* ── Top grid: action queue + sidebar ────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
-
-          {/* TODAY'S PRIORITY QUEUE */}
-          <div className="lg:col-span-2">
-            <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden h-full">
-              {/* Header with gold left accent */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-[#f0ece6] border-l-4 border-l-[#b8a88a]">
-                <div className="flex items-center gap-2">
-                  <Bell size={14} className="text-[#b8a88a]" />
-                  <h2 className="text-sm font-semibold text-[#2c2825]">Today&apos;s Priorities</h2>
-                  {activeItems.length > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-600">{activeItems.length}</span>
-                  )}
-                </div>
-                <Link href="/pipeline" className="text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors flex items-center gap-1">
-                  Full pipeline <ChevronRight size={11} />
-                </Link>
+      {/* ── Rich dark header ─────────────────────────────────────────── */}
+      <div className="bg-gradient-to-br from-[#2c2825] via-[#221f1c] to-[#1a1714] px-5 lg:px-8 pt-10 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles size={14} className="text-[#b8a88a]" />
+                <span className="text-[#b8a88a] text-xs font-medium tracking-wide">{formatDate()}</span>
               </div>
+              <h1 className="text-3xl font-bold text-white mb-1">{getGreeting(realtorName)}</h1>
+              <p className="text-[#9c9590] text-sm">
+                {activeItems.length > 0
+                  ? `You have ${activeItems.length} priority action${activeItems.length !== 1 ? "s" : ""} today`
+                  : "You're all caught up — great work!"}
+              </p>
+            </div>
+            <button
+              onClick={() => exportLeads(filtered)}
+              className="flex items-center gap-1.5 border border-white/20 text-white/70 text-xs px-4 py-2 rounded-full hover:border-white/50 hover:text-white transition-colors bg-white/5 backdrop-blur-sm"
+            >
+              <Download size={12} /> Export
+            </button>
+          </div>
 
-              {actionQueue.length === 0 ? (
-                <div className="px-5 py-12 text-center bg-emerald-50/40">
-                  <CheckCircle2 size={24} className="text-emerald-400 mx-auto mb-3" />
-                  <p className="text-emerald-700 font-medium text-sm mb-1">You&apos;re all caught up ✓</p>
-                  <p className="text-emerald-600/70 text-xs">No urgent actions right now. Share your buyer link to grow your pipeline.</p>
+          {/* Stat pills */}
+          <div className="flex gap-3 mt-8 flex-wrap">
+            {[
+              { label: "Total Leads", value: allLeads.length, bg: "bg-white/10", text: "text-white", sub: "text-white/50", icon: <Users size={14} /> },
+              { label: "Hot", value: hot, bg: "bg-rose-500/20 border border-rose-400/30", text: "text-rose-300", sub: "text-rose-400/70", icon: <Flame size={14} className="text-rose-400" /> },
+              { label: "Warm", value: warm, bg: "bg-amber-500/20 border border-amber-400/30", text: "text-amber-300", sub: "text-amber-400/70", icon: <Zap size={14} className="text-amber-400" /> },
+              { label: "New", value: newLeads, bg: "bg-blue-500/20 border border-blue-400/30", text: "text-blue-300", sub: "text-blue-400/70", icon: <TrendingUp size={14} className="text-blue-400" /> },
+            ].map((stat) => (
+              <div key={stat.label} className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${stat.bg}`}>
+                {stat.icon}
+                <div>
+                  <p className={`text-xl font-bold leading-none ${stat.text}`}>{stat.value}</p>
+                  <p className={`text-[10px] mt-0.5 ${stat.sub}`}>{stat.label}</p>
                 </div>
-              ) : (
-                <>
-                  {/* Active items */}
-                  {activeItems.length === 0 && doneItems.length > 0 ? (
-                    <div className="px-5 py-8 text-center bg-emerald-50/40">
-                      <CheckCircle2 size={20} className="text-emerald-400 mx-auto mb-2" />
-                      <p className="text-emerald-700 font-medium text-sm">You&apos;re all caught up ✓</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main content (pulled up to overlap header) ───────────────── */}
+      <div className="max-w-6xl mx-auto px-5 lg:px-8 -mt-8 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+          {/* ── LEFT: Action Queue ──────────────────────────────────────── */}
+          <div className="lg:col-span-2 space-y-3">
+
+            {/* Section header card */}
+            <div className="bg-white rounded-2xl px-5 py-3.5 flex items-center justify-between shadow-sm border border-[#ece8e2]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <h2 className="text-sm font-semibold text-[#2c2825]">Today&apos;s Priority Actions</h2>
+                {activeItems.length > 0 && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-600 border border-rose-200">
+                    {activeItems.length} remaining
+                  </span>
+                )}
+              </div>
+              <Link href="/pipeline" className="text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors flex items-center gap-1">
+                Full pipeline <ChevronRight size={11} />
+              </Link>
+            </div>
+
+            {/* Action items */}
+            {actionQueue.length === 0 ? (
+              <div className="bg-white rounded-2xl px-5 py-10 text-center shadow-sm border border-[#ece8e2]">
+                <CheckCircle2 size={28} className="text-emerald-400 mx-auto mb-3" />
+                <p className="text-emerald-700 font-semibold text-sm mb-1">You&apos;re all caught up</p>
+                <p className="text-[#8c8580] text-xs">Share your buyer link to grow your pipeline.</p>
+              </div>
+            ) : (
+              <>
+                {activeItems.length === 0 && doneItems.length > 0 ? (
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl px-5 py-10 text-center">
+                    <CheckCircle2 size={28} className="text-emerald-500 mx-auto mb-3" />
+                    <p className="text-emerald-700 font-semibold text-sm">All done for today ✓</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {activeItems.map((item) => (
+                      <ActionQueueItem
+                        key={item.id}
+                        item={item}
+                        isChecked={checkedItems.has(item.id)}
+                        isExpanded={expandedItems.has(item.id)}
+                        realtorName={realtorName}
+                        onToggleCheck={() => toggleCheck(item.id)}
+                        onToggleExpand={() => toggleExpand(item.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Completed items */}
+                {doneItems.length > 0 && (
+                  <div className="bg-white/60 border border-[#ece8e2] rounded-2xl overflow-hidden">
+                    <div className="px-4 py-2.5 flex items-center gap-3">
+                      <div className="flex-1 h-px bg-[#e8e4de]" />
+                      <span className="text-[10px] text-[#b8b4b0] font-medium whitespace-nowrap">
+                        Completed today ({doneItems.length})
+                      </span>
+                      <div className="flex-1 h-px bg-[#e8e4de]" />
                     </div>
-                  ) : (
                     <div className="divide-y divide-[#f5f3f0]">
-                      {activeItems.map((item) => (
-                        <ActionQueueItem
-                          key={item.id}
-                          item={item}
-                          isChecked={checkedItems.has(item.id)}
-                          isExpanded={expandedItems.has(item.id)}
-                          realtorName={realtorName}
-                          onToggleCheck={() => toggleCheck(item.id)}
-                          onToggleExpand={() => toggleExpand(item.id)}
-                        />
+                      {doneItems.map((item) => (
+                        <div key={item.id} className="flex items-center gap-3 px-4 py-2.5 opacity-50">
+                          <button
+                            onClick={() => toggleCheck(item.id)}
+                            className="shrink-0 w-5 h-5 rounded border border-emerald-300 bg-emerald-50 flex items-center justify-center"
+                          >
+                            <Check size={11} className="text-emerald-600" />
+                          </button>
+                          <p className="text-xs text-[#8c8580] line-through truncate">{item.label}</p>
+                        </div>
                       ))}
                     </div>
-                  )}
+                  </div>
+                )}
+              </>
+            )}
 
-                  {/* Done for today section */}
-                  {doneItems.length > 0 && (
-                    <div className="border-t border-[#f0ece6]">
-                      <div className="px-5 py-2.5 flex items-center gap-3">
-                        <div className="flex-1 h-px bg-[#f0ece6]" />
-                        <span className="text-[10px] text-[#b8b4b0] font-medium whitespace-nowrap">
-                          Completed today ({doneItems.length})
-                        </span>
-                        <div className="flex-1 h-px bg-[#f0ece6]" />
-                      </div>
-                      <div className="divide-y divide-[#f5f3f0]">
-                        {doneItems.map((item) => (
-                          <div key={item.id} className="flex items-center gap-3 px-4 py-2.5 opacity-40">
-                            <button
-                              onClick={() => toggleCheck(item.id)}
-                              className="shrink-0 w-5 h-5 rounded border border-emerald-300 bg-emerald-50 flex items-center justify-center"
-                            >
-                              <Check size={11} className="text-emerald-600" />
-                            </button>
-                            <p className="text-xs text-[#8c8580] line-through truncate">{item.label}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
+            {/* ── All Leads ─────────────────────────────────────────────── */}
+            <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm mt-2">
+              <div className="px-5 py-4 border-b border-[#f0ece6] flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-[#2c2825] flex items-center gap-2">
+                  <Users size={14} className="text-[#b8a88a]" /> All Leads
+                  <span className="text-[10px] font-normal text-[#8c8580]">({allLeads.length})</span>
+                </h2>
+              </div>
+
+              <div className="px-5 pt-4">
+                <div className="flex flex-col sm:flex-row gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search name, email, city…"
+                    className="flex-1 border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7]"
+                  />
+                  <div className="flex gap-1.5 flex-wrap">
+                    {SCORE_FILTERS.map((f) => (
+                      <button key={f} onClick={() => setScoreFilter(f)}
+                        className={`text-xs px-3 py-2 rounded-xl border transition-all ${scoreFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"}`}>
+                        {f}
+                      </button>
+                    ))}
+                    <button onClick={() => setPriorityOnly((v) => !v)}
+                      className={`text-xs px-3 py-2 rounded-xl border transition-all flex items-center gap-1 ${priorityOnly ? "bg-[#b8a88a]/20 text-[#8c6a3e] border-[#b8a88a]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825]"}`}>
+                      <Star size={10} /> Priority
+                    </button>
+                  </div>
+                </div>
+                <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
+                  {STATUS_FILTERS.map((f) => (
+                    <button key={f} onClick={() => setStatusFilter(f)}
+                      className={`text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap transition-all shrink-0 ${statusFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"}`}>
+                      {f}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[#b8b4b0] text-xs mb-4">{filtered.length} of {allLeads.length} leads</p>
+              </div>
+
+              <div className="px-5 pb-5">
+                {loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-40 rounded-2xl bg-[#f0ece6] animate-pulse" />
+                    ))}
+                  </div>
+                ) : filtered.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {showingDemos
+                      ? filteredDemo.map((lead) => <LeadCard key={lead.id} lead={lead} isDemo />)
+                      : filteredReal.map((lead) => <LeadCard key={lead.id} lead={lead} />)}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 border border-dashed border-[#e8e4de] rounded-2xl">
+                    <p className="text-[#2c2825] font-medium mb-1">No leads match</p>
+                    <p className="text-[#8c8580] text-sm">Try adjusting your filters.</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* SIDEBAR */}
+          {/* ── RIGHT: Sidebar ─────────────────────────────────────────── */}
           <div className="space-y-4">
 
-            {/* Pipeline stats */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a] mb-3">Pipeline</p>
-              <div className="space-y-3">
-                {[
-                  { label: "Total leads", value: allLeads.length, icon: <Users size={13} />, dot: "bg-[#c4bfb9]", rowBg: "" },
-                  { label: "Hot", value: hot, icon: <Flame size={13} />, dot: "bg-rose-500", rowBg: hot > 0 ? "bg-rose-50/50 -mx-2 px-2 rounded-lg" : "" },
-                  { label: "Warm", value: warm, icon: <Zap size={13} />, dot: "bg-amber-400", rowBg: "" },
-                  { label: "New", value: newLeads, icon: <TrendingUp size={13} />, dot: "bg-blue-400", rowBg: "" },
-                ].map((s) => (
-                  <div key={s.label} className={`flex items-center justify-between py-0.5 transition-colors ${s.rowBg}`}>
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${s.dot}`} />
-                      <span className="text-xs text-[#5c5550]">{s.label}</span>
-                    </div>
-                    <span className="text-sm font-bold text-[#2c2825]">{s.value}</span>
-                  </div>
-                ))}
-              </div>
-              {allLeads.length > 0 && hot > 0 && (
-                <div className="mt-3 pt-3 border-t border-[#f0ece6]">
-                  <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-rose-400 to-amber-400" style={{ width: `${Math.min(100, (hot / allLeads.length) * 100)}%` }} />
-                  </div>
-                  <p className="text-[10px] text-[#8c8580] mt-1">{Math.round((hot / allLeads.length) * 100)}% of leads are hot</p>
-                </div>
-              )}
-            </div>
-
-            {/* Buyer link — warm gradient */}
-            <div className="border border-[#e8e4de] rounded-2xl p-4 bg-gradient-to-br from-[#faf8f5] to-[#f5f0e8]">
-              <div className="flex items-center gap-2 mb-2">
+            {/* Buyer link — hero card */}
+            <div className="bg-gradient-to-br from-[#2c2825] to-[#3d3630] rounded-2xl p-5 shadow-lg">
+              <div className="flex items-center gap-2 mb-1">
                 <Link2 size={13} className="text-[#b8a88a]" />
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
               </div>
-              <p className="text-xs text-[#8c8580] mb-3 leading-relaxed">Share with buyers — their responses come straight to your dashboard.</p>
+              <p className="text-white/70 text-xs mb-4 leading-relaxed">
+                Share this link — buyers fill out the questionnaire and land directly in your dashboard.
+              </p>
               {shareableLink ? (
                 <>
-                  <div className="bg-white/70 border border-[#e8e4de] rounded-xl px-3 py-2 mb-2">
-                    <p className="text-[10px] text-[#8c8580] truncate">{shareableLink}</p>
+                  <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 mb-3">
+                    <p className="text-[10px] text-white/60 truncate">{shareableLink}</p>
                   </div>
                   <button
                     onClick={copyLink}
-                    className={`w-full flex items-center justify-center gap-2 text-sm font-medium py-2.5 rounded-xl transition-all ${copied ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-[#2c2825] text-white hover:bg-[#1a1714]"}`}
+                    className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-xl transition-all ${
+                      copied
+                        ? "bg-emerald-500 text-white"
+                        : "bg-[#b8a88a] text-[#2c2825] hover:bg-[#c9b99b]"
+                    }`}
                   >
-                    {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Link</>}
+                    {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
                   </button>
                 </>
               ) : (
-                <div className="bg-white/70 rounded-xl px-3 py-2">
-                  <p className="text-[10px] text-[#8c8580]">Sign in to get your link</p>
+                <div className="bg-white/10 rounded-xl px-3 py-2.5">
+                  <p className="text-[10px] text-white/50">Sign in to get your link</p>
                 </div>
               )}
             </div>
 
-            {/* Quick nav */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a] mb-3">Quick Access</p>
+            {/* Hot leads callout */}
+            {hot > 0 && (
+              <div className="bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl p-4 shadow-md">
+                <div className="flex items-center gap-2 mb-1">
+                  <Flame size={14} className="text-rose-200" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-rose-200">Hot Pipeline</p>
+                </div>
+                <p className="text-3xl font-bold text-white">{hot}</p>
+                <p className="text-rose-200 text-xs mt-0.5">
+                  {hot === 1 ? "lead" : "leads"} ready to move — act fast
+                </p>
+                {allLeads.length > 0 && (
+                  <div className="mt-3">
+                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-white/80"
+                        style={{ width: `${Math.min(100, (hot / allLeads.length) * 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-rose-200/80 mt-1">
+                      {Math.round((hot / allLeads.length) * 100)}% of your pipeline is hot
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Warm leads card */}
+            {warm > 0 && (
+              <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-4 shadow-md">
+                <div className="flex items-center gap-2 mb-1">
+                  <Zap size={14} className="text-amber-100" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-100">Warm Pipeline</p>
+                </div>
+                <p className="text-3xl font-bold text-white">{warm}</p>
+                <p className="text-amber-100 text-xs mt-0.5">nurture before they go cold</p>
+              </div>
+            )}
+
+            {/* Quick access */}
+            <div className="bg-white border border-[#ece8e2] rounded-2xl p-4 shadow-sm">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a] mb-3">Quick Access</p>
               <div className="space-y-1">
                 {[
-                  { label: "Pipeline Board", href: "/pipeline", icon: <TrendingUp size={13} /> },
-                  { label: "Listings", href: "/listings", icon: <Eye size={13} /> },
-                  { label: "Integrations", href: "/integrations", icon: <AlertCircle size={13} /> },
+                  { label: "Pipeline Board", href: "/pipeline", icon: <TrendingUp size={13} />, color: "text-blue-500" },
+                  { label: "Listings", href: "/listings", icon: <Eye size={13} />, color: "text-emerald-500" },
+                  { label: "Integrations", href: "/integrations", icon: <AlertCircle size={13} />, color: "text-amber-500" },
                 ].map((item) => (
-                  <Link key={item.href} href={item.href} className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-[#f5f3f0] transition-colors group">
-                    <div className="flex items-center gap-2 text-xs text-[#5c5550]">
-                      <span className="text-[#8c8580]">{item.icon}</span>
+                  <Link key={item.href} href={item.href}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#f5f3f0] transition-colors group">
+                    <div className="flex items-center gap-2.5 text-xs text-[#5c5550]">
+                      <span className={item.color}>{item.icon}</span>
                       {item.label}
                     </div>
                     <ChevronRight size={11} className="text-[#c4bfb9] group-hover:text-[#2c2825] transition-colors" />
@@ -520,48 +663,6 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* ── All leads ────────────────────────────────────────────────── */}
-        <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-[#f0ece6]">
-            <h2 className="text-sm font-semibold text-[#2c2825] flex items-center gap-2">
-              <Users size={14} className="text-[#b8a88a]" /> All Leads
-              <span className="text-[10px] font-normal text-[#8c8580]">({allLeads.length})</span>
-            </h2>
-          </div>
-
-          <div className="px-5 pt-4">
-            <div className="flex flex-col sm:flex-row gap-2 mb-3">
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, email, city…" className="flex-1 border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7]" />
-              <div className="flex gap-1.5 flex-wrap">
-                {SCORE_FILTERS.map((f) => (
-                  <button key={f} onClick={() => setScoreFilter(f)} className={`text-xs px-3 py-2 rounded-xl border transition-all ${scoreFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"}`}>{f}</button>
-                ))}
-                <button onClick={() => setPriorityOnly((v) => !v)} className={`text-xs px-3 py-2 rounded-xl border transition-all ${priorityOnly ? "bg-[#b8a88a]/20 text-[#8c6a3e] border-[#b8a88a]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825]"}`}>★ Priority</button>
-              </div>
-            </div>
-            <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
-              {STATUS_FILTERS.map((f) => (
-                <button key={f} onClick={() => setStatusFilter(f)} className={`text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap transition-all shrink-0 ${statusFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"}`}>{f}</button>
-              ))}
-            </div>
-            <p className="text-[#b8b4b0] text-xs mb-4">{filtered.length} of {allLeads.length} leads</p>
-          </div>
-
-          <div className="px-5 pb-5">
-            {filtered.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {filteredReal.map((lead) => <LeadCard key={lead.id} lead={lead} />)}
-                {filteredDemo.map((lead) => <LeadCard key={lead.id} lead={lead} isDemo />)}
-              </div>
-            ) : (
-              <div className="text-center py-12 border border-dashed border-[#e8e4de] rounded-2xl">
-                <p className="text-[#2c2825] font-medium mb-1">No leads match</p>
-                <p className="text-[#8c8580] text-sm">Try adjusting your filters.</p>
-              </div>
-            )}
           </div>
         </div>
       </div>

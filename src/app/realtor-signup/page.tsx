@@ -92,39 +92,22 @@ export default function RealtorSignupPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 size={32} className="text-emerald-600" />
           </div>
-          <h1 className="text-2xl font-semibold text-[#2c2825] mb-3">You&apos;re all set.</h1>
+          <h1 className="text-2xl font-semibold text-[#2c2825] mb-3">You&apos;re in.</h1>
           <p className="text-[#8c8580] leading-relaxed mb-8">
-            Thanks, {form.firstName}. We&apos;ll activate your account and send your login link to{" "}
-            <strong className="text-[#2c2825]">{form.email}</strong> within the hour.
+            Your account is active, {form.firstName}. Head to your dashboard to share your buyer link and start capturing leads.
           </p>
-          <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 text-left mb-8 space-y-3">
-            <p className="text-xs text-[#8c8580] uppercase tracking-wider mb-3">What happens next</p>
-            {[
-              "You'll receive a welcome email with your personal login link",
-              "Your dashboard will be pre-configured for the Niagara region",
-              "Share your questionnaire link with your first buyer and go",
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#f5f3f0] border border-[#e8e4de] flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-xs text-[#8c8580] font-medium">{i + 1}</span>
-                </div>
-                <p className="text-sm text-[#5c5550]">{item}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col gap-3 items-center">
             <Link
-              href="/login"
-              className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm px-6 py-2.5 rounded-full hover:bg-[#1a1714] transition-colors"
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm px-8 py-3 rounded-full hover:bg-[#1a1714] transition-colors w-full sm:w-auto"
             >
-              Sign in to your dashboard
-              <ArrowRight size={14} />
+              Go to dashboard →
             </Link>
             <Link
-              href="/"
-              className="inline-flex items-center justify-center gap-2 border border-[#e8e4de] bg-white text-[#2c2825] text-sm px-6 py-2.5 rounded-full hover:border-[#2c2825] transition-colors"
+              href="/login"
+              className="text-sm text-[#8c8580] hover:text-[#2c2825] transition-colors"
             >
-              Back to Home
+              or sign in later
             </Link>
           </div>
         </div>
