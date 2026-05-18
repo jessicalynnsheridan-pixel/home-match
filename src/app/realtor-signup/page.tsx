@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, ArrowRight, Shield, Users, BarChart3 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -19,6 +20,7 @@ const PLAN_FEATURES = [
 type Step = "plan" | "details" | "confirm";
 
 export default function RealtorSignupPage() {
+  const router = useRouter();
   const [step, setStep] = useState<Step>("plan");
   const [form, setForm] = useState({
     firstName: "",
@@ -54,7 +56,7 @@ export default function RealtorSignupPage() {
     if (step === "details" && validateDetails()) {
       setLoading(true);
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: form.email,
         password,
         options: {
@@ -74,7 +76,11 @@ export default function RealtorSignupPage() {
         setErrors({ auth: error.message });
         return;
       }
-      setStep("confirm");
+      if (data.session) {
+        router.push("/dashboard");
+      } else {
+        setStep("confirm");
+      }
     }
   }
 
