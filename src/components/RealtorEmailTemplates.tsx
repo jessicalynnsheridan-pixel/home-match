@@ -12,12 +12,12 @@ const TEMPLATES = [
 
 I'm so glad we connected, and I want to make sure your home search starts off the right way.
 
-I use a tool called Home Match that lets me understand exactly what you're looking for before we even get on a call. Instead of asking you the same questions over and over, you fill out one thoughtful profile (your budget, timeline, must-haves, deal breakers, neighbourhood preferences) and I get everything I need to start curating homes specifically for you.
+I use a tool called HomeMatch that lets me understand exactly what you're looking for before we even get on a call. Instead of asking you the same questions over and over, you fill out one thoughtful profile (your budget, timeline, must-haves, deal breakers, neighbourhood preferences) and I get everything I need to start curating homes specifically for you.
 
 It takes about 8 minutes and the experience is actually quite good.
 
 Here's your personal link to get started:
-→ [Your Home Match Link]
+→ [Your HomeMatch Link]
 
 Once you've submitted, I'll review your profile and send you a personally selected shortlist. No generic listings, no noise. Just homes that actually fit your life.
 
@@ -33,7 +33,7 @@ Looking forward to working with you.
     subject: "Got your profile. Here's what happens next.",
     body: `Hi [First Name],
 
-Thank you for completing your Home Match profile. I've had a chance to review everything and I'm already thinking about some properties that could be a strong fit.
+Thank you for completing your HomeMatch profile. I've had a chance to review everything and I'm already thinking about some properties that could be a strong fit.
 
 A few things I noticed from your profile:
 - Your budget of [Budget Range] puts you in a competitive position in [Preferred City]
@@ -58,7 +58,7 @@ Talk soon,
 
 I've been through the current market with your profile in mind, and I've put together [X] homes I think are worth a closer look.
 
-I've shared them directly to your Home Match portal. You can view photos, details, and why each one was chosen for you:
+I've shared them directly to your HomeMatch portal. You can view photos, details, and why each one was chosen for you:
 → [Portal Link]
 
 Quick notes on my top pick:
@@ -111,7 +111,7 @@ It's been a little while since we last connected and I wanted to reach out, not 
 The market in [City] has shifted a bit since we last spoke:
 [One honest sentence about current conditions, e.g. "Inventory is up slightly, which means more time to make considered decisions." or "Competition has eased in the $X-$Y range."]
 
-If your situation or timeline has changed, I'd love to update your Home Match profile so my recommendations stay relevant. If you're still looking, I may have a few new properties worth discussing.
+If your situation or timeline has changed, I'd love to update your HomeMatch profile so my recommendations stay relevant. If you're still looking, I may have a few new properties worth discussing.
 
 And if the timing just isn't right yet, completely understood. I'll be here when you're ready.
 

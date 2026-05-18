@@ -16,7 +16,7 @@ export interface RealtorAttribution {
   slug: string;           // e.g. "sarah-mitchell"
   name: string;           // e.g. "Sarah Mitchell"
   firstName: string;      // e.g. "Sarah"
-  agency?: string;        // e.g. "Home Match Realty"
+  agency?: string;        // e.g. "HomeMatch Realty"
   email?: string;
   phone?: string;
   tagline?: string;

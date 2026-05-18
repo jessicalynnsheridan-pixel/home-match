@@ -27,7 +27,7 @@ const features = [
     icon: TrendingUp,
     title: "Understand buyer motivation faster",
     description:
-      "Is this buyer ready to move in 30 days or just exploring? Are they pre-approved or not yet started? Home Match answers these questions before you make your first call.",
+      "Is this buyer ready to move in 30 days or just exploring? Are they pre-approved or not yet started? HomeMatch answers these questions before you make your first call.",
   },
   {
     icon: Star,
@@ -39,13 +39,13 @@ const features = [
     icon: MessageSquare,
     title: "Reduce back-and-forth messages",
     description:
-      "How many times have you asked a buyer the same question three times? Home Match captures everything once, so your conversations can skip straight to the good part.",
+      "How many times have you asked a buyer the same question three times? HomeMatch captures everything once, so your conversations can skip straight to the good part.",
   },
   {
     icon: Zap,
     title: "Create a premium client experience",
     description:
-      "The intake experience sets the tone for your entire working relationship. Home Match helps you deliver a boutique-level first impression that luxury buyers expect.",
+      "The intake experience sets the tone for your entire working relationship. HomeMatch helps you deliver a boutique-level first impression that luxury buyers expect.",
   },
   {
     icon: LayoutDashboard,
@@ -58,7 +58,7 @@ const features = [
 const testimonials = [
   {
     quote:
-      "Home Match completely changed how I handle new buyer inquiries. I know more about a lead before our first call than I used to know after three meetings.",
+      "HomeMatch completely changed how I handle new buyer inquiries. I know more about a lead before our first call than I used to know after three meetings.",
     name: "Sarah M.",
     title: "Luxury Realtor, St. Catharines",
   },
@@ -70,7 +70,7 @@ const testimonials = [
   },
   {
     quote:
-      "I closed two deals last quarter from leads that came through Home Match profiles. The quality of information made a huge difference in how quickly I could match them.",
+      "I closed two deals last quarter from leads that came through HomeMatch profiles. The quality of information made a huge difference in how quickly I could match them.",
     name: "Priya T.",
     title: "Boutique Realtor, Niagara-on-the-Lake",
   },
@@ -135,7 +135,7 @@ export default function ForRealtorsPage() {
           </h1>
           <p className="text-[#8c8580] text-xl leading-relaxed mb-10 max-w-xl mx-auto">
             Stop collecting buyer information in emails, phone calls, and sticky
-            notes. Home Match gives you a premium intake flow and a clean dashboard
+            notes. HomeMatch gives you a premium intake flow and a clean dashboard
             to manage every lead.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -210,7 +210,7 @@ export default function ForRealtorsPage() {
               The Difference
             </p>
             <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c2825] tracking-tight">
-              Without Home Match vs. with it
+              Without HomeMatch vs. with it
             </h2>
           </div>
 
@@ -222,12 +222,12 @@ export default function ForRealtorsPage() {
               </div>
               <div className="px-6 py-4 border-l border-[#e8e4de] bg-[#faf9f7]">
                 <p className="text-[#8c8580] text-xs uppercase tracking-wider">
-                  Without Home Match
+                  Without HomeMatch
                 </p>
               </div>
               <div className="px-6 py-4 border-l border-[#e8e4de] bg-[#2c2825]">
                 <p className="text-[#b8a88a] text-xs uppercase tracking-wider font-medium">
-                  With Home Match
+                  With HomeMatch
                 </p>
               </div>
             </div>
@@ -294,7 +294,7 @@ export default function ForRealtorsPage() {
               The Pitch
             </p>
             <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c2825] tracking-tight mb-4">
-              How to explain Home Match to a buyer
+              How to explain HomeMatch to a buyer
             </h2>
             <p className="text-[#8c8580] text-lg max-w-xl mx-auto">
               Three ways to frame it, depending on the conversation.
@@ -368,7 +368,7 @@ export default function ForRealtorsPage() {
             already out there searching.
           </h2>
           <p className="text-[#e8e4de]/70 text-lg leading-relaxed mb-10">
-            Give them a first impression worth talking about. Home Match turns your
+            Give them a first impression worth talking about. HomeMatch turns your
             intake process into a competitive advantage, without adding complexity
             to your workflow.
           </p>

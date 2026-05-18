@@ -46,7 +46,7 @@ export default function AdminPage() {
           </p>
           <h1 className="text-2xl font-semibold text-[#2c2825]">Branding & Settings</h1>
           <p className="text-[#8c8580] text-sm mt-1">
-            Customize how your Home Match portal appears to buyers.
+            Customize how your HomeMatch portal appears to buyers.
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export default function AdminPage() {
                 className="text-sm font-medium px-6 py-2.5 rounded-full"
                 style={{ backgroundColor: branding.accentColor, color: branding.primaryColor }}
               >
-                Start Your Home Match
+                Start Your HomeMatch
               </button>
               <div className="mt-6 pt-5 border-t border-white/10 text-xs opacity-60">
                 {branding.realtorName} · {branding.realtorTitle} · {branding.phone}

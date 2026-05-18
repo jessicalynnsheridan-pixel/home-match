@@ -172,7 +172,7 @@ export default function RealtorSignupPage() {
             <div className="bg-white border border-[#2c2825] rounded-2xl overflow-hidden">
               <div className="bg-[#2c2825] px-6 py-4 flex items-center justify-between">
                 <div>
-                  <p className="text-white font-semibold">Home Match Pro</p>
+                  <p className="text-white font-semibold">HomeMatch Pro</p>
                   <p className="text-[#e8e4de]/60 text-sm">Everything you need, all in one place</p>
                 </div>
                 <div className="text-right">

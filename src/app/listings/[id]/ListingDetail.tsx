@@ -389,7 +389,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                   )}
 
                   <p className="text-xs text-[#b8a88a] pt-2 border-t border-[#f0ece6]">
-                    Based on your Home Match questionnaire profile.{" "}
+                    Based on your HomeMatch questionnaire profile.{" "}
                     <Link href="/questionnaire" className="underline underline-offset-2 hover:text-[#8c8580]">Update your profile</Link>
                   </p>
                 </div>

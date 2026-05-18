@@ -26,7 +26,7 @@ export default async function InvitePage({
 
 export function generateMetadata() {
   return {
-    title: "Your Personal Home Search · Home Match",
+    title: "Your Personal Home Search · HomeMatch",
     description: "A curated home search experience built around your life.",
   };
 }

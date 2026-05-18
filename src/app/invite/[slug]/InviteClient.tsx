@@ -53,7 +53,7 @@ export default function InviteClient({ slug, source = "invite_link" }: InviteCli
           <div className="w-6 h-6 rounded-full bg-[#2c2825] flex items-center justify-center text-white text-[10px] font-semibold shrink-0">
             {firstName.charAt(0)}
           </div>
-          <span className="text-[#8c8580] text-sm">{displayName} · {slug.includes("-") ? "Real Estate Advisor" : "Home Match"}</span>
+          <span className="text-[#8c8580] text-sm">{displayName} · {slug.includes("-") ? "Real Estate Advisor" : "HomeMatch"}</span>
         </div>
 
         {/* Headline */}
@@ -131,7 +131,7 @@ export default function InviteClient({ slug, source = "invite_link" }: InviteCli
 
       {/* Footer hint */}
       <p className="text-center text-[#8c8580]/60 text-xs pb-8">
-        Home Match · A personalised experience from {displayName}
+        HomeMatch · A personalised experience from {displayName}
       </p>
     </div>
   );

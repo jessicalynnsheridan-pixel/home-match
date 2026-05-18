@@ -317,7 +317,7 @@ export default function HomePage() {
             <span className="text-[#8c8580] font-normal">This one feels like discovery.</span>
           </h2>
           <p className="text-[#8c8580] text-lg leading-relaxed max-w-2xl mx-auto mb-14">
-            Home Match learns what lights you up, the morning light, the neighbourhood rhythm, the feeling of walking in, and finds homes that deliver it.
+            HomeMatch learns what lights you up, the morning light, the neighbourhood rhythm, the feeling of walking in, and finds homes that deliver it.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -379,7 +379,7 @@ export default function HomePage() {
               href="/for-realtors"
               className="underline underline-offset-2 hover:text-[#2c2825] transition-colors"
             >
-              Learn how Home Match works for your practice →
+              Learn how HomeMatch works for your practice →
             </Link>
           </p>
         </div>

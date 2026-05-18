@@ -338,7 +338,7 @@ export default function Navigation() {
                 Realtor Sign Up
               </Link>
               <Link href="/questionnaire" className="inline-flex items-center text-[#1a1512] font-semibold text-sm px-5 py-2.5 rounded-full transition-all btn-press" style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 4px 16px rgba(201,168,112,0.30)" }}>
-                Start Your Home Match
+                Start Your HomeMatch
               </Link>
             </>
           )}
@@ -489,7 +489,7 @@ export default function Navigation() {
             className="inline-flex items-center justify-center text-white font-semibold text-sm px-5 py-3 rounded-full text-center mt-1 transition-all"
             style={{ background: "#1a1512" }}
           >
-            Start Your Home Match
+            Start Your HomeMatch
           </Link>
         </div>
       )}

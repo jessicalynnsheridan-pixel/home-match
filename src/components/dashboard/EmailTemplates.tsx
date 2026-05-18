@@ -153,7 +153,7 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
 
   const body = `Hi ${name},
 
-I've gone through your Home Match profile and wanted to reach out personally rather than send you a generic search link.
+I've gone through your HomeMatch profile and wanted to reach out personally rather than send you a generic search link.
 
 ${lifestyleHook}
 
@@ -190,10 +190,10 @@ function buildTextMessage(lead: Lead): string {
   const feeling = answers.homeFeeling?.[0]?.toLowerCase();
 
   if (answers.timeline === "ASAP" || answers.timeline === "1–3 months") {
-    return `Hi ${name}, it's YOUR_NAME from Home Match. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
+    return `Hi ${name}, it's YOUR_NAME from HomeMatch. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
   }
 
-  return `Hi ${name}, it's YOUR_NAME. I came across your Home Match profile - sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
+  return `Hi ${name}, it's YOUR_NAME. I came across your HomeMatch profile - sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
 }
 
 function buildCallScript(lead: Lead): string {
@@ -204,7 +204,7 @@ function buildCallScript(lead: Lead): string {
   const sunday = answers.sundayMorning;
 
   return `OPENING (first 20 seconds)
-"Hi ${name}, it's YOUR_NAME - I'm a realtor connected through Home Match. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
+"Hi ${name}, it's YOUR_NAME - I'm a realtor connected through HomeMatch. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
 
 IF YES - PERSONALISE IMMEDIATELY
 "I read through your answers and I have to say - you were really specific, which I appreciate. You mentioned wanting something ${feeling}${sunday ? `, and ${sunday.toLowerCase()} as your ideal Sunday vibe` : ""}. That tells me exactly what to look for."

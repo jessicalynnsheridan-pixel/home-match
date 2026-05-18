@@ -248,7 +248,7 @@ export default function PrintProfilePage() {
 
             {/* Footer */}
             <div className="pt-6 border-t border-[#e8e4de] flex justify-between text-xs text-[#8c8580]">
-              <p>Home Match · Confidential Buyer Profile</p>
+              <p>HomeMatch · Confidential Buyer Profile</p>
               <p>Prepared {formatDate(new Date().toISOString())}</p>
             </div>
           </div>

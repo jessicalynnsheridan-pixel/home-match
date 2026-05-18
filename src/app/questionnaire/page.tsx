@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import QuestionnaireForm from "@/components/questionnaire/QuestionnaireForm";
 
 export const metadata = {
-  title: "Find Your Match · Home Match",
+  title: "Find Your Match · HomeMatch",
   description: "Tell us how you want to feel at home. Takes 8 minutes.",
 };
 

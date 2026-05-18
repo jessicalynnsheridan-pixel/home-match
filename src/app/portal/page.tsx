@@ -136,7 +136,7 @@ function RealtorBanner({ realtorName, realtorEmail, message }: { realtorName: st
         <p className="text-[#8c8580] text-xs leading-relaxed mt-0.5">{message}</p>
       </div>
       <a
-        href={`mailto:${realtorEmail}?subject=Home Match - Question for ${realtorName}`}
+        href={`mailto:${realtorEmail}?subject=HomeMatch - Question for ${realtorName}`}
         className="shrink-0 flex items-center gap-1.5 bg-[#2c2825] text-white text-xs font-medium px-3 py-2 rounded-full hover:bg-[#1a1714] transition-colors btn-press"
       >
         <MessageCircle size={12} />
@@ -809,7 +809,7 @@ export default function BuyerPortalPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
-              href={`mailto:${branding.email}?subject=Home Match - Ready to connect`}
+              href={`mailto:${branding.email}?subject=HomeMatch - Ready to connect`}
               className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#c9b99b] transition-colors btn-press"
             >
               <MessageCircle size={14} />

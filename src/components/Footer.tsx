@@ -40,7 +40,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {[
                 { label: "Realtor Dashboard", href: "/dashboard" },
-                { label: "Why Use Home Match", href: "/for-realtors" },
+                { label: "Why Use HomeMatch", href: "/for-realtors" },
                 { label: "View Demo Leads", href: "/dashboard" },
               ].map((l) => (
                 <li key={l.label}>
@@ -55,7 +55,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-6 border-t border-[#e8e4de] flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-[#8c8580] text-xs">
-            &copy; {new Date().getFullYear()} Home Match. All rights reserved.
+            &copy; {new Date().getFullYear()} HomeMatch. All rights reserved.
           </p>
           <p className="text-[#8c8580] text-xs">
             Privacy Policy &middot; Terms of Service

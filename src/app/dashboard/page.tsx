@@ -88,7 +88,7 @@ function generateQuickMessage(item: ActionItem, lead: Lead, realtorName: string)
       : lead.answers.homeFeeling?.[0]
       ? `You're looking for something ${lead.answers.homeFeeling[0].toLowerCase()}`
       : `You have a clear sense of what you want`;
-    return `Hi ${name}, it's ${from} from Home Match. ${hook}. I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
+    return `Hi ${name}, it's ${from} from HomeMatch. ${hook}. I have a couple of properties in ${city} that I think could be a real fit. Worth a quick 5-minute call this week?`;
   }
   if (item.icon === "new") {
     const propType = lead.answers.propertyType || "property";
@@ -174,7 +174,7 @@ function ActionQueueItem({
   const message = generateQuickMessage(item, item.lead, realtorName);
   const isEmailType = item.icon === "email" || (item.icon === "followup" && item.emailAddr);
   const gmailUrl = item.emailAddr
-    ? quickGmailUrl(item.emailAddr, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message)
+    ? quickGmailUrl(item.emailAddr, `Homes in ${item.lead.answers.preferredCity || "your area"} | HomeMatch`, message)
     : "";
   const smsUrl = item.phone ? quickSmsUrl(item.phone, message) : "";
 
@@ -226,7 +226,7 @@ function ActionQueueItem({
               )}
               {item.emailAddr && item.icon !== "call" && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message); }}
+                  onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | HomeMatch`, message); }}
                   className={`hidden sm:flex items-center gap-1.5 shrink-0 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
                 >
                   <Mail size={11} /> Email
@@ -264,7 +264,7 @@ function ActionQueueItem({
               )}
               {item.emailAddr && item.icon !== "call" && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message); }}
+                  onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | HomeMatch`, message); }}
                   className={`flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl font-semibold transition-colors ${s.ctaBg}`}
                 >
                   <Mail size={11} /> Email
@@ -291,7 +291,7 @@ function ActionQueueItem({
             </button>
             {isEmailType && item.emailAddr ? (
               <button
-                onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | Home Match`, message); }}
+                onClick={(e) => { e.stopPropagation(); openGmailPopup(item.emailAddr!, `Homes in ${item.lead.answers.preferredCity || "your area"} | HomeMatch`, message); }}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white border border-[#e0dbd5] text-[#5c5550] hover:border-[#2c2825] hover:text-[#2c2825] transition-colors font-medium">
                 <ExternalLink size={11} /> Open in Gmail
               </button>
