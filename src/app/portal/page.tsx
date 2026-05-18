@@ -10,7 +10,7 @@ import {
   Lightbulb, BookOpen, MapPin, ShieldCheck, ChevronDown,
   ChevronUp, Info, ArrowRight, TrendingUp, MessageCircle,
   Sparkles, Star, Bell, Flame, CalendarDays, Phone, Mail,
-  Calculator,
+  Calculator, Home, Zap, Check,
 } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { useBranding } from "@/context/BrandingContext";
@@ -350,6 +350,19 @@ export default function BuyerPortalPage() {
 
   const [calc, setCalc] = useState({ price: 0, downPct: 20, rate: 5.5, years: 25 });
 
+  const OFFER_CHECKLIST = [
+    { id: "preapproval", label: "Pre-approval letter ready", auto: (a: QuestionnaireAnswers) => a.preApprovalStatus === "Yes, fully approved" || a.preApprovalStatus === "Paying cash" },
+    { id: "deposit",     label: "Deposit cheque prepared (1–5% of purchase price)", auto: () => false },
+    { id: "lawyer",      label: "Real estate lawyer retained", auto: () => false },
+    { id: "conditions",  label: "Conditions decided (inspection, financing)", auto: () => false },
+    { id: "price",       label: "Target offer price discussed with realtor", auto: () => false },
+  ];
+
+  const [offerChecked, setOfferChecked] = useState<Set<string>>(new Set());
+  const [offerNote, setOfferNote]       = useState("");
+  const [offerSent, setOfferSent]       = useState(false);
+  const [offerSending, setOfferSending] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       // Load buyer answers
@@ -414,6 +427,13 @@ export default function BuyerPortalPage() {
       toast("Added to your Dream Collection.", { sub: "Saved homes live across all your devices.", variant: "save" });
     }
   }, [savedIds, rawToggle, toast]);
+
+  // Auto-check pre-approval item based on answers
+  useEffect(() => {
+    if (answers.preApprovalStatus === "Yes, fully approved" || answers.preApprovalStatus === "Paying cash") {
+      setOfferChecked((prev) => new Set([...prev, "preapproval"]));
+    }
+  }, [answers.preApprovalStatus]);
 
   const recommendations = mockProperties.filter((p) => p.leadId === "lead-001");
   const readiness = calcBuyerReadiness(answers);
@@ -1043,6 +1063,150 @@ export default function BuyerPortalPage() {
               </button>
             </form>
           )}
+        </section>
+
+        {/* ── Found the one? Offer readiness ─────────────────────────────── */}
+        <section className="animate-fade-up">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-t-2xl px-6 py-5 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+              <Home size={18} className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold text-lg leading-tight">Found the one?</h2>
+              <p className="text-emerald-100 text-sm">Let's get you ready to move fast.</p>
+            </div>
+            {offerChecked.size > 0 && (
+              <div className="ml-auto bg-white/20 rounded-full px-3 py-1">
+                <p className="text-white text-xs font-bold">{offerChecked.size}/{OFFER_CHECKLIST.length} ready</p>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white border border-emerald-200 border-t-0 rounded-b-2xl p-6">
+            {offerSent ? (
+              <div className="flex flex-col items-center py-8 gap-3 text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-300 flex items-center justify-center">
+                  <Zap size={28} className="text-emerald-500" />
+                </div>
+                <p className="text-[#2c2825] font-bold text-lg">Your realtor has been alerted!</p>
+                <p className="text-[#8c8580] text-sm max-w-xs">{realtorFirst} has been notified with urgency and will be in touch very soon.</p>
+                <button onClick={() => setOfferSent(false)} className="mt-2 text-xs text-[#8c8580] underline">Start over</button>
+              </div>
+            ) : (
+              <>
+                <p className="text-[#8c8580] text-sm mb-5">Check off everything below, then alert {realtorFirst} — they'll get an urgent notification the moment you hit send.</p>
+
+                {/* Progress bar */}
+                <div className="mb-5">
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-[#8c8580]">Offer readiness</span>
+                    <span className={`font-semibold ${offerChecked.size === OFFER_CHECKLIST.length ? "text-emerald-600" : "text-[#2c2825]"}`}>
+                      {offerChecked.size} of {OFFER_CHECKLIST.length} complete
+                    </span>
+                  </div>
+                  <div className="h-2 bg-[#e8e4de] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: `${(offerChecked.size / OFFER_CHECKLIST.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Checklist */}
+                <div className="space-y-2.5 mb-6">
+                  {OFFER_CHECKLIST.map((item) => {
+                    const checked = offerChecked.has(item.id);
+                    const isAuto  = item.auto(answers);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          if (isAuto) return; // auto-checked, can't uncheck
+                          setOfferChecked((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(item.id)) next.delete(item.id);
+                            else next.add(item.id);
+                            return next;
+                          });
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all ${
+                          checked
+                            ? "bg-emerald-50 border-emerald-300"
+                            : "bg-[#faf9f7] border-[#e8e4de] hover:border-emerald-300"
+                        } ${isAuto ? "cursor-default" : "cursor-pointer"}`}
+                      >
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                          checked ? "bg-emerald-500 border-emerald-500" : "border-[#d8d4ce]"
+                        }`}>
+                          {checked && <Check size={11} className="text-white" />}
+                        </div>
+                        <span className={`text-sm flex-1 ${checked ? "text-emerald-800 font-medium" : "text-[#2c2825]"}`}>
+                          {item.label}
+                        </span>
+                        {isAuto && (
+                          <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium shrink-0">Auto ✓</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Optional note */}
+                <div className="mb-5">
+                  <label className="block text-xs font-medium text-[#2c2825] mb-1.5">
+                    Which property? <span className="text-[#8c8580] font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder='e.g. "The one on Rosedale Valley Rd" or address'
+                    value={offerNote}
+                    onChange={(e) => setOfferNote(e.target.value)}
+                    className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] placeholder:text-[#b8a88a]/60 focus:outline-none focus:border-emerald-400 transition-colors"
+                  />
+                </div>
+
+                {/* CTA */}
+                <button
+                  disabled={offerChecked.size === 0 || offerSending}
+                  onClick={async () => {
+                    setOfferSending(true);
+                    let realtorId: string | null = null;
+                    try {
+                      const raw = sessionStorage.getItem("homematch_answers");
+                      if (raw) realtorId = JSON.parse(raw).realtorId ?? null;
+                    } catch { /* ignore */ }
+                    if (!realtorId) {
+                      realtorId = new URLSearchParams(window.location.search).get("r");
+                    }
+                    try {
+                      await fetch("/api/offer-interest", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          realtorId,
+                          buyerName: answers.firstName || "Your buyer",
+                          buyerEmail: answers.email || "",
+                          propertyNote: offerNote,
+                          preApprovalStatus: answers.preApprovalStatus,
+                          checklistCompleted: offerChecked.size,
+                        }),
+                      });
+                    } catch { /* ignore */ }
+                    setOfferSending(false);
+                    setOfferSent(true);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-white text-sm font-bold px-6 py-4 rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed btn-press"
+                >
+                  <Zap size={16} />
+                  {offerSending ? "Alerting your realtor…" : `Alert ${realtorFirst} — I'm ready to offer`}
+                </button>
+                {offerChecked.size === 0 && (
+                  <p className="text-center text-xs text-[#b8b4b0] mt-2">Check at least one item to unlock</p>
+                )}
+              </>
+            )}
+          </div>
         </section>
 
         {/* ── Update profile CTA ─────────────────────────────────────────── */}
