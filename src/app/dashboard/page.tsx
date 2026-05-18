@@ -500,16 +500,49 @@ interface ShowingRequest {
 }
 
 // ─── Showing Inbox Widget ─────────────────────────────────────────────────────
+const MOCK_SHOWING_REQUESTS: ShowingRequest[] = [
+  {
+    id: "mock-1",
+    buyer_name: "Emma Chen",
+    buyer_email: "emma@example.com",
+    preferred_dates: "This Saturday or Sunday",
+    preferred_time: "Morning",
+    message: "Excited about the Rosedale listing — can we see it this weekend?",
+    status: "pending",
+    requested_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+  },
+  {
+    id: "mock-2",
+    buyer_name: "David Park",
+    buyer_email: "david@example.com",
+    preferred_dates: "Next Tuesday",
+    preferred_time: "Afternoon",
+    message: "",
+    status: "confirmed",
+    requested_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+  },
+];
+
 function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
   const [requests, setRequests] = useState<ShowingRequest[]>([]);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!realtorId) return;
+    if (!realtorId) {
+      // Not signed in — show mocks
+      setRequests(MOCK_SHOWING_REQUESTS);
+      setLoaded(true);
+      return;
+    }
     fetch("/api/showings/list")
       .then((r) => r.json())
-      .then((d) => setRequests(d.requests ?? []))
-      .catch(() => {});
+      .then((d) => {
+        const real = d.requests ?? [];
+        setRequests(real.length > 0 ? real : MOCK_SHOWING_REQUESTS);
+      })
+      .catch(() => setRequests(MOCK_SHOWING_REQUESTS))
+      .finally(() => setLoaded(true));
   }, [realtorId]);
 
   async function updateStatus(id: string, status: "confirmed" | "declined") {
@@ -540,11 +573,9 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
         </div>
       </div>
 
-      {requests.length === 0 ? (
-        <div className="px-4 py-6 text-center">
-          <CalendarDays size={20} className="text-[#e8e4de] mx-auto mb-2" />
-          <p className="text-xs text-[#8c8580]">No showing requests yet.</p>
-          <p className="text-[10px] text-[#b8b4b0] mt-0.5">Buyers can request via their portal.</p>
+      {!loaded ? (
+        <div className="px-4 py-5 space-y-2">
+          {[1,2].map(i => <div key={i} className="h-14 rounded-xl bg-[#f5f2ee] animate-pulse" />)}
         </div>
       ) : (
         <div className="divide-y divide-[#f5f2ee]">
@@ -702,6 +733,103 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
           </div>
         </button>
       ))}
+    </div>
+  );
+}
+
+// ─── Gift Reminder Widget ─────────────────────────────────────────────────────
+const MOCK_GIFT_REMINDERS = [
+  {
+    id: "g1",
+    buyerName: "Sarah & Mike Liu",
+    address: "42 Rosedale Valley Rd",
+    closedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+    giftSent: false,
+    suggestion: "Personalized door knocker or premium wine set",
+  },
+  {
+    id: "g2",
+    buyerName: "Emma Chen",
+    address: "18 Forest Hill Ave",
+    closedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString(),
+    giftSent: true,
+    suggestion: "Custom address stamp",
+  },
+];
+
+function GiftReminderWidget({ leads }: { leads: Lead[] }) {
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [sent, setSent] = useState<Set<string>>(new Set());
+
+  const closedLeads = leads.filter((l) => l.status === "Closed");
+  const reminders = closedLeads.length > 0
+    ? closedLeads.slice(0, 3).map((l, i) => ({
+        id: l.id,
+        buyerName: `${l.answers.firstName} ${l.answers.lastName}`.trim(),
+        address: l.answers.preferredCity || "their new home",
+        closedDate: l.submittedAt ?? new Date().toISOString(),
+        giftSent: false,
+        suggestion: ["Personalized door knocker", "Premium wine & cheese set", "Custom address stamp"][i % 3],
+      }))
+    : MOCK_GIFT_REMINDERS;
+
+  const visible = reminders.filter((r) => !dismissed.has(r.id));
+  if (visible.length === 0) return null;
+
+  function daysSince(dateStr: string) {
+    return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  return (
+    <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm">
+      <div className="px-4 py-3.5 border-b border-[#f0ece6] flex items-center gap-2">
+        <span className="text-base">🎁</span>
+        <p className="text-xs font-bold text-[#2c2825]">Send a Closing Gift</p>
+        <span className="ml-auto text-[10px] text-[#b8b4b0]">Builds referrals</span>
+      </div>
+      <div className="divide-y divide-[#f5f2ee]">
+        {visible.map((r) => {
+          const days = daysSince(r.closedDate);
+          const isSent = sent.has(r.id) || r.giftSent;
+          return (
+            <div key={r.id} className={`px-4 py-3.5 ${isSent ? "opacity-60" : ""}`}>
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-[#2c2825] truncate">{r.buyerName}</p>
+                  <p className="text-[10px] text-[#8c8580] truncate">📍 {r.address}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {days <= 7 && !isSent && (
+                    <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-bold">New close</span>
+                  )}
+                  <button onClick={() => setDismissed((p) => new Set([...p, r.id]))} className="text-[#c4bfb9] hover:text-[#8c8580] transition-colors">
+                    <X size={12} />
+                  </button>
+                </div>
+              </div>
+              <p className="text-[10px] text-[#b8a88a] italic mb-2.5">💡 {r.suggestion}</p>
+              {isSent ? (
+                <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1"><Check size={11} /> Gift sent · Great for referrals</p>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSent((p) => new Set([...p, r.id]))}
+                    className="flex-1 text-[11px] font-semibold bg-[#2c2825] text-white py-1.5 rounded-lg hover:bg-[#1a1714] transition-colors"
+                  >
+                    Mark as sent ✓
+                  </button>
+                  <a
+                    href={`mailto:?subject=Congratulations on your new home!&body=Hi ${r.buyerName.split(" ")[0]},%0A%0ACongratulations on closing on ${r.address}! It was such a pleasure working with you.%0A%0AI wanted to send a small gift to welcome you home.%0A%0AWarmly,%0A`}
+                    className="flex-1 text-[11px] font-semibold bg-[#f5f2ee] text-[#5c5550] py-1.5 rounded-lg hover:bg-[#ece8e2] transition-colors text-center"
+                  >
+                    ✉️ Send note
+                  </a>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -1289,6 +1417,9 @@ export default function DashboardPage() {
             )}
 
             {/* Revenue forecast */}
+            {/* Thank You Gift Reminder */}
+            <GiftReminderWidget leads={allLeads} />
+
             {/* Quick access */}
             <div className="bg-white border border-[#ece8e2] rounded-2xl p-4 shadow-sm">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a] mb-3">Quick Access</p>
