@@ -62,7 +62,7 @@ export default function RealtorSignupPage() {
           <h1 className="text-2xl font-semibold text-[#2c2825] mb-3">You&apos;re all set.</h1>
           <p className="text-[#8c8580] leading-relaxed mb-8">
             Thanks, {form.firstName}. We&apos;ll activate your account and send your login link to{" "}
-            <strong className="text-[#2c2825]">{form.email}</strong> within one business day.
+            <strong className="text-[#2c2825]">{form.email}</strong> within the hour.
           </p>
           <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 text-left mb-8 space-y-3">
             <p className="text-xs text-[#8c8580] uppercase tracking-wider mb-3">What happens next</p>
@@ -110,7 +110,7 @@ export default function RealtorSignupPage() {
         <p className="text-[#a09890] text-base max-w-md mx-auto">
           {step === "plan"
             ? "Give every buyer a guided, intelligent experience. Look more organized from day one."
-            : "Fill in your information and we'll get you set up within one business day."}
+            : "Fill in your information and we'll have you set up within the hour."}
         </p>
 
         {/* Step indicator */}
