@@ -51,77 +51,97 @@ async function sendEmail(resendKey: string, to: string, subject: string, html: s
   }).catch(() => {});
 }
 
-// ─── Email templates ──────────────────────────────────────────────────────────
+// ─── Email templates (buyer-facing) ───────────────────────────────────────────
 
-function emailDay1Realtor(realtorName: string, lead: LeadRow) {
-  const buyer = `${lead.answers.firstName ?? ""} ${lead.answers.lastName ?? ""}`.trim();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+function emailDay1Buyer(realtorName: string, lead: LeadRow) {
+  const buyer = `${lead.answers.firstName ?? ""}`.trim() || "there";
+  const city = lead.answers.preferredCity ?? "your target area";
+  const budget = formatBudget(lead.answers.budgetMin, lead.answers.budgetMax);
+  const portalUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
   return `
-    <div style="font-family:Georgia,serif;max-width:540px;margin:0 auto;padding:32px;color:#2c2825">
-      <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">New Buyer · Day 1</p>
-      <h2 style="font-size:22px;font-weight:700;margin:0 0 4px">Hi ${realtorName} 👋</h2>
-      <p style="color:#8c8580;font-size:14px;margin-bottom:24px">A new buyer just submitted their profile. Here's a quick snapshot:</p>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
-        <tr><td style="padding:10px 0;border-bottom:1px solid #f0ece6;color:#8c8580;font-size:13px;width:40%">Buyer</td><td style="padding:10px 0;border-bottom:1px solid #f0ece6;font-size:13px;font-weight:600">${buyer}${lead.answers.email ? ` · ${lead.answers.email}` : ""}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #f0ece6;color:#8c8580;font-size:13px">Looking for</td><td style="padding:10px 0;border-bottom:1px solid #f0ece6;font-size:13px">${lead.answers.propertyType ?? "Property"} in ${lead.answers.preferredCity ?? "N/A"}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #f0ece6;color:#8c8580;font-size:13px">Budget</td><td style="padding:10px 0;border-bottom:1px solid #f0ece6;font-size:13px">${formatBudget(lead.answers.budgetMin, lead.answers.budgetMax)}</td></tr>
-        <tr><td style="padding:10px 0;color:#8c8580;font-size:13px">Timeline</td><td style="padding:10px 0;font-size:13px">${lead.answers.timeline ?? "Not set"}</td></tr>
-      </table>
-      <p style="font-size:14px;color:#2c2825;margin-bottom:20px">💡 <strong>Best practice:</strong> Reach out within the first hour — response rates drop significantly after 24 hrs.</p>
-      <a href="${appUrl}/dashboard/${lead.id}" style="display:inline-block;background:#2c2825;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700">View ${buyer}&apos;s Profile →</a>
-      <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent automatically by HomeMatch · Day 1 of nurture sequence</p>
-    </div>`;
-}
-
-function emailDay3Realtor(realtorName: string, lead: LeadRow) {
-  const buyer = `${lead.answers.firstName ?? ""} ${lead.answers.lastName ?? ""}`.trim();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
-  return `
-    <div style="font-family:Georgia,serif;max-width:540px;margin:0 auto;padding:32px;color:#2c2825">
-      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 18px;margin-bottom:24px">
-        <p style="color:#92400e;font-size:13px;font-weight:700;margin:0 0 2px">⏰ 3-Day Follow-Up Reminder</p>
-        <p style="color:#92400e;font-size:13px;margin:0">${buyer} submitted 3 days ago — have you connected yet?</p>
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+      <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
+        <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
+        <h1 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Your home search is officially on 🏡</h1>
       </div>
-      <h2 style="font-size:20px;font-weight:700;margin:0 0 12px">Hi ${realtorName},</h2>
-      <p style="color:#5c5550;font-size:14px;line-height:1.6;margin-bottom:20px">${buyer} is still sitting at <strong>${lead.status}</strong>. Buyers who don't hear back within 3 days often move on to another agent.</p>
-      <p style="color:#5c5550;font-size:14px;line-height:1.6;margin-bottom:24px">A quick email or call today keeps you top of mind. We've already drafted a template for you:</p>
-      <a href="${appUrl}/dashboard/${lead.id}" style="display:inline-block;background:#2c2825;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;margin-bottom:12px">Open Outreach Templates →</a>
-      <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent automatically by HomeMatch · Day 3 of nurture sequence</p>
-    </div>`;
-}
-
-function emailDay7Realtor(realtorName: string, lead: LeadRow) {
-  const buyer = `${lead.answers.firstName ?? ""} ${lead.answers.lastName ?? ""}`.trim();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
-  return `
-    <div style="font-family:Georgia,serif;max-width:540px;margin:0 auto;padding:32px;color:#2c2825">
-      <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:14px 18px;margin-bottom:24px">
-        <p style="color:#991b1b;font-size:13px;font-weight:700;margin:0 0 2px">🚨 7-Day Alert — Risk of Losing Lead</p>
-        <p style="color:#991b1b;font-size:13px;margin:0">${buyer} hasn't moved past <strong>${lead.status}</strong> in a week.</p>
+      <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
+        <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 20px">Thanks for submitting your profile — I've received everything and I'm already reviewing your search criteria. Here's what I have on file for you:</p>
+        <div style="background:#faf9f7;border-radius:12px;padding:18px 20px;margin-bottom:24px;border:1px solid #f0ece6">
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:8px 0;border-bottom:1px solid #ede9e3;color:#8c8580;font-size:12px;width:40%;vertical-align:top">Looking in</td><td style="padding:8px 0;border-bottom:1px solid #ede9e3;font-size:13px;font-weight:600">${city}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #ede9e3;color:#8c8580;font-size:12px;vertical-align:top">Property type</td><td style="padding:8px 0;border-bottom:1px solid #ede9e3;font-size:13px">${lead.answers.propertyType ?? "Any"}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #ede9e3;color:#8c8580;font-size:12px;vertical-align:top">Budget</td><td style="padding:8px 0;border-bottom:1px solid #ede9e3;font-size:13px">${budget}</td></tr>
+            <tr><td style="padding:8px 0;color:#8c8580;font-size:12px;vertical-align:top">Timeline</td><td style="padding:8px 0;font-size:13px">${lead.answers.timeline ?? "Flexible"}</td></tr>
+          </table>
+        </div>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">I'll be reaching out shortly to introduce myself and chat through next steps. In the meantime, feel free to reply to this email with any questions.</p>
+        <p style="font-size:14px;color:#5c5550;margin:0 0 4px">Talk soon,</p>
+        <p style="font-size:14px;font-weight:700;color:#2c2825;margin:0">${realtorName}</p>
+        <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent via HomeMatch · Reply directly to reach ${realtorName}</p>
       </div>
-      <h2 style="font-size:20px;font-weight:700;margin:0 0 12px">Hi ${realtorName},</h2>
-      <p style="color:#5c5550;font-size:14px;line-height:1.6;margin-bottom:20px">It's been 7 days since ${buyer} submitted their profile and they're still at <strong>${lead.status}</strong>. At this stage, buyers have almost certainly spoken to other agents.</p>
-      <p style="color:#5c5550;font-size:14px;line-height:1.6;margin-bottom:24px">One genuine, personalised outreach today could still turn this around. We've got their full profile and conversation starters ready.</p>
-      <a href="${appUrl}/dashboard/${lead.id}" style="display:inline-block;background:#dc2626;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;margin-bottom:12px">Re-engage ${buyer} Now →</a>
-      <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent automatically by HomeMatch · Day 7 of nurture sequence · Final reminder</p>
     </div>`;
 }
 
+function emailDay3Buyer(realtorName: string, lead: LeadRow) {
+  const buyer = `${lead.answers.firstName ?? ""}`.trim() || "there";
+  const city = lead.answers.preferredCity ?? "your area";
+  return `
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+      <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
+        <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
+        <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Just checking in on your search 👋</h1>
+      </div>
+      <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
+        <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">I wanted to check in and see how you're feeling about your home search in ${city}. Do you have any questions since submitting your profile?</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Whether you're ready to start viewing properties or just want to talk through your options, I'm here. No rush — just want to make sure you feel supported every step of the way.</p>
+        <p style="font-size:14px;color:#5c5550;margin:0 0 4px">Looking forward to connecting,</p>
+        <p style="font-size:14px;font-weight:700;color:#2c2825;margin:0">${realtorName}</p>
+        <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent via HomeMatch · Reply directly to reach ${realtorName}</p>
+      </div>
+    </div>`;
+}
+
+function emailDay7Buyer(realtorName: string, lead: LeadRow) {
+  const buyer = `${lead.answers.firstName ?? ""}`.trim() || "there";
+  const city = lead.answers.preferredCity ?? "your area";
+  return `
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+      <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
+        <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch</p>
+        <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">Still thinking about buying in ${city}?</h1>
+      </div>
+      <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
+        <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">It's been a little while since you submitted your profile and I want to make sure you're getting the support you need.</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">The market in ${city} moves quickly — but that doesn't mean you have to rush. Even a quick 15-minute call can help clarify what's out there and what fits your situation best.</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Feel free to reply here or give me a call whenever works for you. I'm happy to go at whatever pace feels right.</p>
+        <p style="font-size:14px;color:#5c5550;margin:0 0 4px">Here whenever you're ready,</p>
+        <p style="font-size:14px;font-weight:700;color:#2c2825;margin:0">${realtorName}</p>
+        <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent via HomeMatch · Reply directly to reach ${realtorName}</p>
+      </div>
+    </div>`;
+}
+
+// Inactivity alert goes to the realtor (CRM nudge, not buyer-facing)
 function emailInactivityRealtor(realtorName: string, lead: LeadRow, daysIdle: number) {
   const buyer = `${lead.answers.firstName ?? ""} ${lead.answers.lastName ?? ""}`.trim();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
   const scoreEmoji = lead.score === "Hot" ? "🔥" : "⚡";
   return `
-    <div style="font-family:Georgia,serif;max-width:540px;margin:0 auto;padding:32px;color:#2c2825">
-      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:14px 18px;margin-bottom:24px">
-        <p style="color:#9a3412;font-size:13px;font-weight:700;margin:0 0 2px">${scoreEmoji} Inactivity Alert · ${lead.score} Lead</p>
-        <p style="color:#9a3412;font-size:13px;margin:0">No contact recorded with ${buyer} in ${Math.floor(daysIdle)} days.</p>
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
+      <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
+        <p style="color:#b8a88a;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px">HomeMatch · Inactivity Alert</p>
+        <h1 style="font-size:22px;font-weight:700;color:#ffffff;margin:0;line-height:1.3">${scoreEmoji} ${buyer} — ${Math.floor(daysIdle)} days with no contact</h1>
       </div>
-      <h2 style="font-size:20px;font-weight:700;margin:0 0 12px">Hi ${realtorName},</h2>
-      <p style="color:#5c5550;font-size:14px;line-height:1.6;margin-bottom:20px">Your ${lead.score.toLowerCase()} lead <strong>${buyer}</strong> (${lead.answers.propertyType ?? "buyer"} in ${lead.answers.preferredCity ?? "N/A"}) hasn't had any recorded contact in ${Math.floor(daysIdle)} days.</p>
-      <p style="color:#5c5550;font-size:14px;line-height:1.6;margin-bottom:24px">Hot and warm leads cool fast. A quick check-in keeps the relationship alive and signals you're the proactive agent they want representing them.</p>
-      <a href="${appUrl}/dashboard/${lead.id}" style="display:inline-block;background:#ea580c;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;margin-bottom:12px">View ${buyer}&apos;s Profile →</a>
-      <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent automatically by HomeMatch · Inactivity detection (${Math.floor(daysIdle)} days)</p>
+      <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
+        <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${realtorName},</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">Your <strong>${lead.score}</strong> lead <strong>${buyer}</strong> (${lead.answers.propertyType ?? "buyer"} in ${lead.answers.preferredCity ?? "N/A"}) hasn't had any recorded contact in ${Math.floor(daysIdle)} days.</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Hot and warm leads cool fast. A quick personal check-in keeps the relationship warm and shows you're the proactive agent they want in their corner.</p>
+        <a href="${appUrl}/dashboard/${lead.id}" style="display:inline-block;background:#ea580c;color:white;padding:13px 26px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700">View ${buyer}'s Profile →</a>
+        <p style="font-size:12px;color:#b8b4b0;border-top:1px solid #e8e4de;padding-top:16px;margin-top:24px">Sent automatically by HomeMatch · Inactivity detection</p>
+      </div>
     </div>`;
 }
 
@@ -191,16 +211,18 @@ export async function GET(request: NextRequest) {
     const realtorName = userData?.user?.user_metadata?.first_name ?? "there";
     if (!realtorEmail) continue;
 
-    async function tryLog(type: AutomationType, subject: string, html: string) {
+    const buyerEmail = lead.answers.email;
+
+    async function tryLog(type: AutomationType, subject: string, html: string, to: string) {
       if (sent.has(`${lead.id}:${type}`)) return; // already sent
-      await sendEmail(resendKey!, realtorEmail!, subject, html);
+      await sendEmail(resendKey!, to, subject, html);
       // Insert log — silently ignore if table doesn't exist yet
       try {
         await admin.from("automation_log").insert({
           lead_id: lead.id,
           realtor_id: lead.realtor_id,
           automation_type: type,
-          email_to: realtorEmail,
+          email_to: to,
           subject,
         });
       } catch { /* table may not exist yet */ }
@@ -208,19 +230,19 @@ export async function GET(request: NextRequest) {
       sent.add(`${lead.id}:${type}`); // prevent double-send within same run
     }
 
-    // Day 1 — new lead intro (first 36 hours)
-    if (age >= 0 && age < 1.5) {
-      await tryLog("day1", `New buyer: ${buyer} just submitted their profile`, emailDay1Realtor(realtorName, lead));
+    // Day 1 — welcome email to buyer (first 36 hours)
+    if (age >= 0 && age < 1.5 && buyerEmail) {
+      await tryLog("day1", `Your home search is officially on, ${lead.answers.firstName ?? buyer} 🏡`, emailDay1Buyer(realtorName, lead), buyerEmail);
     }
 
-    // Day 3 — follow-up reminder
-    if (age >= 3 && age < 4 && ["New Lead", "Qualified"].includes(lead.status)) {
-      await tryLog("day3", `⏰ Follow up with ${buyer} — 3 days since they submitted`, emailDay3Realtor(realtorName, lead));
+    // Day 3 — check-in email to buyer
+    if (age >= 3 && age < 4 && ["New Lead", "Qualified"].includes(lead.status) && buyerEmail) {
+      await tryLog("day3", `Just checking in on your search, ${lead.answers.firstName ?? buyer} 👋`, emailDay3Buyer(realtorName, lead), buyerEmail);
     }
 
-    // Day 7 — final nudge
-    if (age >= 7 && age < 8 && ["New Lead", "Qualified"].includes(lead.status)) {
-      await tryLog("day7", `🚨 ${buyer} — 7 days with no progress`, emailDay7Realtor(realtorName, lead));
+    // Day 7 — gentle nudge to buyer
+    if (age >= 7 && age < 8 && ["New Lead", "Qualified"].includes(lead.status) && buyerEmail) {
+      await tryLog("day7", `Still thinking about buying in ${lead.answers.preferredCity ?? "your area"}?`, emailDay7Buyer(realtorName, lead), buyerEmail);
     }
 
     // Inactivity — Hot/Warm leads idle 5+ days, re-alerts every 7 days
@@ -241,7 +263,7 @@ export async function GET(request: NextRequest) {
       const daysSinceLast = lastAlert?.sent_at ? daysSince(lastAlert.sent_at) : Infinity;
       if (daysSinceLast >= 7) {
         const scoreEmoji = lead.score === "Hot" ? "🔥" : "⚡";
-        await tryLog("inactivity", `${scoreEmoji} Inactivity alert: ${buyer} (${Math.floor(age)} days)`, emailInactivityRealtor(realtorName, lead, age));
+        await tryLog("inactivity", `${scoreEmoji} Inactivity alert: ${buyer} (${Math.floor(age)} days)`, emailInactivityRealtor(realtorName, lead, age), realtorEmail!);
       }
     }
   }

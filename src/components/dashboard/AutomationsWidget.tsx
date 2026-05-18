@@ -49,21 +49,22 @@ const SEQUENCE_TEMPLATES: TemplateStep[] = [
   {
     type: "day1",
     day: "Day 1",
-    trigger: "Sent within 36hrs of a new lead submitting",
-    subject: "New buyer: [Name] just submitted their profile",
-    preview: "A new buyer just submitted their profile. Here's a quick snapshot — reach out within the first hour for the best response rate.",
-    body: `Hi [Realtor],
+    trigger: "Sent to buyer within 36hrs of submitting their profile",
+    subject: "Your home search is officially on 🏡",
+    preview: "Hi [First name], thanks for submitting your profile — I've received everything and I'm already reviewing your search criteria.",
+    body: `Hi [First name],
 
-A new buyer just submitted their profile. Here's a quick snapshot:
+Thanks for submitting your profile — I've received everything and I'm already reviewing your search criteria. Here's what I have on file for you:
 
-Buyer: [First Last] · [email]
-Looking for: [Property type] in [City]
-Budget: $X to $Y
-Timeline: [Timeline]
+  Looking in      [City]
+  Property type   [Type]
+  Budget          $X to $Y
+  Timeline        [Timeline]
 
-💡 Best practice: Reach out within the first hour — response rates drop significantly after 24 hrs.
+I'll be reaching out shortly to introduce myself and chat through next steps. In the meantime, feel free to reply to this email with any questions.
 
-→ View [Name]'s Profile`,
+Talk soon,
+[Realtor name]`,
     color: "#059669",
     bg: "#f0fdf4",
     border: "#bbf7d0",
@@ -73,18 +74,17 @@ Timeline: [Timeline]
   {
     type: "day3",
     day: "Day 3",
-    trigger: "Sent if lead is still New Lead or Qualified after 3 days",
-    subject: "⏰ Follow up with [Name] — 3 days since they submitted",
-    preview: "Buyers who don't hear back within 3 days often move on to another agent. A quick email or call today keeps you top of mind.",
-    body: `Hi [Realtor],
+    trigger: "Sent to buyer if still uncontacted after 3 days",
+    subject: "Just checking in on your search 👋",
+    preview: "Hi [First name], wanted to check in and see how you're feeling about your home search. Do you have any questions since submitting your profile?",
+    body: `Hi [First name],
 
-[Name] submitted 3 days ago — have you connected yet?
+I wanted to check in and see how you're feeling about your home search in [City]. Do you have any questions since submitting your profile?
 
-They're still at [status]. Buyers who don't hear back within 3 days often move on to another agent.
+Whether you're ready to start viewing properties or just want to talk through your options, I'm here. No rush — just want to make sure you feel supported every step of the way.
 
-A quick email or call today keeps you top of mind. We've already drafted a template for you:
-
-→ Open Outreach Templates`,
+Looking forward to connecting,
+[Realtor name]`,
     color: "#d97706",
     bg: "#fffbeb",
     border: "#fde68a",
@@ -94,35 +94,36 @@ A quick email or call today keeps you top of mind. We've already drafted a templ
   {
     type: "day7",
     day: "Day 7",
-    trigger: "Sent if lead is still stalled after 7 days — final nudge",
-    subject: "🚨 [Name] — 7 days with no progress",
-    preview: "It's been a week. At this stage, buyers have almost certainly spoken to other agents. One genuine outreach today could still turn this around.",
-    body: `Hi [Realtor],
+    trigger: "Sent to buyer if still uncontacted after 7 days — gentle nudge",
+    subject: "Still thinking about buying in [City]?",
+    preview: "Hi [First name], it's been a little while since you submitted your profile and I want to make sure you're getting the support you need.",
+    body: `Hi [First name],
 
-It's been 7 days since [Name] submitted their profile and they're still at [status].
+It's been a little while since you submitted your profile and I want to make sure you're getting the support you need.
 
-At this stage, buyers have almost certainly spoken to other agents.
+The market in [City] moves quickly — but that doesn't mean you have to rush. Even a quick 15-minute call can help clarify what's out there and what fits your situation best.
 
-One genuine, personalised outreach today could still turn this around. We've got their full profile and conversation starters ready.
+Feel free to reply here or give me a call whenever works for you. I'm happy to go at whatever pace feels right.
 
-→ Re-engage [Name] Now`,
-    color: "#dc2626",
-    bg: "#fef2f2",
-    border: "#fecaca",
-    tagBg: "#fee2e2",
-    tagColor: "#991b1b",
+Here whenever you're ready,
+[Realtor name]`,
+    color: "#7c3aed",
+    bg: "#faf5ff",
+    border: "#ddd6fe",
+    tagBg: "#ede9fe",
+    tagColor: "#4c1d95",
   },
   {
     type: "inactivity",
-    day: "5-Day Alert",
-    trigger: "Sent when a Hot or Warm lead has had no recorded contact for 5+ days",
-    subject: "🔥 Inactivity alert: [Name] ([X] days)",
-    preview: "Hot and warm leads cool fast. A quick check-in keeps the relationship alive and signals you're the proactive agent they want representing them.",
+    day: "Realtor alert",
+    trigger: "Sent to you when a Hot or Warm lead has had no contact for 5+ days",
+    subject: "🔥 Inactivity alert: [Name] ([X] days no contact)",
+    preview: "Your Hot/Warm lead [Name] hasn't had any recorded contact in [X] days. Hot leads cool fast — a quick check-in keeps the relationship alive.",
     body: `Hi [Realtor],
 
-Your Hot/Warm lead [Name] ([Property type] in [City]) hasn't had any recorded contact in [X] days.
+Your Hot lead [Name] ([Property type] in [City]) hasn't had any recorded contact in [X] days.
 
-Hot and warm leads cool fast. A quick check-in keeps the relationship alive and signals you're the proactive agent they want representing them.
+Hot and warm leads cool fast. A quick personal check-in keeps the relationship warm and shows you're the proactive agent they want in their corner.
 
 → View [Name]'s Profile`,
     color: "#ea580c",
@@ -192,42 +193,63 @@ function buildMockStatuses(leads: Lead[]): SequenceStatus[] {
 
 // ─── Template card ────────────────────────────────────────────────────────────
 
-function TemplateCard({ t, defaultOpen }: { t: TemplateStep; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen ?? false);
+function TemplateCard({ t }: { t: TemplateStep }) {
+  const [open, setOpen] = useState(false);
+  const isRealtorAlert = t.type === "inactivity";
 
   return (
-    <div style={{ border: `1px solid ${t.border}`, borderRadius: "14px", overflow: "hidden", background: t.bg }}>
+    <div style={{ border: "1px solid #e8e4de", borderRadius: "14px", overflow: "hidden", background: "#ffffff" }}>
       {/* Header row */}
       <button
         onClick={() => setOpen((p) => !p)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left"
+        className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#faf9f7] transition-colors"
       >
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: t.tagBg, color: t.tagColor }}>
+        <div className="flex items-center gap-3 min-w-0">
+          <span
+            className="text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0"
+            style={{ background: t.tagBg, color: t.tagColor }}
+          >
             {t.day}
           </span>
-          <div>
-            <p className="text-xs font-semibold text-[#2c2825]">{t.subject.replace(/\[.*?\]/g, "[Buyer]")}</p>
-            <p className="text-[10px] text-[#8c8580] mt-0.5">{t.trigger}</p>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold text-[#2c2825] truncate">{t.subject}</p>
+            <p className="text-[10px] text-[#b8a88a] mt-0.5">{t.trigger}</p>
           </div>
         </div>
-        <ChevronDown size={13} className="text-[#b8a88a] shrink-0 ml-2 transition-transform" style={{ transform: open ? "rotate(180deg)" : "none" }} />
+        <ChevronDown
+          size={13}
+          className="text-[#b8a88a] shrink-0 ml-2 transition-transform"
+          style={{ transform: open ? "rotate(180deg)" : "none" }}
+        />
       </button>
 
-      {/* Expanded body */}
+      {/* Expanded — mini email mockup */}
       {open && (
-        <div style={{ borderTop: `1px solid ${t.border}` }} className="px-4 py-3">
-          <div className="bg-white rounded-xl px-4 py-3 mb-3" style={{ border: `1px solid ${t.border}` }}>
-            <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: t.color }}>
-              Email Preview
-            </p>
-            <pre className="text-[11px] text-[#5c5550] leading-relaxed whitespace-pre-wrap font-sans">
-              {t.body}
-            </pre>
+        <div style={{ borderTop: "1px solid #f0ece6", background: "#f5f4f2", padding: "14px" }}>
+          {/* Email chrome */}
+          <div style={{ background: "#ffffff", borderRadius: "12px", border: "1px solid #e8e4de", overflow: "hidden" }}>
+            {/* Email header bar */}
+            <div style={{ background: "#2c2825", padding: "14px 16px 12px" }}>
+              <p style={{ color: "#b8a88a", fontSize: "9px", fontWeight: 700, letterSpacing: "1.5px", textTransform: "uppercase", margin: "0 0 3px" }}>
+                HomeMatch
+              </p>
+              <p style={{ color: "#ffffff", fontSize: "13px", fontWeight: 700, margin: 0, lineHeight: 1.3 }}>
+                {t.subject}
+              </p>
+            </div>
+            {/* Email body */}
+            <div style={{ padding: "14px 16px" }}>
+              <p style={{ fontSize: "11px", color: "#5c5550", lineHeight: 1.7, whiteSpace: "pre-line", margin: "0 0 12px", fontFamily: "Georgia, serif" }}>
+                {t.body}
+              </p>
+            </div>
           </div>
-          <p className="text-[10px] text-[#8c8580] flex items-center gap-1">
-            <Send size={9} />
-            Sent automatically to you · Personalised with buyer details
+          {/* Sent-to label */}
+          <p className="text-[10px] flex items-center gap-1 mt-2" style={{ color: "#8c8580" }}>
+            <Send size={9} style={{ color: t.color }} />
+            {isRealtorAlert
+              ? "Sent to you (the realtor) — CRM nudge, not visible to buyer"
+              : "Sent directly to your client — personalised with their name, city, and budget"}
           </p>
         </div>
       )}
@@ -408,7 +430,7 @@ export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
         {showTemplates && (
           <div className="px-4 pb-4 space-y-2.5 border-t border-[#f0ece6] pt-3" style={{ background: "#faf9f7" }}>
             <p className="text-[10px] text-[#8c8580] mb-3 leading-relaxed">
-              These emails are sent automatically to <strong>you</strong> — personalised with each buyer&apos;s name, property type, city, and budget. No action needed, they run in the background.
+              Day 1, 3, and 7 emails go directly to <strong>your client</strong> — personalised with their name, city, and budget. The inactivity alert goes to <strong>you</strong> as a CRM nudge. All run automatically in the background.
             </p>
             {SEQUENCE_TEMPLATES.map((t) => (
               <TemplateCard key={t.type} t={t} />
