@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles, Calendar, Clock, MapPin, Bell, DollarSign } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles, Calendar, Clock, MapPin, Bell, DollarSign, CalendarDays, X, MessageSquare, ShieldAlert, Activity, Target } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
@@ -487,6 +487,205 @@ function ScheduleWidget({ leads }: { leads: Lead[] }) {
   );
 }
 
+// ─── Showing Request Types ────────────────────────────────────────────────────
+interface ShowingRequest {
+  id: string;
+  buyer_name: string;
+  buyer_email: string;
+  preferred_dates: string;
+  preferred_time: string;
+  message: string;
+  status: "pending" | "confirmed" | "declined";
+  requested_at: string;
+}
+
+// ─── Showing Inbox Widget ─────────────────────────────────────────────────────
+function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
+  const [requests, setRequests] = useState<ShowingRequest[]>([]);
+  const [updating, setUpdating] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!realtorId) return;
+    fetch("/api/showings/list")
+      .then((r) => r.json())
+      .then((d) => setRequests(d.requests ?? []))
+      .catch(() => {});
+  }, [realtorId]);
+
+  async function updateStatus(id: string, status: "confirmed" | "declined") {
+    setUpdating(id);
+    try {
+      await fetch("/api/showings/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status } : r));
+    } catch { /* ignore */ }
+    setUpdating(null);
+  }
+
+  const pending = requests.filter((r) => r.status === "pending");
+  const recent = requests.filter((r) => r.status !== "pending").slice(0, 2);
+
+  return (
+    <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm">
+      <div className="px-4 py-3.5 border-b border-[#f0ece6] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CalendarDays size={13} className="text-[#b8a88a]" />
+          <p className="text-xs font-bold text-[#2c2825]">Showing Requests</p>
+          {pending.length > 0 && (
+            <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pending.length}</span>
+          )}
+        </div>
+      </div>
+
+      {requests.length === 0 ? (
+        <div className="px-4 py-6 text-center">
+          <CalendarDays size={20} className="text-[#e8e4de] mx-auto mb-2" />
+          <p className="text-xs text-[#8c8580]">No showing requests yet.</p>
+          <p className="text-[10px] text-[#b8b4b0] mt-0.5">Buyers can request via their portal.</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-[#f5f2ee]">
+          {pending.map((req) => (
+            <div key={req.id} className="px-4 py-3.5 bg-amber-50/50">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <p className="text-xs font-semibold text-[#2c2825]">{req.buyer_name || "Buyer"}</p>
+                  <p className="text-[10px] text-[#b8a88a] font-medium">{req.preferred_dates}{req.preferred_time ? ` · ${req.preferred_time}` : ""}</p>
+                </div>
+                <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium shrink-0">Pending</span>
+              </div>
+              {req.message && (
+                <p className="text-[10px] text-[#8c8580] italic mb-2.5 leading-relaxed">&ldquo;{req.message}&rdquo;</p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  disabled={updating === req.id}
+                  onClick={() => updateStatus(req.id, "confirmed")}
+                  className="flex-1 flex items-center justify-center gap-1 bg-emerald-500 text-white text-[11px] font-semibold py-2 rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                >
+                  <Check size={11} /> Confirm
+                </button>
+                <button
+                  disabled={updating === req.id}
+                  onClick={() => updateStatus(req.id, "declined")}
+                  className="flex-1 flex items-center justify-center gap-1 border border-[#e8e4de] text-[#8c8580] text-[11px] font-medium py-2 rounded-lg hover:border-rose-300 hover:text-rose-500 transition-colors disabled:opacity-60"
+                >
+                  <X size={11} /> Decline
+                </button>
+              </div>
+            </div>
+          ))}
+          {recent.map((req) => (
+            <div key={req.id} className="px-4 py-3 flex items-center gap-3">
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${req.status === "confirmed" ? "bg-emerald-400" : "bg-slate-300"}`} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-medium text-[#2c2825] truncate">{req.buyer_name}</p>
+                <p className="text-[10px] text-[#8c8580]">{req.preferred_dates}</p>
+              </div>
+              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${req.status === "confirmed" ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                {req.status === "confirmed" ? "Confirmed" : "Declined"}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Smart Insights Bar ───────────────────────────────────────────────────────
+function SmartInsightsBar({ leads }: { leads: Lead[] }) {
+  const now = Date.now();
+
+  const coldLeads = leads.filter((l) => {
+    if (l.score !== "Hot" && l.score !== "Warm") return false;
+    if (l.status === "Closed") return false;
+    const submitted = new Date(l.submittedAt ?? "").getTime();
+    return (now - submitted) / (1000 * 60 * 60 * 24) > 7;
+  });
+
+  const offerLeads = leads.filter((l) => l.status === "Offer Stage");
+  const hotLeads = leads.filter((l) => l.score === "Hot" && l.status !== "Closed");
+
+  const atRiskCommission = coldLeads.reduce((sum, l) => {
+    const avg = ((l.answers.budgetMin || 0) + (l.answers.budgetMax || 0)) / 2;
+    return sum + avg * 0.025;
+  }, 0);
+
+  const insights: { icon: React.ReactNode; text: string; sub: string; color: string; bg: string }[] = [];
+
+  if (coldLeads.length > 0) {
+    const fmt = atRiskCommission >= 1000 ? `$${Math.round(atRiskCommission / 1000)}K` : `$${Math.round(atRiskCommission)}`;
+    insights.push({
+      icon: <ShieldAlert size={14} className="text-rose-500" />,
+      text: `${coldLeads.length} lead${coldLeads.length > 1 ? "s" : ""} going cold`,
+      sub: `${fmt} commission at risk · Re-engage now`,
+      color: "text-rose-700",
+      bg: "bg-rose-50 border-rose-200",
+    });
+  }
+
+  if (offerLeads.length > 0) {
+    insights.push({
+      icon: <Target size={14} className="text-emerald-600" />,
+      text: `${offerLeads.length} lead${offerLeads.length > 1 ? "s" : ""} at Offer Stage`,
+      sub: "You're close — keep the momentum going",
+      color: "text-emerald-700",
+      bg: "bg-emerald-50 border-emerald-200",
+    });
+  }
+
+  if (hotLeads.length > 0 && coldLeads.length === 0) {
+    insights.push({
+      icon: <Flame size={14} className="text-amber-500" />,
+      text: `${hotLeads.length} hot lead${hotLeads.length > 1 ? "s" : ""} need attention`,
+      sub: "Reach out this week before they go elsewhere",
+      color: "text-amber-700",
+      bg: "bg-amber-50 border-amber-200",
+    });
+  }
+
+  const urgentTimeline = leads.find((l) =>
+    l.status !== "Closed" && ["1-3 months", "ASAP"].includes(l.answers.timeline ?? "")
+  );
+  if (urgentTimeline) {
+    insights.push({
+      icon: <Clock size={14} className="text-violet-500" />,
+      text: `${urgentTimeline.answers.firstName} needs to move fast`,
+      sub: `Timeline: ${urgentTimeline.answers.timeline} · ${urgentTimeline.answers.preferredCity || "local"}`,
+      color: "text-violet-700",
+      bg: "bg-violet-50 border-violet-200",
+    });
+  }
+
+  if (insights.length === 0) {
+    insights.push({
+      icon: <Activity size={14} className="text-sky-500" />,
+      text: "Pipeline looking healthy",
+      sub: "No urgent actions right now — great work",
+      color: "text-sky-700",
+      bg: "bg-sky-50 border-sky-200",
+    });
+  }
+
+  return (
+    <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+      {insights.map((ins, i) => (
+        <div key={i} className={`flex items-start gap-2.5 shrink-0 border rounded-xl px-4 py-3 min-w-[220px] max-w-[260px] ${ins.bg}`}>
+          <div className="mt-0.5 shrink-0">{ins.icon}</div>
+          <div>
+            <p className={`text-xs font-semibold ${ins.color}`}>{ins.text}</p>
+            <p className="text-[10px] text-[#8c8580] mt-0.5 leading-relaxed">{ins.sub}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Revenue Forecast Widget ─────────────────────────────────────────────────
 
 function formatCommission(value: number): string {
@@ -848,6 +1047,11 @@ export default function DashboardPage() {
               </>
             )}
 
+            {/* ── Smart Insights ────────────────────────────────────────── */}
+            {!loading && allLeads.length > 0 && (
+              <SmartInsightsBar leads={allLeads} />
+            )}
+
             {/* ── All Leads ─────────────────────────────────────────────── */}
             <div className="bg-white border border-[#ece8e2] rounded-2xl overflow-hidden shadow-sm mt-2">
               <div className="px-5 py-4 border-b border-[#f0ece6] flex items-center justify-between">
@@ -1009,6 +1213,9 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+
+            {/* Showing Request Inbox */}
+            <ShowingInboxWidget realtorId={realtorId} />
 
             {/* Schedule widget */}
             <ScheduleWidget leads={allLeads} />
