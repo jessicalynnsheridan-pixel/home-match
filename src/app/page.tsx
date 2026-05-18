@@ -97,7 +97,7 @@ export default function HomePage() {
 
           <div className="mt-6 pt-6 border-t border-[#e8e4de]">
             <Link
-              href="/dashboard"
+              href="/realtor-signup"
               className="inline-flex items-center gap-2 text-sm text-[#8c8580] hover:text-[#2c2825] transition-colors group"
             >
               <span className="w-6 h-6 rounded-full bg-[#f0ece6] flex items-center justify-center text-xs font-bold text-[#b8a88a] group-hover:bg-[#2c2825] group-hover:text-white transition-all">R</span>
