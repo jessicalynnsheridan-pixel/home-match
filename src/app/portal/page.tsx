@@ -9,7 +9,8 @@ import {
   Heart, BedDouble, Bath, Ruler, CheckCircle, Circle,
   Lightbulb, BookOpen, MapPin, ShieldCheck, ChevronDown,
   ChevronUp, Info, ArrowRight, TrendingUp, MessageCircle,
-  Sparkles, Star, Bell, Flame, CalendarDays,
+  Sparkles, Star, Bell, Flame, CalendarDays, Phone, Mail,
+  Calculator,
 } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { useBranding } from "@/context/BrandingContext";
@@ -347,6 +348,8 @@ export default function BuyerPortalPage() {
     submitting: boolean;
   }>({ dates: "", time: "", message: "", submitted: false, submitting: false });
 
+  const [calc, setCalc] = useState({ price: 0, downPct: 20, rate: 5.5, years: 25 });
+
   useEffect(() => {
     const timer = setTimeout(() => {
       // Load buyer answers
@@ -414,7 +417,8 @@ export default function BuyerPortalPage() {
 
   const recommendations = mockProperties.filter((p) => p.leadId === "lead-001");
   const readiness = calcBuyerReadiness(answers);
-  const midPrice = (answers.budgetMin + answers.budgetMax) / 2;
+  const midPrice = ((answers.budgetMin ?? 0) + (answers.budgetMax ?? 0)) / 2;
+  const calcPrice = calc.price > 0 ? calc.price : Math.round(midPrice) || 750000;
   const downPayment = midPrice * 0.2;
   const monthlyPayment = calcMonthlyPayment(midPrice);
   const ltt = ontarioLTT(midPrice);
@@ -439,29 +443,26 @@ export default function BuyerPortalPage() {
         <ReturnBanner count={newMatchCount} streak={streak} realtorName={branding.realtorName} />
 
         {/* ── Welcome header ─────────────────────────────────────────────── */}
-        <div className="gradient-dark-animated rounded-3xl p-8 text-white animate-fade-up relative overflow-hidden">
-          {/* Ambient orbs inside the header */}
-          <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
-            <div className="absolute top-[-20%] right-[10%] w-64 h-64 rounded-full bg-[#b8a88a]/[6%] blur-3xl" />
-            <div className="absolute bottom-[-10%] left-[5%] w-48 h-48 rounded-full bg-[#b8a88a]/[4%] blur-2xl" />
-          </div>
+        <div className="bg-gradient-to-br from-amber-50 via-[#fdf8f2] to-violet-50 border border-[#e8e4de] rounded-3xl p-8 animate-fade-up relative overflow-hidden">
+          <div aria-hidden className="absolute top-[-30px] right-[-30px] w-52 h-52 rounded-full bg-[#b8a88a]/10 blur-3xl pointer-events-none" />
+          <div aria-hidden className="absolute bottom-[-20px] left-[5%] w-40 h-40 rounded-full bg-violet-200/20 blur-2xl pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase mb-3">
+            <p className="text-[#b8a88a] text-xs font-semibold tracking-widest uppercase mb-3">
               Your Home Journey
             </p>
-            <h1 className="text-2xl sm:text-3xl font-semibold mb-1">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-[#2c2825] mb-1">
               {getGreeting()}{firstName ? `, ${firstName}` : ""}.
             </h1>
-            <p className="text-[#e8e4de]/60 text-sm mb-7">
+            <p className="text-[#8c8580] text-sm mb-7">
               {isRealUser
                 ? "Everything here is built around you. Your profile, your matches, your pace."
                 : "Your personalised home search hub. Explore everything below."}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Stat label="Readiness Score" value={`${readiness.overall}/100`} />
-              <Stat label="Budget" value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`} />
-              <Stat label="Timeline" value={answers.timeline || "–"} />
-              <Stat label="Dream Collection" value={`${savedIds.size} saved`} />
+              <Stat label="Readiness Score" value={`${readiness.overall}/100`} color="amber" />
+              <Stat label="Budget" value={`${formatCurrency(answers.budgetMin ?? 0)} – ${formatCurrency(answers.budgetMax ?? 0)}`} color="violet" />
+              <Stat label="Timeline" value={answers.timeline || "–"} color="emerald" />
+              <Stat label="Dream Collection" value={`${savedIds.size} saved`} color="rose" />
             </div>
           </div>
         </div>
@@ -470,6 +471,43 @@ export default function BuyerPortalPage() {
         {answers.homeFeeling && answers.homeFeeling.length > 0 && (
           <VibeSummary answers={answers} />
         )}
+
+        {/* ── My Realtor ─────────────────────────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Your Advisor · Available Now</p>
+          </div>
+          <div className="flex items-start gap-4 mb-5">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2c2825] to-[#5c4a3a] flex items-center justify-center shrink-0 text-white text-2xl font-bold shadow-md">
+              {branding.realtorName.charAt(0)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-[#2c2825] font-bold text-lg leading-tight">{branding.realtorName}</h2>
+              <p className="text-[#b8a88a] text-sm font-medium">Personal Real Estate Advisor</p>
+              <p className="text-[#8c8580] text-sm mt-2 leading-relaxed">{realtorMessage}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <a
+              href={`mailto:${branding.email}?subject=HomeMatch - Question for ${realtorFirst}`}
+              className="flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-[#1a1714] transition-colors btn-press"
+            >
+              <Mail size={14} />
+              Send an Email
+            </a>
+            <button
+              onClick={() => {
+                const el = document.getElementById("showing-section");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="flex items-center justify-center gap-2 bg-[#b8a88a]/15 text-[#2c2825] text-sm font-semibold px-4 py-3 rounded-xl hover:bg-[#b8a88a]/25 transition-colors border border-[#b8a88a]/30 btn-press"
+            >
+              <CalendarDays size={14} />
+              Book a Showing
+            </button>
+          </div>
+        </section>
 
         {/* ── Today's Discoveries ────────────────────────────────────────── */}
         <TodaysDiscoveries
@@ -581,6 +619,90 @@ export default function BuyerPortalPage() {
           </div>
         </section>
 
+        {/* ── Interactive Mortgage Calculator ────────────────────────────── */}
+        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
+          <div className="flex items-center gap-2 mb-1">
+            <Calculator size={16} className="text-[#b8a88a]" />
+            <h2 className="text-[#2c2825] font-semibold">Mortgage Calculator</h2>
+          </div>
+          <p className="text-[#8c8580] text-sm mb-6">Adjust any number and see your payment update instantly.</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div>
+              <label className="block text-xs font-medium text-[#8c8580] mb-1.5">Home Price</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8c8580] text-sm">$</span>
+                <input
+                  type="number"
+                  value={calcPrice}
+                  onChange={(e) => setCalc((p) => ({ ...p, price: Number(e.target.value) }))}
+                  className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl pl-7 pr-3 py-2.5 text-sm text-[#2c2825] focus:outline-none focus:border-[#b8a88a] transition-colors"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#8c8580] mb-1.5">Down Payment — {calc.downPct}%</label>
+              <input
+                type="range"
+                min={5}
+                max={50}
+                step={1}
+                value={calc.downPct}
+                onChange={(e) => setCalc((p) => ({ ...p, downPct: Number(e.target.value) }))}
+                className="w-full accent-[#b8a88a] mt-2"
+              />
+              <p className="text-xs text-[#b8a88a] mt-1">{formatCurrency(Math.round(calcPrice * calc.downPct / 100))}</p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#8c8580] mb-1.5">Interest Rate</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  step={0.1}
+                  min={0.1}
+                  max={15}
+                  value={calc.rate}
+                  onChange={(e) => setCalc((p) => ({ ...p, rate: Number(e.target.value) }))}
+                  className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-3 pr-7 py-2.5 text-sm text-[#2c2825] focus:outline-none focus:border-[#b8a88a] transition-colors"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8c8580] text-sm">%</span>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#8c8580] mb-1.5">Amortization</label>
+              <select
+                value={calc.years}
+                onChange={(e) => setCalc((p) => ({ ...p, years: Number(e.target.value) }))}
+                className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-3 py-2.5 text-sm text-[#2c2825] focus:outline-none focus:border-[#b8a88a] transition-colors"
+              >
+                {[15, 20, 25, 30].map((y) => <option key={y} value={y}>{y} years</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/* Big result */}
+          <div className="bg-gradient-to-br from-amber-50 to-[#fdf8f0] border border-amber-200 rounded-2xl p-6 text-center mb-4">
+            <p className="text-[#8c8580] text-xs font-semibold uppercase tracking-widest mb-2">Estimated Monthly Payment</p>
+            <p className="text-4xl sm:text-5xl font-bold text-[#2c2825]">
+              {formatCurrency(Math.round(calcMonthlyPayment(calcPrice, calc.downPct / 100, calc.rate / 100, calc.years)))}
+            </p>
+            <p className="text-[#8c8580] text-xs mt-2">Principal & Interest · {calc.downPct}% down · {calc.rate}% rate · {calc.years}yr</p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "Loan Amount", value: formatCurrency(Math.round(calcPrice * (1 - calc.downPct / 100))) },
+              { label: "Down Payment", value: formatCurrency(Math.round(calcPrice * calc.downPct / 100)) },
+              { label: "Land Transfer Tax", value: formatCurrency(ontarioLTT(calcPrice)) },
+            ].map((s) => (
+              <div key={s.label} className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl p-3 text-center">
+                <p className="text-[10px] text-[#8c8580] mb-1">{s.label}</p>
+                <p className="text-sm font-semibold text-[#2c2825]">{s.value}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* ── True cost of buying ─────────────────────────────────────────── */}
         <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
@@ -610,12 +732,12 @@ export default function BuyerPortalPage() {
             ))}
           </div>
 
-          <div className="bg-[#2c2825] rounded-xl p-4 flex items-center justify-between">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
             <div>
-              <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-0.5">Budget beyond purchase price</p>
-              <p className="text-white/50 text-xs">Excluding first year maintenance</p>
+              <p className="text-amber-700 text-xs font-semibold uppercase tracking-wider mb-0.5">Budget beyond purchase price</p>
+              <p className="text-amber-600/70 text-xs">Excluding first year maintenance</p>
             </div>
-            <p className="text-white font-bold text-xl">{formatCurrency(totalHiddenCosts)}</p>
+            <p className="text-amber-800 font-bold text-xl">{formatCurrency(totalHiddenCosts)}</p>
           </div>
         </section>
 
@@ -805,7 +927,7 @@ export default function BuyerPortalPage() {
         </section>
 
         {/* ── Request a Showing ──────────────────────────────────────────── */}
-        <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
+        <section id="showing-section" className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up card-hover">
           <div className="flex items-center gap-2 mb-1">
             <CalendarDays size={16} className="text-[#b8a88a]" />
             <h2 className="text-[#2c2825] font-semibold">Request a Showing</h2>
@@ -923,27 +1045,26 @@ export default function BuyerPortalPage() {
           )}
         </section>
 
-        {/* ── Connect with realtor ────────────────────────────────────────── */}
-        <section className="gradient-dark-animated rounded-2xl p-8 animate-fade-up relative overflow-hidden">
-          <div className="flex items-center gap-2 mb-4">
-            <Flame size={15} className="text-[#b8a88a]" />
-            <p className="text-[#b8a88a] text-xs font-medium tracking-widest uppercase">Your Advisor</p>
+        {/* ── Update profile CTA ─────────────────────────────────────────── */}
+        <section className="bg-gradient-to-br from-[#fdf8f0] via-white to-violet-50 border border-[#e8e4de] rounded-2xl p-8 animate-fade-up text-center">
+          <div className="w-12 h-12 rounded-2xl bg-[#b8a88a]/15 flex items-center justify-center mx-auto mb-4">
+            <Sparkles size={20} className="text-[#b8a88a]" />
           </div>
-          <h2 className="text-white font-semibold text-lg mb-2">{branding.realtorName} is ready when you are.</h2>
-          <p className="text-[#e8e4de]/60 text-sm leading-relaxed max-w-md mb-6">
-            {branding.tagline || "Your profile is complete. Reach out whenever the time feels right, no pressure, no scripts."}
+          <h2 className="text-[#2c2825] font-bold text-lg mb-2">Keep your profile sharp.</h2>
+          <p className="text-[#8c8580] text-sm leading-relaxed max-w-sm mx-auto mb-6">
+            {branding.tagline || "The more we know about what you love, the better your matches get."}
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href={`mailto:${branding.email}?subject=HomeMatch - Ready to connect`}
-              className="inline-flex items-center justify-center gap-2 bg-[#b8a88a] text-[#2c2825] text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#c9b99b] transition-colors btn-press"
+              className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-[#1a1714] transition-colors btn-press"
             >
               <MessageCircle size={14} />
               Message {realtorFirst}
             </a>
             <Link
               href="/questionnaire"
-              className="inline-flex items-center justify-center gap-2 border border-white/20 text-white text-sm px-6 py-2.5 rounded-full hover:border-white/40 transition-colors"
+              className="inline-flex items-center justify-center gap-2 border border-[#e8e4de] text-[#2c2825] text-sm font-medium px-6 py-3 rounded-full hover:border-[#b8a88a] transition-colors"
             >
               Update My Profile
               <ArrowRight size={14} />
@@ -958,11 +1079,17 @@ export default function BuyerPortalPage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, color = "amber" }: { label: string; value: string; color?: string }) {
+  const styles: Record<string, string> = {
+    amber: "bg-amber-50 border-amber-200 text-amber-800",
+    violet: "bg-violet-50 border-violet-200 text-violet-800",
+    emerald: "bg-emerald-50 border-emerald-200 text-emerald-800",
+    rose: "bg-rose-50 border-rose-200 text-rose-700",
+  };
   return (
-    <div className="bg-white/10 rounded-xl px-4 py-3">
-      <p className="text-[#e8e4de]/50 text-xs mb-0.5">{label}</p>
-      <p className="text-white font-semibold text-sm">{value}</p>
+    <div className={`${styles[color] ?? styles.amber} border rounded-xl px-4 py-3`}>
+      <p className="text-[#8c8580] text-xs mb-0.5">{label}</p>
+      <p className="font-semibold text-sm">{value}</p>
     </div>
   );
 }
