@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Lead } from "@/types";
-import { Zap, Mail, AlertCircle, CheckCircle2, Clock, ChevronRight, Flame } from "lucide-react";
+import { Zap, Mail, AlertCircle, CheckCircle2, Clock, ChevronRight, Flame, ChevronDown, Eye, Send } from "lucide-react";
 import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -29,17 +29,114 @@ interface SequenceStatus {
   inactivityDays: number;
 }
 
+// ─── Template definitions ─────────────────────────────────────────────────────
+
+interface TemplateStep {
+  type: AutomationType;
+  day: string;
+  trigger: string;
+  subject: string;
+  preview: string;
+  body: string;
+  color: string;
+  bg: string;
+  border: string;
+  tagBg: string;
+  tagColor: string;
+}
+
+const SEQUENCE_TEMPLATES: TemplateStep[] = [
+  {
+    type: "day1",
+    day: "Day 1",
+    trigger: "Sent within 36hrs of a new lead submitting",
+    subject: "New buyer: [Name] just submitted their profile",
+    preview: "A new buyer just submitted their profile. Here's a quick snapshot — reach out within the first hour for the best response rate.",
+    body: `Hi [Realtor],
+
+A new buyer just submitted their profile. Here's a quick snapshot:
+
+Buyer: [First Last] · [email]
+Looking for: [Property type] in [City]
+Budget: $X to $Y
+Timeline: [Timeline]
+
+💡 Best practice: Reach out within the first hour — response rates drop significantly after 24 hrs.
+
+→ View [Name]'s Profile`,
+    color: "#059669",
+    bg: "#f0fdf4",
+    border: "#bbf7d0",
+    tagBg: "#dcfce7",
+    tagColor: "#166534",
+  },
+  {
+    type: "day3",
+    day: "Day 3",
+    trigger: "Sent if lead is still New Lead or Qualified after 3 days",
+    subject: "⏰ Follow up with [Name] — 3 days since they submitted",
+    preview: "Buyers who don't hear back within 3 days often move on to another agent. A quick email or call today keeps you top of mind.",
+    body: `Hi [Realtor],
+
+[Name] submitted 3 days ago — have you connected yet?
+
+They're still at [status]. Buyers who don't hear back within 3 days often move on to another agent.
+
+A quick email or call today keeps you top of mind. We've already drafted a template for you:
+
+→ Open Outreach Templates`,
+    color: "#d97706",
+    bg: "#fffbeb",
+    border: "#fde68a",
+    tagBg: "#fef3c7",
+    tagColor: "#92400e",
+  },
+  {
+    type: "day7",
+    day: "Day 7",
+    trigger: "Sent if lead is still stalled after 7 days — final nudge",
+    subject: "🚨 [Name] — 7 days with no progress",
+    preview: "It's been a week. At this stage, buyers have almost certainly spoken to other agents. One genuine outreach today could still turn this around.",
+    body: `Hi [Realtor],
+
+It's been 7 days since [Name] submitted their profile and they're still at [status].
+
+At this stage, buyers have almost certainly spoken to other agents.
+
+One genuine, personalised outreach today could still turn this around. We've got their full profile and conversation starters ready.
+
+→ Re-engage [Name] Now`,
+    color: "#dc2626",
+    bg: "#fef2f2",
+    border: "#fecaca",
+    tagBg: "#fee2e2",
+    tagColor: "#991b1b",
+  },
+  {
+    type: "inactivity",
+    day: "5-Day Alert",
+    trigger: "Sent when a Hot or Warm lead has had no recorded contact for 5+ days",
+    subject: "🔥 Inactivity alert: [Name] ([X] days)",
+    preview: "Hot and warm leads cool fast. A quick check-in keeps the relationship alive and signals you're the proactive agent they want representing them.",
+    body: `Hi [Realtor],
+
+Your Hot/Warm lead [Name] ([Property type] in [City]) hasn't had any recorded contact in [X] days.
+
+Hot and warm leads cool fast. A quick check-in keeps the relationship alive and signals you're the proactive agent they want representing them.
+
+→ View [Name]'s Profile`,
+    color: "#ea580c",
+    bg: "#fff7ed",
+    border: "#fed7aa",
+    tagBg: "#ffedd5",
+    tagColor: "#9a3412",
+  },
+];
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function daysSince(dateStr: string) {
   return (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24);
-}
-
-function relativeTime(dateStr: string) {
-  const d = daysSince(dateStr);
-  if (d < 1) return "today";
-  if (d < 2) return "yesterday";
-  return `${Math.floor(d)}d ago`;
 }
 
 const TYPE_LABELS: Record<AutomationType, string> = {
@@ -59,72 +156,86 @@ const TYPE_COLOR: Record<AutomationType, string> = {
 function buildSequenceStatus(lead: Lead, logs: AutomationLog[]): SequenceStatus {
   const name = `${lead.answers.firstName} ${lead.answers.lastName}`.trim();
   const ageDays = daysSince(lead.submittedAt);
-  const sentTypes = logs
-    .filter((l) => l.lead_id === lead.id)
-    .map((l) => l.automation_type);
-
+  const sentTypes = logs.filter((l) => l.lead_id === lead.id).map((l) => l.automation_type);
   const isActive = ["New Lead", "Qualified", "Showing Booked"].includes(lead.status);
 
-  // Calculate next step
   let next: SequenceStatus["next"] = null;
   if (isActive) {
     if (!sentTypes.includes("day1")) {
       next = { type: "day1", label: "Day 1 intro email", dueIn: "Now", overdue: ageDays > 1.5 };
     } else if (!sentTypes.includes("day3") && ["New Lead", "Qualified"].includes(lead.status)) {
       const dueAt = 3 - ageDays;
-      next = {
-        type: "day3",
-        label: "Day 3 follow-up",
-        dueIn: dueAt > 0 ? `in ${Math.ceil(dueAt)}d` : "Overdue",
-        overdue: dueAt <= 0,
-      };
+      next = { type: "day3", label: "Day 3 follow-up", dueIn: dueAt > 0 ? `in ${Math.ceil(dueAt)}d` : "Overdue", overdue: dueAt <= 0 };
     } else if (!sentTypes.includes("day7") && ["New Lead", "Qualified"].includes(lead.status)) {
       const dueAt = 7 - ageDays;
-      next = {
-        type: "day7",
-        label: "Day 7 final nudge",
-        dueIn: dueAt > 0 ? `in ${Math.ceil(dueAt)}d` : "Overdue",
-        overdue: dueAt <= 0,
-      };
+      next = { type: "day7", label: "Day 7 final nudge", dueIn: dueAt > 0 ? `in ${Math.ceil(dueAt)}d` : "Overdue", overdue: dueAt <= 0 };
     }
   }
 
-  // Inactivity alert check (Hot/Warm, 5+ days idle)
   const inactivityLogs = logs.filter((l) => l.lead_id === lead.id && l.automation_type === "inactivity");
   const lastInactivity = inactivityLogs[0]?.sent_at;
   const daysSinceInactivity = lastInactivity ? daysSince(lastInactivity) : Infinity;
   const inactivityAlert =
-    (lead.score === "Hot" || lead.score === "Warm") &&
-    ageDays >= 5 &&
-    isActive &&
-    daysSinceInactivity >= 7;
+    (lead.score === "Hot" || lead.score === "Warm") && ageDays >= 5 && isActive && daysSinceInactivity >= 7;
 
-  return {
-    lead,
-    name,
-    ageDays,
-    score: lead.score,
-    status: lead.status,
-    sent: sentTypes,
-    next,
-    inactivityAlert,
-    inactivityDays: Math.floor(ageDays),
-  };
+  return { lead, name, ageDays, score: lead.score, status: lead.status, sent: sentTypes, next, inactivityAlert, inactivityDays: Math.floor(ageDays) };
 }
 
-// ─── Mock data (shown when no real Supabase logs exist) ───────────────────────
-
 function buildMockStatuses(leads: Lead[]): SequenceStatus[] {
-  // Simulate realistic automation states for the 3 mock leads
   const mockLogs: AutomationLog[] = [
-    { id: "ml1", lead_id: "lead-001", automation_type: "day1", sent_at: new Date(Date.now() - 4 * 86400000).toISOString(), subject: "New buyer" },
-    { id: "ml2", lead_id: "lead-001", automation_type: "day3", sent_at: new Date(Date.now() - 1 * 86400000).toISOString(), subject: "Follow up" },
-    { id: "ml3", lead_id: "lead-002", automation_type: "day1", sent_at: new Date(Date.now() - 0.5 * 86400000).toISOString(), subject: "New buyer" },
+    { id: "ml1", lead_id: "lead-001", automation_type: "day1", sent_at: new Date(Date.now() - 4 * 86400000).toISOString(), subject: "" },
+    { id: "ml2", lead_id: "lead-001", automation_type: "day3", sent_at: new Date(Date.now() - 1 * 86400000).toISOString(), subject: "" },
+    { id: "ml3", lead_id: "lead-002", automation_type: "day1", sent_at: new Date(Date.now() - 0.5 * 86400000).toISOString(), subject: "" },
   ];
   return leads.map((l) => buildSequenceStatus(l, mockLogs));
 }
 
-// ─── Subcomponents ────────────────────────────────────────────────────────────
+// ─── Template card ────────────────────────────────────────────────────────────
+
+function TemplateCard({ t, defaultOpen }: { t: TemplateStep; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen ?? false);
+
+  return (
+    <div style={{ border: `1px solid ${t.border}`, borderRadius: "14px", overflow: "hidden", background: t.bg }}>
+      {/* Header row */}
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: t.tagBg, color: t.tagColor }}>
+            {t.day}
+          </span>
+          <div>
+            <p className="text-xs font-semibold text-[#2c2825]">{t.subject.replace(/\[.*?\]/g, "[Buyer]")}</p>
+            <p className="text-[10px] text-[#8c8580] mt-0.5">{t.trigger}</p>
+          </div>
+        </div>
+        <ChevronDown size={13} className="text-[#b8a88a] shrink-0 ml-2 transition-transform" style={{ transform: open ? "rotate(180deg)" : "none" }} />
+      </button>
+
+      {/* Expanded body */}
+      {open && (
+        <div style={{ borderTop: `1px solid ${t.border}` }} className="px-4 py-3">
+          <div className="bg-white rounded-xl px-4 py-3 mb-3" style={{ border: `1px solid ${t.border}` }}>
+            <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: t.color }}>
+              Email Preview
+            </p>
+            <pre className="text-[11px] text-[#5c5550] leading-relaxed whitespace-pre-wrap font-sans">
+              {t.body}
+            </pre>
+          </div>
+          <p className="text-[10px] text-[#8c8580] flex items-center gap-1">
+            <Send size={9} />
+            Sent automatically to you · Personalised with buyer details
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Sequence row ─────────────────────────────────────────────────────────────
 
 function SequenceRow({ s }: { s: SequenceStatus }) {
   const scoreIcon = s.score === "Hot"
@@ -136,18 +247,15 @@ function SequenceRow({ s }: { s: SequenceStatus }) {
   return (
     <Link href={`/dashboard/${s.lead.id}`} className="block group">
       <div className="px-4 py-3 hover:bg-[#faf9f7] transition-colors rounded-xl">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-1.5">
             {scoreIcon}
             <span className="text-xs font-semibold text-[#2c2825]">{s.name}</span>
           </div>
           <ChevronRight size={12} className="text-[#c4bfb9] group-hover:text-[#8c8580] transition-colors" />
         </div>
-
-        {/* Sent pills */}
         {s.sent.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
+          <div className="flex flex-wrap gap-1 mb-1.5">
             {s.sent.map((type) => (
               <span key={type} className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#f0ece6] text-[#8c8580]">
                 <CheckCircle2 size={9} style={{ color: TYPE_COLOR[type] }} />
@@ -156,30 +264,24 @@ function SequenceRow({ s }: { s: SequenceStatus }) {
             ))}
           </div>
         )}
-
-        {/* Next step */}
         {s.next && (
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center gap-1.5">
             <Clock size={10} style={{ color: s.next.overdue ? "#ef4444" : "#f97316" }} />
             <span className="text-[11px]" style={{ color: s.next.overdue ? "#ef4444" : "#f97316" }}>
               {s.next.label} · {s.next.dueIn}
             </span>
           </div>
         )}
-
-        {/* Inactivity alert */}
         {s.inactivityAlert && (
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center gap-1.5">
             <AlertCircle size={10} style={{ color: "#ef4444" }} />
             <span className="text-[11px] font-medium" style={{ color: "#ef4444" }}>
-              {s.inactivityDays} days with no contact — alert queued
+              {s.inactivityDays} days no contact — alert queued
             </span>
           </div>
         )}
-
-        {/* Fully done */}
         {!s.next && !s.inactivityAlert && s.sent.length > 0 && (
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center gap-1.5">
             <CheckCircle2 size={10} style={{ color: "#22c55e" }} />
             <span className="text-[11px] text-[#8c8580]">Sequence complete</span>
           </div>
@@ -194,6 +296,7 @@ function SequenceRow({ s }: { s: SequenceStatus }) {
 export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
   const [logs, setLogs] = useState<AutomationLog[] | null>(null);
   const [useMock, setUseMock] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   useEffect(() => {
     fetch("/api/automations/status")
@@ -213,7 +316,7 @@ export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
   } else if (logs !== null) {
     statuses = activeLeads.map((l) => buildSequenceStatus(l, logs));
   } else {
-    statuses = []; // loading
+    statuses = [];
   }
 
   const alerts = statuses.filter((s) => s.inactivityAlert || s.next?.overdue).length;
@@ -238,13 +341,13 @@ export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
               {alerts} alert{alerts !== 1 ? "s" : ""}
             </span>
           )}
-          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#f0fdf4] text-emerald-700">
+          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: "#f0fdf4", color: "#166534" }}>
             {active} active
           </span>
         </div>
       </div>
 
-      {/* Sequence list */}
+      {/* Sequence status list */}
       <div className="divide-y divide-[#f5f3f0]">
         {logs === null && !useMock ? (
           <div className="px-4 py-6 text-center">
@@ -260,10 +363,36 @@ export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
         )}
       </div>
 
+      {/* ── Email Templates section ─────────────────────────────────────────── */}
+      <div className="border-t border-[#f0ece6]">
+        <button
+          onClick={() => setShowTemplates((p) => !p)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#faf9f7] transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Eye size={13} className="text-[#b8a88a]" />
+            <span className="text-xs font-semibold text-[#2c2825]">View email templates</span>
+            <span className="text-[10px] text-[#b8a88a]">· 4 automated emails</span>
+          </div>
+          <ChevronDown size={13} className="text-[#b8a88a] transition-transform" style={{ transform: showTemplates ? "rotate(180deg)" : "none" }} />
+        </button>
+
+        {showTemplates && (
+          <div className="px-4 pb-4 space-y-2.5 border-t border-[#f0ece6] pt-3" style={{ background: "#faf9f7" }}>
+            <p className="text-[10px] text-[#8c8580] mb-3 leading-relaxed">
+              These emails are sent automatically to <strong>you</strong> — personalised with each buyer&apos;s name, property type, city, and budget. No action needed, they run in the background.
+            </p>
+            {SEQUENCE_TEMPLATES.map((t) => (
+              <TemplateCard key={t.type} t={t} />
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-[#f0ece6]" style={{ background: "#fafaf9" }}>
+      <div className="px-4 py-2.5 border-t border-[#f0ece6]" style={{ background: "#fafaf9" }}>
         <p className="text-[10px] text-[#b8a88a] text-center">
-          Emails send automatically · Day 1, Day 3, Day 7 · Inactivity at 5 days
+          Runs daily at 8am · Day 1, Day 3, Day 7 · Inactivity at 5 days
         </p>
       </div>
     </div>
