@@ -84,6 +84,7 @@ export default function LeadDetailPage() {
   }, [id, initialLead]);
   const [newNote, setNewNote] = useState("");
   const [tab, setTab] = useState<Tab>("brief");
+  const [statusSaved, setStatusSaved] = useState(false);
 
   const properties = mockProperties.filter((p) => p.leadId === id);
 
@@ -104,10 +105,18 @@ export default function LeadDetailPage() {
 
   async function updateStatus(status: LeadStatus) {
     setLead((p) => p && { ...p, status });
+    setStatusSaved(false);
     const isMock = mockLeads.some((l) => l.id === id);
     if (!isMock) {
       const supabase = createClient();
-      await supabase.from("leads").update({ status }).eq("id", id);
+      const { error } = await supabase.from("leads").update({ status }).eq("id", id);
+      if (!error) {
+        setStatusSaved(true);
+        setTimeout(() => setStatusSaved(false), 2000);
+      }
+    } else {
+      setStatusSaved(true);
+      setTimeout(() => setStatusSaved(false), 2000);
     }
   }
 
@@ -212,13 +221,18 @@ export default function LeadDetailPage() {
             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getScoreColor(lead.score)}`}>
               {lead.score}
             </span>
-            <select
-              value={lead.status}
-              onChange={(e) => updateStatus(e.target.value as LeadStatus)}
-              className="text-xs border border-[#e8e4de] rounded-lg px-2 py-1 bg-white text-[#2c2825] focus:outline-none cursor-pointer"
-            >
-              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <div className="flex items-center gap-2">
+              <select
+                value={lead.status}
+                onChange={(e) => updateStatus(e.target.value as LeadStatus)}
+                className="text-xs border border-[#e8e4de] rounded-lg px-2 py-1 bg-white text-[#2c2825] focus:outline-none cursor-pointer"
+              >
+                {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              {statusSaved && (
+                <span className="text-[10px] text-emerald-600 font-medium animate-fade-up">Saved ✓</span>
+              )}
+            </div>
           </div>
         </div>
 
