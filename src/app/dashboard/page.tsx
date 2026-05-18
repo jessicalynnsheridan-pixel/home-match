@@ -8,6 +8,7 @@ import { Lead, LeadScore, LeadStatus } from "@/types";
 import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail, ChevronRight, Star, Users, TrendingUp, ChevronDown, CheckCircle2, ExternalLink, Sparkles, Calendar, Clock, MapPin, Bell, DollarSign, CalendarDays, X, MessageSquare, ShieldAlert, Activity, Target } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import AutomationsWidget from "@/components/dashboard/AutomationsWidget";
 
 const SCORE_FILTERS: (LeadScore | "All")[] = ["All", "Hot", "Warm", "Browsing"];
 const STATUS_FILTERS: (LeadStatus | "All")[] = [
@@ -1366,6 +1367,9 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+
+            {/* Automations */}
+            <AutomationsWidget leads={allLeads} />
 
             {/* Showing Request Inbox */}
             <ShowingInboxWidget realtorId={realtorId} />
