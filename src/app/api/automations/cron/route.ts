@@ -115,7 +115,7 @@ function emailDay7Buyer(realtorName: string, lead: LeadRow) {
       <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
         <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${buyer},</p>
         <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">It's been a little while since you submitted your profile and I want to make sure you're getting the support you need.</p>
-        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">The market in ${city} moves quickly - but that doesn't mean you have to rush. Even a quick 15-minute call can help clarify what's out there and what fits your situation best.</p>
+        <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 16px">The market in ${city} moves quickly, but that doesn't mean you have to rush. Even a quick 15-minute call can help clarify what's out there and what fits your situation best.</p>
         <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 24px">Feel free to reply here or give me a call whenever works for you. I'm happy to go at whatever pace feels right.</p>
         <p style="font-size:14px;color:#5c5550;margin:0 0 4px">Here whenever you're ready,</p>
         <p style="font-size:14px;font-weight:700;color:#2c2825;margin:0">${realtorName}</p>

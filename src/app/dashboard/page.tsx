@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
@@ -916,7 +915,6 @@ function RevenueWidget({ leads }: { leads: Lead[] }) {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [scoreFilter, setScoreFilter] = useState<LeadScore | "All">("All");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "All">("All");
   const [search, setSearch] = useState("");
@@ -1008,8 +1006,6 @@ export default function DashboardPage() {
     });
   }
 
-  void router;
-
   function toggleLeadSelect(id: string) {
     setSelectedLeads((prev) => {
       const next = new Set(prev);
@@ -1045,78 +1041,8 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#f5f3f0]">
 
-      {/* ── Warm ivory header ────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-[#faf7f3] via-[#f5f0e8] to-[#ede8df] px-5 lg:px-8 pt-10 pb-16 border-b border-[#e8e2d8]">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles size={13} className="text-[#b8a88a]" />
-                <span className="text-[#b8a88a] text-xs font-medium tracking-wide">{formatDate()}</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#1a1714] mb-1">{getGreeting(realtorName)}</h1>
-              <p className="text-[#8c8580] text-sm">
-                {activeItems.length > 0
-                  ? `You have ${activeItems.length} priority action${activeItems.length !== 1 ? "s" : ""} today`
-                  : "You're all caught up. Great work!"}
-              </p>
-            </div>
-
-            {/* Pipeline commission — motivating number */}
-            <div className="shrink-0 text-right">
-              {(() => {
-                const active = allLeads.filter(l => l.status !== "Closed");
-                const commission = active.reduce((sum, l) => {
-                  const avg = ((l.answers.budgetMin || 0) + (l.answers.budgetMax || 0)) / 2;
-                  return sum + avg * 0.025;
-                }, 0);
-                const fmt = (n: number) => n >= 1000000 ? `$${(n/1000000).toFixed(1)}M` : n >= 1000 ? `$${Math.round(n/1000)}K` : `$${Math.round(n)}`;
-                return commission > 0 ? (
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a] mb-0.5">Est. Commission</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-[#2c2825] leading-none">{fmt(commission)}</p>
-                    <p className="text-[10px] text-[#b8b4b0] mt-1">{active.length} active lead{active.length !== 1 ? "s" : ""} · 2.5%</p>
-                    <button
-                      onClick={() => exportLeads(filtered)}
-                      className="mt-2 flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-3 py-1.5 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60 ml-auto"
-                    >
-                      <Download size={11} /> Export
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => exportLeads(filtered)}
-                    className="flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60"
-                  >
-                    <Download size={12} /> Export
-                  </button>
-                );
-              })()}
-            </div>
-          </div>
-
-          {/* Stat pills — horizontal scroll on mobile, row on desktop */}
-          <div className="flex overflow-x-auto gap-2 mt-8 -mx-1 px-1 pb-1 scrollbar-hide sm:flex-wrap sm:overflow-visible sm:gap-3">
-            {[
-              { label: "Total Leads", value: allLeads.length, icon: <Users size={13} className="text-[#b8a88a]" /> },
-              { label: "Hot",         value: hot,             icon: <Flame size={13} className="text-[#b8a88a]" /> },
-              { label: "Warm",        value: warm,            icon: <Zap size={13} className="text-[#b8a88a]" /> },
-              { label: "New",         value: newLeads,        icon: <TrendingUp size={13} className="text-[#b8a88a]" /> },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm shrink-0 bg-white border border-[#e8e2d8]">
-                {stat.icon}
-                <div>
-                  <p className="text-base sm:text-xl font-bold leading-none text-[#2c2825]">{stat.value}</p>
-                  <p className="text-[10px] mt-0.5 text-[#8c8580]">{stat.label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Main content (pulled up to overlap header) ───────────────── */}
-      <div className="max-w-6xl mx-auto px-5 lg:px-8 -mt-8 pb-10">
+      {/* ── Main content ─────────────────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-5 lg:px-8 pt-8 pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
           {/* ── LEFT: Action Queue ──────────────────────────────────────── */}
