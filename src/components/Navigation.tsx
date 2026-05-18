@@ -133,7 +133,7 @@ export default function Navigation() {
             isDark ? "text-white" : "text-[#2c2825]"
           }`}
         >
-          Home<span className={isDark ? "text-[#c9a870]" : "text-[#b8a88a]"}> Match</span>
+          Home<span className={isDark ? "text-[#c9a870]" : "text-[#b8a88a]"}>Match</span>
         </Link>
 
         {/* Desktop nav */}
