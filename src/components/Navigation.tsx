@@ -45,6 +45,7 @@ const realtorLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Pipeline", href: "/pipeline", icon: List },
   { label: "Listings", href: "/listings", icon: Building2 },
+  { label: "Integrations", href: "/integrations", icon: Settings },
   { label: "For Realtors", href: "/for-realtors", icon: UserPlus },
 ];
 

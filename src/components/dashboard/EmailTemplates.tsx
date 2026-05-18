@@ -3,7 +3,99 @@
 import { useState } from "react";
 import { Lead } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { Copy, CheckCheck, Zap, Mail, MessageSquare, Phone, Clock } from "lucide-react";
+import { Copy, CheckCheck, Zap, Mail, MessageSquare, Phone, Clock, ExternalLink, Calendar, Settings } from "lucide-react";
+import Link from "next/link";
+
+// ─── Send helpers ─────────────────────────────────────────────────────────────
+
+function gmailUrl(to: string, subject: string, body: string) {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function outlookUrl(to: string, subject: string, body: string) {
+  return `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function smsUrl(phone: string, body: string) {
+  return `sms:${phone}?body=${encodeURIComponent(body)}`;
+}
+
+function googleCalendarUrl(title: string, detail: string, date?: Date) {
+  const start = date ?? new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const end = new Date(start.getTime() + 30 * 60 * 1000);
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(start)}/${fmt(end)}&details=${encodeURIComponent(detail)}`;
+}
+
+function outlookCalendarUrl(title: string, detail: string, date?: Date) {
+  const start = date ?? new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const end = new Date(start.getTime() + 30 * 60 * 1000);
+  return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(detail)}&startdt=${start.toISOString()}&enddt=${end.toISOString()}`;
+}
+
+// ─── SendBar component ────────────────────────────────────────────────────────
+
+function EmailSendBar({ to, subject, body }: { to: string; subject: string; body: string }) {
+  const full = `${body}\n\n[Your name]\n[Your phone]`;
+  return (
+    <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
+      <a
+        href={gmailUrl(to, subject, full)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+      >
+        <span className="text-[11px]">G</span> Open in Gmail <ExternalLink size={10} />
+      </a>
+      <a
+        href={outlookUrl(to, subject, full)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+      >
+        <span className="text-[11px]">O</span> Open in Outlook <ExternalLink size={10} />
+      </a>
+    </div>
+  );
+}
+
+function SmsSendBar({ phone, body }: { phone: string; body: string }) {
+  return (
+    <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
+      <a
+        href={smsUrl(phone, body)}
+        className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+      >
+        <MessageSquare size={11} /> Open in Messages
+      </a>
+      <p className="text-[10px] text-[#8c8580] self-center">Works on mobile. On desktop, copy and paste into your SMS app.</p>
+    </div>
+  );
+}
+
+function CalendarBar({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
+      <p className="text-[10px] text-[#8c8580] w-full mb-1">Schedule a follow-up:</p>
+      <a
+        href={googleCalendarUrl(title, detail)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+      >
+        <Calendar size={11} /> Google Calendar <ExternalLink size={10} />
+      </a>
+      <a
+        href={outlookCalendarUrl(title, detail)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors font-medium"
+      >
+        <Calendar size={11} /> Outlook Calendar <ExternalLink size={10} />
+      </a>
+    </div>
+  );
+}
 
 // ─── Playbook logic ───────────────────────────────────────────────────────────
 
@@ -330,6 +422,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
                   This email references {lead.answers.firstName}&apos;s actual lifestyle answers - their Sunday morning preference, home vibe, and tradeoffs. It&apos;s built to feel like you wrote it, not a CRM.
                 </p>
               </div>
+              <EmailSendBar to={lead.answers.email} subject={email.subject} body={email.body} />
             </>
           )}
 
@@ -348,9 +441,10 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
                 <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#6b6560] leading-relaxed">
-                  Keep it under 160 characters if possible. Text has 3–5× higher open rates than email. Send this first, email second.
+                  Text has 5x higher open rates than email. Send this first, email second.
                 </p>
               </div>
+              <SmsSendBar phone={lead.answers.phone} body={text} />
             </>
           )}
 
@@ -369,8 +463,20 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
                 <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#6b6560] leading-relaxed">
-                  The key is personalising within the first 30 seconds. Reference their lifestyle answer immediately - it signals you actually read their profile, not just their budget.
+                  Reference their lifestyle answer in the first 30 seconds - it signals you actually read their profile, not just their budget.
                 </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
+                <a
+                  href={`tel:${lead.answers.phone}`}
+                  className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-xl border border-[#e8e4de] bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium"
+                >
+                  <Phone size={11} /> Call {lead.answers.firstName} now
+                </a>
+                <CalendarBar
+                  title={`Call with ${lead.answers.firstName} ${lead.answers.lastName}`}
+                  detail={`Buyer profile: ${window?.location?.href ?? ""}\nBudget: ${lead.answers.budgetMin ? `$${(lead.answers.budgetMin/1000).toFixed(0)}k` : ""} - ${lead.answers.budgetMax ? `$${(lead.answers.budgetMax/1000).toFixed(0)}k` : ""}\nTimeline: ${lead.answers.timeline}`}
+                />
               </div>
             </>
           )}
@@ -399,13 +505,30 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div className="flex items-start gap-2 bg-[#f5f3f0] rounded-xl p-3">
                 <Zap size={13} className="text-[#b8956a] shrink-0 mt-0.5" />
                 <p className="text-xs text-[#6b6560] leading-relaxed">
-                  Send this 48–72 hours after the first email if no reply. Short is better - shows confidence, not desperation.
+                  Send 48-72 hours after your first email if no reply. Short is better - shows confidence, not desperation.
                 </p>
               </div>
+              <EmailSendBar to={lead.answers.email} subject={followup.subject} body={followup.body} />
+              <CalendarBar
+                title={`Follow-up: ${lead.answers.firstName} ${lead.answers.lastName}`}
+                detail={`Send follow-up email to ${lead.answers.email}\nSubject: ${followup.subject}`}
+              />
             </>
           )}
         </div>
       </div>
+
+      {/* Integrations link */}
+      <Link
+        href="/integrations"
+        className="flex items-center justify-between bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-3 hover:border-[#2c2825] transition-colors group"
+      >
+        <div className="flex items-center gap-2">
+          <Settings size={13} className="text-[#8c8580]" />
+          <p className="text-xs text-[#5c5550]">Connect Gmail, Outlook, or calendar to send directly without copy-paste</p>
+        </div>
+        <ExternalLink size={11} className="text-[#b8b4b0] group-hover:text-[#2c2825] transition-colors shrink-0" />
+      </Link>
     </div>
   );
 }
