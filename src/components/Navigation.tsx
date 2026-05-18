@@ -12,24 +12,32 @@ const buyerFeatures = [
     label: "My Home Hub",
     sub: "Your matches, profile & updates",
     href: "/portal",
+    color: "#e8f0e8",
+    iconColor: "#4a7c59",
   },
   {
     icon: Sparkles,
     label: "My Matches",
     sub: "Homes picked for you",
     href: "/results",
+    color: "#f0ece6",
+    iconColor: "#b8956a",
   },
   {
     icon: ClipboardList,
     label: "Build My Profile",
     sub: "Tell us how you want to live",
     href: "/questionnaire",
+    color: "#e8edf4",
+    iconColor: "#4a6f9c",
   },
   {
     icon: HelpCircle,
     label: "How It Works",
     sub: "See how matching works",
     href: "/#how-it-works",
+    color: "#f5f0e8",
+    iconColor: "#8c7a5a",
   },
 ];
 
@@ -112,12 +120,8 @@ export default function Navigation() {
                           : isDark ? "hover:bg-white/6" : "hover:bg-[#faf9f7]"
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                        active
-                          ? "bg-[#c9a870]/20"
-                          : isDark ? "bg-white/8" : "bg-[#f0ece6]"
-                      }`}>
-                        <Icon size={15} className={active ? "text-[#c9a870]" : isDark ? "text-white/50" : "text-[#8c8580]"} />
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : f.color }}>
+                        <Icon size={15} style={{ color: isDark ? "rgba(255,255,255,0.5)" : f.iconColor }} />
                       </div>
                       <div>
                         <p className={`text-sm font-medium leading-none mb-0.5 ${
@@ -252,10 +256,8 @@ export default function Navigation() {
                         : "bg-white border-[#e8e4de] hover:border-[#d8d4ce]"
                   }`}
                 >
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                    active ? "bg-[#c9a870]/20" : isDark ? "bg-white/8" : "bg-[#f0ece6]"
-                  }`}>
-                    <Icon size={14} className={active ? "text-[#c9a870]" : isDark ? "text-white/50" : "text-[#8c8580]"} />
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: isDark ? "rgba(255,255,255,0.08)" : f.color }}>
+                    <Icon size={14} style={{ color: isDark ? "rgba(255,255,255,0.5)" : f.iconColor }} />
                   </div>
                   <div>
                     <p className={`text-xs font-semibold leading-tight ${isDark ? "text-white/90" : "text-[#2c2825]"}`}>{f.label}</p>
@@ -306,8 +308,8 @@ export default function Navigation() {
           <Link
             href="/questionnaire"
             onClick={() => setMobileOpen(false)}
-            className="inline-flex items-center justify-center text-[#1a1512] font-semibold text-sm px-5 py-3 rounded-full text-center mt-1 transition-all"
-            style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)" }}
+            className="inline-flex items-center justify-center text-white font-semibold text-sm px-5 py-3 rounded-full text-center mt-1 transition-all"
+            style={{ background: "#1a1512" }}
           >
             Start Your Home Match
           </Link>
