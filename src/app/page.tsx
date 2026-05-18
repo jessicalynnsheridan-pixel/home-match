@@ -61,33 +61,34 @@ export default function HomePage() {
 
         <div className="max-w-4xl mx-auto text-center animate-fade-up relative z-10">
           {/* Pill badge */}
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-8 text-sm text-[#8c8580]" style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.08)" }}>
-            <Sparkles size={13} className="text-[#b8956a]" />
-            Homes matched to who you are, not just what you can afford
+          <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 mb-10 text-xs font-medium text-[#b8956a] tracking-wide uppercase" style={{ background: "rgba(184,149,106,0.10)", border: "1px solid rgba(184,149,106,0.25)" }}>
+            <Sparkles size={11} />
+            Matched to your lifestyle
           </div>
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.08] tracking-tight mb-6">
-            <span className="text-[#2c2825]">More than listings.</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-7">
+            <span className="text-[#1a1512]">More than listings.</span>
             <br />
             <span className="text-gradient-gold">A lifestyle match.</span>
           </h1>
 
-          <p className="text-[#8c8580] text-lg sm:text-xl leading-relaxed max-w-lg mx-auto mb-12">
+          <p className="text-[#6b6560] text-lg sm:text-xl leading-relaxed max-w-md mx-auto mb-10">
             Not a filter, a match. Built around how you actually live.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-5">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <Link
               href="/questionnaire"
-              className="inline-flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-sm px-9 py-4 rounded-full transition-all hover:-translate-y-1 btn-press"
-              style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.32), 0 2px 8px rgba(201,168,112,0.20)" }}
+              className="inline-flex items-center justify-center gap-2 text-white font-semibold text-sm px-8 py-4 rounded-full transition-all hover:opacity-90 hover:-translate-y-0.5 btn-press"
+              style={{ background: "#1a1512", boxShadow: "0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)" }}
             >
               Discover my matches
               <ArrowRight size={16} />
             </Link>
             <Link
               href="/portal"
-              className="inline-flex items-center justify-center gap-2 text-[#6b6560] text-sm font-medium px-9 py-4 rounded-full hover:text-[#2c2825] transition-all btn-press" style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.08)" }}
+              className="inline-flex items-center justify-center gap-2 text-[#2c2825] text-sm font-medium px-8 py-4 rounded-full hover:bg-[#f0ece6] transition-all btn-press"
+              style={{ background: "white", border: "1.5px solid #d8d4ce" }}
             >
               See buyer tools
             </Link>
@@ -104,8 +105,8 @@ export default function HomePage() {
             {vibes.map((v, i) => (
               <div
                 key={v.label}
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 animate-fade-up"
-                style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.07)", animationDelay: `${0.18 + i * 0.06}s` }}
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 animate-fade-up bg-white"
+                style={{ border: "1.5px solid #e8e4de", animationDelay: `${0.18 + i * 0.06}s` }}
               >
                 <span className="text-base">{v.emoji}</span>
                 <div>
