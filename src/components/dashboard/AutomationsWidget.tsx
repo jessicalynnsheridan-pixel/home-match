@@ -295,23 +295,51 @@ function SequenceRow({ s }: { s: SequenceStatus }) {
 
 export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
   const [logs, setLogs] = useState<AutomationLog[] | null>(null);
-  const [useMock, setUseMock] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [testRunning, setTestRunning] = useState(false);
+  const [testResult, setTestResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/automations/status")
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data.logs)) setLogs(data.logs);
-        else setUseMock(true);
+        if (Array.isArray(data.logs)) {
+          setLogs(data.logs);
+          setIsLive(true);
+        } else {
+          setLogs([]);
+          setIsLive(false);
+        }
       })
-      .catch(() => setUseMock(true));
+      .catch(() => { setLogs([]); setIsLive(false); });
   }, []);
+
+  async function runNow() {
+    setTestRunning(true);
+    setTestResult(null);
+    try {
+      const r = await fetch("/api/automations/cron?secret=homematch2026");
+      const d = await r.json();
+      if (d.sent !== undefined) {
+        setTestResult(`✓ Ran — ${d.sent} email${d.sent !== 1 ? "s" : ""} sent for ${d.leadsChecked} leads`);
+      } else if (d.skipped) {
+        setTestResult(`ℹ ${d.skipped}`);
+      } else {
+        setTestResult(`⚠ ${d.error ?? "Unknown response"}`);
+      }
+    } catch {
+      setTestResult("⚠ Could not reach cron endpoint");
+    }
+    setTestRunning(false);
+  }
 
   const activeLeads = leads.filter((l) => l.status !== "Closed");
 
+  const isMockMode = !isLive && activeLeads.some((l) => l.id.startsWith("lead-"));
+
   let statuses: SequenceStatus[];
-  if (useMock || (logs !== null && logs.length === 0 && activeLeads.some((l) => l.id.startsWith("lead-")))) {
+  if (isMockMode) {
     statuses = buildMockStatuses(activeLeads);
   } else if (logs !== null) {
     statuses = activeLeads.map((l) => buildSequenceStatus(l, logs));
@@ -349,7 +377,7 @@ export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
 
       {/* Sequence status list */}
       <div className="divide-y divide-[#f5f3f0]">
-        {logs === null && !useMock ? (
+        {logs === null ? (
           <div className="px-4 py-6 text-center">
             <div className="w-5 h-5 rounded-full border-2 border-[#e8e4de] border-t-[#b8a88a] animate-spin mx-auto" />
           </div>
@@ -390,10 +418,32 @@ export default function AutomationsWidget({ leads }: { leads: Lead[] }) {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2.5 border-t border-[#f0ece6]" style={{ background: "#fafaf9" }}>
-        <p className="text-[10px] text-[#b8a88a] text-center">
-          Runs daily at 8am · Day 1, Day 3, Day 7 · Inactivity at 5 days
-        </p>
+      <div className="px-4 py-3 border-t border-[#f0ece6] space-y-2" style={{ background: "#fafaf9" }}>
+        {/* Mock mode notice */}
+        {isMockMode && (
+          <p className="text-[10px] text-[#b8a88a] text-center">
+            Showing preview data · Sequence tracking starts once real leads submit
+          </p>
+        )}
+
+        {/* Manual test trigger */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] text-[#b8a88a]">Runs daily at 8am automatically</p>
+          <button
+            onClick={runNow}
+            disabled={testRunning}
+            className="text-[10px] font-semibold px-2.5 py-1 rounded-full border transition-colors disabled:opacity-50"
+            style={{ borderColor: "#e8e4de", color: "#2c2825", background: "white" }}
+          >
+            {testRunning ? "Running…" : "Test run"}
+          </button>
+        </div>
+
+        {testResult && (
+          <p className="text-[10px] font-medium text-center" style={{ color: testResult.startsWith("✓") ? "#059669" : "#d97706" }}>
+            {testResult}
+          </p>
+        )}
       </div>
     </div>
   );
