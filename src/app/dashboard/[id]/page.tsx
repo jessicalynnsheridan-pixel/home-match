@@ -45,6 +45,20 @@ export default function LeadDetailPage() {
 
   const initialLead = mockLeads.find((l) => l.id === id);
   const [lead, setLead] = useState<Lead | null>(initialLead ?? null);
+  const [realtorName, setRealtorName] = useState<string>("");
+  const [realtorPhone, setRealtorPhone] = useState<string>("");
+
+  // Load realtor info for template personalisation
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      const first = (user.user_metadata?.first_name as string) ?? "";
+      const last = (user.user_metadata?.last_name as string) ?? "";
+      setRealtorName([first, last].filter(Boolean).join(" "));
+      setRealtorPhone((user.user_metadata?.phone as string) ?? "");
+    });
+  }, []);
 
   // Fetch from Supabase if not found in mock data
   useEffect(() => {
@@ -233,7 +247,7 @@ export default function LeadDetailPage() {
             {tab === "brief" && <BuyerBrief lead={lead} />}
 
             {/* Tab: Outreach */}
-            {tab === "outreach" && <EmailTemplates lead={lead} />}
+            {tab === "outreach" && <EmailTemplates lead={lead} realtorName={realtorName} realtorPhone={realtorPhone} />}
 
             {/* Tab: Profile */}
             {tab === "profile" && (

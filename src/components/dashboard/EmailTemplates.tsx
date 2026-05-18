@@ -35,8 +35,9 @@ function outlookCalendarUrl(title: string, detail: string, date?: Date) {
 
 // ─── SendBar component ────────────────────────────────────────────────────────
 
-function EmailSendBar({ to, subject, body }: { to: string; subject: string; body: string }) {
-  const full = `${body}\n\n[Your name]\n[Your phone]`;
+function EmailSendBar({ to, subject, body, realtorName, realtorPhone }: { to: string; subject: string; body: string; realtorName?: string; realtorPhone?: string }) {
+  const signature = [realtorName || "[Your name]", realtorPhone || "[Your phone]"].join("\n");
+  const full = `${body}\n\n${signature}`;
   return (
     <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e8e4de]">
       <a
@@ -187,10 +188,10 @@ function buildTextMessage(lead: Lead): string {
   const feeling = answers.homeFeeling?.[0]?.toLowerCase();
 
   if (answers.timeline === "ASAP" || answers.timeline === "1–3 months") {
-    return `Hi ${name}, it's [Your Name] from Home Match. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
+    return `Hi ${name}, it's YOUR_NAME from Home Match. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
   }
 
-  return `Hi ${name}, it's [Your Name]. I came across your Home Match profile - sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
+  return `Hi ${name}, it's YOUR_NAME. I came across your Home Match profile - sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
 }
 
 function buildCallScript(lead: Lead): string {
@@ -201,7 +202,7 @@ function buildCallScript(lead: Lead): string {
   const sunday = answers.sundayMorning;
 
   return `OPENING (first 20 seconds)
-"Hi ${name}, it's [Your Name] - I'm a realtor connected through Home Match. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
+"Hi ${name}, it's YOUR_NAME - I'm a realtor connected through Home Match. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
 
 IF YES - PERSONALISE IMMEDIATELY
 "I read through your answers and I have to say - you were really specific, which I appreciate. You mentioned wanting something ${feeling}${sunday ? `, and ${sunday.toLowerCase()} as your ideal Sunday vibe` : ""}. That tells me exactly what to look for."
@@ -304,17 +305,30 @@ const TAB_META: { id: Tab; icon: React.ComponentType<{ size?: number; className?
   { id: "followup",icon: Clock,         label: "Follow-up",                           description: "Send 48–72 hrs after no reply" },
 ];
 
-export default function EmailTemplates({ lead }: { lead: Lead }) {
+export default function EmailTemplates({ lead, realtorName, realtorPhone }: { lead: Lead; realtorName?: string; realtorPhone?: string }) {
   const [tab, setTab] = useState<Tab>("email");
   const [copied, setCopied] = useState<string | null>(null);
   const [emailExpanded, setEmailExpanded] = useState(false);
   const [callExpanded, setCallExpanded] = useState(false);
   const [followupExpanded, setFollowupExpanded] = useState(false);
 
+  const rName = realtorName || "[Your Name]";
+  const rPhone = realtorPhone || "[Your phone]";
+
   const email = buildPersonalizedEmail(lead);
-  const text = buildTextMessage(lead);
-  const call = buildCallScript(lead);
   const followup = buildFollowUpEmail(lead);
+
+  // Replace placeholder tokens with real realtor info
+  function fillRealtor(str: string) {
+    return str
+      .replace(/YOUR_NAME/g, rName)
+      .replace(/\[Your Name\]/g, rName)
+      .replace(/\[Your name\]/g, rName)
+      .replace(/\[Your phone\]/g, rPhone);
+  }
+
+  const text = fillRealtor(buildTextMessage(lead));
+  const call = fillRealtor(buildCallScript(lead));
   const profileUrl = typeof window !== "undefined" ? window.location.href : "";
 
   function copy(key: string, value: string) {
@@ -386,7 +400,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               {/* BIG send buttons FIRST */}
               <div className="flex flex-col sm:flex-row gap-2">
                 <a
-                  href={gmailUrl(lead.answers.email, email.subject, `${email.body}\n\n[Your name]\n[Your phone]`)}
+                  href={gmailUrl(lead.answers.email, email.subject, fillRealtor(`${email.body}\n\n${rName}\n${rPhone}`))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2c2825] text-white text-sm font-semibold hover:bg-[#1a1512] transition-colors"
@@ -396,7 +410,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
                   <ExternalLink size={12} className="opacity-60" />
                 </a>
                 <a
-                  href={outlookUrl(lead.answers.email, email.subject, `${email.body}\n\n[Your name]\n[Your phone]`)}
+                  href={outlookUrl(lead.answers.email, email.subject, fillRealtor(`${email.body}\n\n${rName}\n${rPhone}`))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[#2c2825] text-[#2c2825] text-sm font-semibold hover:bg-[#f5f3f0] transition-colors"
@@ -430,7 +444,7 @@ export default function EmailTemplates({ lead }: { lead: Lead }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-[#8c8580] text-xs uppercase tracking-wider">Body</p>
-                  <CopyBtn id="email-body" value={`${email.body}\n\n[Your name]\n[Your phone]`} copied={copied} onCopy={copy} />
+                  <CopyBtn id="email-body" value={fillRealtor(`${email.body}\n\n${rName}\n${rPhone}`)} copied={copied} onCopy={copy} />
                 </div>
                 <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-4 py-4 text-xs text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans overflow-hidden">
                   {emailExpanded ? email.body : firstLines(email.body, 3)}
