@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
           Authorization: `Bearer ${resendKey}`,
         },
         body: JSON.stringify({
-          from: "HomeMatch <noreply@homematch.ca>",
+          from: process.env.RESEND_FROM_EMAIL ?? "HomeMatch <onboarding@resend.dev>",
           to: realtorEmail,
           subject: `Showing request from ${buyerName}`,
           html: `

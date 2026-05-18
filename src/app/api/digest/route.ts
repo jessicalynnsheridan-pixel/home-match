@@ -24,8 +24,11 @@ export async function GET(request: NextRequest) {
 
   // Get all realtors
   const { data: { users }, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
-  if (usersError || !users?.length) {
-    return NextResponse.json({ error: "Could not fetch users" }, { status: 500 });
+  if (usersError) {
+    return NextResponse.json({ error: "Could not fetch users", detail: usersError.message }, { status: 500 });
+  }
+  if (!users?.length) {
+    return NextResponse.json({ sent: 0, message: "No users found" });
   }
 
   const results: { email: string; status: string }[] = [];
@@ -123,7 +126,7 @@ export async function GET(request: NextRequest) {
         Authorization: `Bearer ${resendKey}`,
       },
       body: JSON.stringify({
-        from: "HomeMatch <digest@homematch.ca>",
+        from: process.env.RESEND_FROM_EMAIL ?? "HomeMatch <onboarding@resend.dev>",
         to: user.email,
         subject: `Your pipeline this week: ${hot.length} hot, ${newThisWeek.length} new`,
         html,
