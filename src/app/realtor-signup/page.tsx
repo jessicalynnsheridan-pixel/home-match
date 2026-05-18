@@ -45,7 +45,6 @@ export default function RealtorSignupPage() {
     if (!form.email.trim() || !form.email.includes("@")) next.email = "Valid email required";
     if (!form.phone.trim()) next.phone = "Required";
     if (!form.brokerageName.trim()) next.brokerageName = "Required";
-    if (!form.licenseNumber.trim()) next.licenseNumber = "Required";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -278,13 +277,13 @@ export default function RealtorSignupPage() {
                       className={inputClass(!!errors.brokerageName)}
                     />
                   </Field>
-                  <Field label="RECO license number" error={errors.licenseNumber}>
+                  <Field label="License number" sublabel="optional" error={undefined}>
                     <input
                       autoComplete="off"
                       value={form.licenseNumber}
                       onChange={(e) => update("licenseNumber", e.target.value)}
                       placeholder="4012345"
-                      className={inputClass(!!errors.licenseNumber)}
+                      className={inputClass(false)}
                     />
                   </Field>
                 </div>
@@ -352,10 +351,13 @@ export default function RealtorSignupPage() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, sublabel, error, children }: { label: string; sublabel?: string; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs text-[#8c8580] font-medium mb-1.5">{label}</label>
+      <label className="flex items-center gap-1.5 text-xs text-[#8c8580] font-medium mb-1.5">
+        {label}
+        {sublabel && <span className="text-[#c4bfb9] font-normal">({sublabel})</span>}
+      </label>
       {children}
       {error && <p className="text-rose-500 text-xs mt-1">{error}</p>}
     </div>
