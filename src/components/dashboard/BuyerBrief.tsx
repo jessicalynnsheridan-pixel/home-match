@@ -160,18 +160,6 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
   return (
     <div className="space-y-4">
 
-      {/* Action directive */}
-      <div
-        className="rounded-2xl border px-5 py-4 flex items-center gap-3"
-        style={{ background: pb.bg, borderColor: pb.border }}
-      >
-        <span style={{ color: pb.color }} className="shrink-0">{pb.icon}</span>
-        <div>
-          <p className="text-sm font-bold leading-none mb-1" style={{ color: pb.color }}>{pb.action}</p>
-          <p className="text-xs" style={{ color: pb.color, opacity: 0.75 }}>{pb.detail}</p>
-        </div>
-      </div>
-
       {/* At a glance — 4 stat pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[

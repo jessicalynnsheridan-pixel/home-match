@@ -13,7 +13,7 @@ import FollowUpReminders from "@/components/dashboard/FollowUpReminders";
 import EmailTemplates from "@/components/dashboard/EmailTemplates";
 import MortgageChecklist from "@/components/dashboard/MortgageChecklist";
 import BuyerBrief from "@/components/dashboard/BuyerBrief";
-import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, Info } from "lucide-react";
+import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, Info, Phone, Mail, MessageSquare, Clock } from "lucide-react";
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { calcBuyerIntelligence } from "@/lib/buyerIntelligence";
 import BuyerIntelligencePanel from "@/components/dashboard/BuyerIntelligence";
@@ -23,7 +23,20 @@ const STATUS_OPTIONS: LeadStatus[] = [
   "New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed",
 ];
 
-type Tab = "brief" | "profile" | "intelligence" | "email" | "checklist";
+type Tab = "brief" | "outreach" | "profile" | "checklist";
+
+// ─── Playbook ─────────────────────────────────────────────────────────────────
+type Playbook = { icon: React.ReactNode; action: string; color: string; bg: string; border: string };
+
+function getPlaybook(lead: Lead): Playbook {
+  const { answers, score } = lead;
+  const isFinanced = answers.preApprovalStatus === "Yes, fully approved" || answers.preApprovalStatus === "Paying cash";
+  const isASAP = answers.timeline === "ASAP" || answers.timeline === "1–3 months";
+  if (score === "Hot" && isASAP && isFinanced) return { icon: <Phone size={13} />, action: "Call within 2 hours", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
+  if (score === "Hot") return { icon: <Mail size={13} />, action: "Email today, call tomorrow", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
+  if (score === "Warm") return { icon: <MessageSquare size={13} />, action: "Email now, follow up in 5 days", color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" };
+  return { icon: <Clock size={13} />, action: "Monthly touch — no rush", color: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" };
+}
 
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -74,154 +87,163 @@ export default function LeadDetailPage() {
     setLead((p) => p ? { ...p, answers: { ...p.answers, mortgageChecklist: items } } : p);
   }
 
-  const TABS: { id: Tab; label: string; badge?: string }[] = [
-    { id: "brief", label: "Buyer Brief" },
-    { id: "profile", label: "Full Profile" },
-    { id: "intelligence", label: "Buyer Intelligence", badge: intelligence.style.type },
-    { id: "email", label: "Outreach Hub" },
-    { id: "checklist", label: "Mortgage Checklist" },
+  const TABS: { id: Tab; label: string }[] = [
+    { id: "brief", label: "Brief" },
+    { id: "outreach", label: "Outreach" },
+    { id: "profile", label: "Profile" },
+    { id: "checklist", label: "Checklist" },
   ];
+
+  const pb = getPlaybook(lead);
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-8 gap-4">
-          <div>
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="flex items-center gap-1.5 text-[#8c8580] hover:text-[#2c2825] text-sm mb-4 transition-colors"
-            >
-              <ArrowLeft size={14} /> Back to leads
-            </button>
-            <div className="flex flex-wrap items-center gap-3 mb-1">
-              {lead.isPriority && <Star size={16} className="text-[#b8a88a] fill-[#b8a88a]" />}
-              <h1 className="text-2xl font-semibold text-[#2c2825]">
-                {answers.firstName} {answers.lastName}
-              </h1>
-              <span className={`text-xs font-medium px-3 py-1 rounded-full border ${getScoreColor(lead.score)}`}>
-                {lead.score}
-              </span>
-              <span className={`text-xs font-medium px-3 py-1 rounded-full border ${getStatusColor(lead.status)}`}>
-                {lead.status}
-              </span>
-            </div>
-            <p className="text-[#8c8580] text-sm flex flex-wrap items-center gap-2">
-              <span>{answers.email} · {answers.phone} · Submitted {formatDate(lead.submittedAt)}</span>
-              <span className="text-xs bg-violet-100 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-full">
-                {intelligence.style.type} buyer
-              </span>
-            </p>
-          </div>
+      <div className="max-w-5xl mx-auto px-5 lg:px-8 py-6">
 
-          <div className="flex items-center gap-2 flex-wrap justify-end">
-            <Link
-              href={`/dashboard/${lead.id}/print`}
-              className="flex items-center gap-1.5 text-sm px-4 py-2 rounded-full border border-[#e8e4de] text-[#2c2825] hover:border-[#2c2825] transition-colors bg-white"
-            >
-              <Printer size={13} /> PDF Profile
-            </Link>
-            <button
-              onClick={togglePriority}
-              className={`flex items-center gap-1.5 text-sm px-4 py-2 rounded-full border transition-all ${
-                lead.isPriority
-                  ? "bg-[#b8a88a] text-[#2c2825] border-[#b8a88a]"
-                  : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-              }`}
-            >
-              <Star size={13} className={lead.isPriority ? "fill-[#2c2825]" : ""} />
-              {lead.isPriority ? "Prioritized" : "Mark Priority"}
-            </button>
+        {/* ── Compact header ─────────────────────────────────────────────── */}
+        <div className="mb-5">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="flex items-center gap-1 text-[#8c8580] hover:text-[#2c2825] text-xs mb-4 transition-colors"
+          >
+            <ArrowLeft size={12} /> Back to leads
+          </button>
+
+          <div className="flex items-center gap-3">
+            {/* Avatar */}
+            <div className="w-10 h-10 rounded-full bg-[#2c2825] text-white flex items-center justify-center text-sm font-bold shrink-0">
+              {answers.firstName.charAt(0)}{answers.lastName.charAt(0)}
+            </div>
+
+            {/* Name + meta */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h1 className="text-base font-semibold text-[#2c2825]">
+                  {answers.firstName} {answers.lastName}
+                </h1>
+                {lead.isPriority && <Star size={11} className="text-[#b8a88a] fill-[#b8a88a]" />}
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getScoreColor(lead.score)}`}>
+                  {lead.score}
+                </span>
+              </div>
+              <p className="text-xs text-[#8c8580] truncate">{answers.email} · {answers.phone}</p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <a href={`tel:${answers.phone}`} className="flex items-center gap-1 text-xs px-3 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors">
+                <Phone size={12} /> Call
+              </a>
+              <a href={`mailto:${answers.email}`} className="flex items-center gap-1 text-xs px-3 py-2 rounded-xl border border-[#e8e4de] bg-white text-[#2c2825] hover:border-[#2c2825] transition-colors">
+                <Mail size={12} /> Email
+              </a>
+              <button onClick={togglePriority} className={`p-2 rounded-xl border transition-all ${lead.isPriority ? "bg-[#b8a88a]/20 border-[#b8a88a] text-[#8c6a3e]" : "border-[#e8e4de] bg-white text-[#8c8580]"}`}>
+                <Star size={12} className={lead.isPriority ? "fill-[#8c6a3e]" : ""} />
+              </button>
+              <Link href={`/dashboard/${lead.id}/print`} className="p-2 rounded-xl border border-[#e8e4de] bg-white text-[#8c8580] hover:text-[#2c2825] transition-colors">
+                <Printer size={12} />
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ── Left: main content ────────────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-5">
-            {/* Buyer Readiness Score */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
-              <div className="flex items-start justify-between gap-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <MatchScoreRing score={readiness.overall} size="lg" />
-                  <div>
-                    <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-0.5">Buyer Readiness</p>
-                    <p className="text-[#2c2825] font-semibold text-lg">{readiness.overall} / 100</p>
-                    <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                      readiness.overall >= 80 ? "bg-emerald-50 text-emerald-700" :
-                      readiness.overall >= 60 ? "bg-[#f5f3f0] text-[#b8a88a]" :
-                      readiness.overall >= 40 ? "bg-amber-50 text-amber-700" :
-                      "bg-slate-50 text-slate-500"
-                    }`}>
-                      {readiness.label}
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right text-xs text-[#8c8580]">
-                  <p>Pre-approval: <strong className="text-[#2c2825]">{answers.preApprovalStatus || "-"}</strong></p>
-                  <p className="mt-0.5">Timeline: <strong className="text-[#2c2825]">{answers.timeline || "-"}</strong></p>
-                </div>
-              </div>
+        {/* ── Action directive banner ─────────────────────────────────────── */}
+        <div
+          className="flex items-center gap-3 rounded-xl border px-4 py-3 mb-5"
+          style={{ background: pb.bg, borderColor: pb.border }}
+        >
+          <span style={{ color: pb.color }} className="shrink-0">{pb.icon}</span>
+          <p className="text-sm font-bold" style={{ color: pb.color }}>{pb.action}</p>
+          <div className="ml-auto flex items-center gap-2">
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getScoreColor(lead.score)}`}>
+              {lead.score}
+            </span>
+            <select
+              value={lead.status}
+              onChange={(e) => updateStatus(e.target.value as LeadStatus)}
+              className="text-xs border border-[#e8e4de] rounded-lg px-2 py-1 bg-white text-[#2c2825] focus:outline-none cursor-pointer"
+            >
+              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
 
-              <div className="space-y-3 mb-4">
-                {[readiness.financing, readiness.timeline, readiness.documentation, readiness.commitment].map((dim) => (
-                  <div key={dim.label}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-[#2c2825] font-medium">{dim.label}</span>
-                      <span className="text-[#8c8580]">{dim.detail}</span>
-                    </div>
-                    <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
-                        style={{ width: `${dim.score}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* ── Left: tabs + content ────────────────────────────────────── */}
+          <div className="lg:col-span-2 space-y-4">
 
-              {readiness.tip && (
-                <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 flex gap-2.5 items-start">
-                  <Info size={13} className="text-[#b8a88a] shrink-0 mt-0.5" />
-                  <p className="text-xs text-[#5c5550]">{readiness.tip}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Dream home profile */}
-            <DreamHomeProfile answers={answers} />
-
-            {/* Tab nav */}
-            <div className="flex gap-1 bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-1 overflow-x-auto">
+            {/* Tab bar */}
+            <div className="flex gap-1 bg-[#f0ece6] rounded-xl p-1">
               {TABS.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setTab(t.id)}
-                  className={`flex-shrink-0 flex items-center gap-1.5 text-sm py-2 px-3 rounded-lg transition-all font-medium ${
+                  className={`flex-1 text-xs py-2 px-2 rounded-lg transition-all font-medium ${
                     tab === t.id
                       ? "bg-white text-[#2c2825] shadow-sm"
                       : "text-[#8c8580] hover:text-[#2c2825]"
                   }`}
                 >
                   {t.label}
-                  {t.badge && tab !== t.id && (
-                    <span className="text-xs bg-violet-100 text-violet-700 border border-violet-200 px-1.5 py-0 rounded-full hidden sm:inline">
-                      {t.badge}
-                    </span>
-                  )}
                 </button>
               ))}
             </div>
 
-            {/* Tab: Buyer Brief */}
+            {/* Tab: Brief */}
             {tab === "brief" && <BuyerBrief lead={lead} />}
 
-            {/* Tab: Full Profile */}
+            {/* Tab: Outreach */}
+            {tab === "outreach" && <EmailTemplates lead={lead} />}
+
+            {/* Tab: Profile */}
             {tab === "profile" && (
-              <>
-                {/* Buyer summary */}
-                <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
-                  <h2 className="text-[#2c2825] font-semibold mb-5">Buyer Profile</h2>
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+              <div className="space-y-4">
+                {/* Readiness card */}
+                <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
+                  <div className="flex items-center gap-4 mb-4">
+                    <MatchScoreRing score={readiness.overall} size="lg" />
+                    <div>
+                      <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-0.5">Buyer Readiness</p>
+                      <p className="text-[#2c2825] font-semibold text-lg">{readiness.overall} / 100</p>
+                      <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                        readiness.overall >= 80 ? "bg-emerald-50 text-emerald-700" :
+                        readiness.overall >= 60 ? "bg-[#f5f3f0] text-[#b8a88a]" :
+                        readiness.overall >= 40 ? "bg-amber-50 text-amber-700" : "bg-slate-50 text-slate-500"
+                      }`}>{readiness.label}</span>
+                    </div>
+                    <div className="ml-auto text-right text-xs text-[#8c8580]">
+                      <p>Pre-approval: <strong className="text-[#2c2825]">{answers.preApprovalStatus || "-"}</strong></p>
+                      <p className="mt-0.5">Timeline: <strong className="text-[#2c2825]">{answers.timeline || "-"}</strong></p>
+                    </div>
+                  </div>
+                  <div className="space-y-2.5 mb-3">
+                    {[readiness.financing, readiness.timeline, readiness.documentation, readiness.commitment].map((dim) => (
+                      <div key={dim.label}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-[#2c2825] font-medium">{dim.label}</span>
+                          <span className="text-[#8c8580]">{dim.detail}</span>
+                        </div>
+                        <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`} style={{ width: `${dim.score}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {readiness.tip && (
+                    <div className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 flex gap-2.5 items-start">
+                      <Info size={13} className="text-[#b8a88a] shrink-0 mt-0.5" />
+                      <p className="text-xs text-[#5c5550]">{readiness.tip}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Buyer intelligence summary */}
+                <BuyerIntelligencePanel intelligence={intelligence} />
+
+                {/* Buyer details */}
+                <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
+                  <h2 className="text-[#2c2825] font-semibold mb-4 text-sm">Details</h2>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     <DetailRow label="Timeline" value={answers.timeline} />
                     <DetailRow label="Budget" value={`${formatCurrency(answers.budgetMin)} – ${formatCurrency(answers.budgetMax)}`} />
                     <DetailRow label="Location" value={answers.preferredCity} />
@@ -231,117 +253,68 @@ export default function LeadDetailPage() {
                     <DetailRow label="Pre-approval" value={answers.preApprovalStatus} />
                     <DetailRow label="Ownership" value={answers.ownershipStatus} />
                     <DetailRow label="Purpose" value={answers.investmentOrPersonal} />
-                    <DetailRow label="School district" value={answers.schoolDistrictImportance} />
                   </div>
-                  {answers.commutePreferences && (
-                    <div className="mt-5 pt-5 border-t border-[#e8e4de]">
-                      <p className="text-[#8c8580] text-xs mb-1">Commute preferences</p>
-                      <p className="text-[#2c2825] text-sm">{answers.commutePreferences}</p>
+                  {answers.additionalNotes && (
+                    <div className="mt-4 pt-4 border-t border-[#e8e4de]">
+                      <p className="text-[#8c8580] text-xs mb-1">Buyer notes</p>
+                      <p className="text-[#2c2825] text-sm leading-relaxed">{answers.additionalNotes}</p>
                     </div>
                   )}
                 </div>
 
-                {/* Must-haves, deal breakers, lifestyle */}
-                <div className="bg-white border border-[#e8e4de] rounded-2xl p-6 space-y-5">
+                {/* Must-haves / deal-breakers */}
+                <div className="bg-white border border-[#e8e4de] rounded-2xl p-5 space-y-4">
                   <ChipSection title="Must-haves" items={answers.mustHaves} />
                   <ChipSection title="Deal breakers" items={answers.dealBreakers} accent />
-                  <ChipSection title="Lifestyle priorities" items={answers.lifestylePriorities} />
                 </div>
 
-                {/* Buyer notes */}
-                {answers.additionalNotes && (
-                  <div className="bg-white border border-[#e8e4de] rounded-2xl p-6">
-                    <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-3">Buyer Notes</p>
-                    <p className="text-[#2c2825] text-sm leading-relaxed">{answers.additionalNotes}</p>
-                  </div>
-                )}
-
-                {/* Property recommendations */}
+                {/* Dream home + recommended homes */}
+                <DreamHomeProfile answers={answers} />
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-[#2c2825] font-semibold">Recommended Homes</h2>
-                    <button className="flex items-center gap-1.5 text-sm border border-[#e8e4de] px-4 py-2 rounded-full hover:border-[#2c2825] transition-colors bg-white text-[#2c2825]">
-                      <Plus size={13} /> Add recommendation
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-[#2c2825] font-semibold text-sm">Recommended Homes</h2>
+                    <button className="flex items-center gap-1 text-xs border border-[#e8e4de] px-3 py-1.5 rounded-full hover:border-[#2c2825] transition-colors bg-white text-[#2c2825]">
+                      <Plus size={11} /> Add
                     </button>
                   </div>
                   {properties.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {properties.map((p) => <PropertyCard key={p.id} property={p} />)}
                     </div>
                   ) : (
-                    <div className="bg-white border border-[#e8e4de] rounded-2xl p-10 text-center">
-                      <Home size={24} className="text-[#e8e4de] mx-auto mb-3" />
-                      <p className="text-[#2c2825] font-medium mb-1">No recommendations yet</p>
-                      <p className="text-[#8c8580] text-sm">Add homes that match this buyer&apos;s profile.</p>
+                    <div className="bg-white border border-[#e8e4de] rounded-2xl p-8 text-center">
+                      <Home size={22} className="text-[#e8e4de] mx-auto mb-2" />
+                      <p className="text-[#2c2825] font-medium text-sm mb-1">No recommendations yet</p>
+                      <p className="text-[#8c8580] text-xs">Add homes that match this buyer&apos;s profile.</p>
                     </div>
                   )}
                 </div>
-              </>
+              </div>
             )}
 
-            {/* Tab: Buyer Intelligence */}
-            {tab === "intelligence" && (
-              <BuyerIntelligencePanel intelligence={intelligence} />
-            )}
-
-            {/* Tab: Email Templates */}
-            {tab === "email" && <EmailTemplates lead={lead} />}
-
-            {/* Tab: Mortgage Checklist */}
+            {/* Tab: Checklist */}
             {tab === "checklist" && (
-              <MortgageChecklist
-                items={answers.mortgageChecklist || []}
-                onChange={updateChecklist}
-              />
+              <MortgageChecklist items={answers.mortgageChecklist || []} onChange={updateChecklist} />
             )}
           </div>
 
-          {/* ── Right: status, notes, reminders ──────────────────────────── */}
-          <div className="space-y-5">
-            {/* Status */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
-              <p className="text-[#2c2825] font-semibold mb-4">Pipeline Stage</p>
-              <div className="space-y-2">
-                {STATUS_OPTIONS.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => updateStatus(s)}
-                    className={`w-full text-left text-sm px-4 py-2.5 rounded-xl border transition-all ${
-                      lead.status === s
-                        ? "bg-[#2c2825] text-white border-[#2c2825]"
-                        : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <Link
-                href="/pipeline"
-                className="flex items-center gap-1 text-xs text-[#8c8580] hover:text-[#2c2825] mt-4 transition-colors"
-              >
-                <ExternalLink size={11} /> View in pipeline board
-              </Link>
-            </div>
-
+          {/* ── Right sidebar ───────────────────────────────────────────── */}
+          <div className="space-y-4">
             {/* Follow-up reminders */}
             <FollowUpReminders reminders={lead.reminders} onChange={updateReminders} />
 
-            {/* Realtor private notes */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
-              <p className="text-[#2c2825] font-semibold mb-4">Private Notes</p>
+            {/* Private notes */}
+            <div className="bg-white border border-[#e8e4de] rounded-2xl p-4">
+              <p className="text-[#2c2825] font-semibold text-sm mb-3">Private Notes</p>
               {lead.realtorNotes.length > 0 && (
-                <div className="space-y-3 mb-4">
+                <div className="space-y-2.5 mb-3">
                   {lead.realtorNotes.map((note) => (
-                    <div key={note.id} className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-3.5 group">
-                      <p className="text-[#2c2825] text-sm leading-relaxed mb-2">{note.text}</p>
+                    <div key={note.id} className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl p-3 group">
+                      <p className="text-[#2c2825] text-xs leading-relaxed mb-1.5">{note.text}</p>
                       <div className="flex justify-between items-center">
-                        <p className="text-[#8c8580] text-xs">{formatDate(note.createdAt)}</p>
-                        <button
-                          onClick={() => deleteNote(note.id)}
-                          className="text-[#8c8580] hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 size={12} />
+                        <p className="text-[#8c8580] text-[10px]">{formatDate(note.createdAt)}</p>
+                        <button onClick={() => deleteNote(note.id)} className="text-[#8c8580] hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100">
+                          <Trash2 size={11} />
                         </button>
                       </div>
                     </div>
@@ -353,31 +326,24 @@ export default function LeadDetailPage() {
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Add a private note..."
                 rows={3}
-                className="w-full border border-[#e8e4de] rounded-xl px-3.5 py-3 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7] resize-none mb-3"
+                className="w-full border border-[#e8e4de] rounded-xl px-3 py-2.5 text-xs text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7] resize-none mb-2"
               />
               <button
                 onClick={addNote}
                 disabled={!newNote.trim()}
-                className="w-full bg-[#2c2825] text-white text-sm font-medium py-2.5 rounded-full hover:bg-[#1a1714] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full bg-[#2c2825] text-white text-xs font-medium py-2 rounded-full hover:bg-[#1a1714] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Save Note
               </button>
             </div>
 
-            {/* Contact */}
-            <div className="bg-white border border-[#e8e4de] rounded-2xl p-5">
-              <p className="text-[#2c2825] font-semibold mb-4">Contact</p>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-[#8c8580] text-xs mb-0.5">Email</p>
-                  <p className="text-[#2c2825] text-sm">{answers.email}</p>
-                </div>
-                <div>
-                  <p className="text-[#8c8580] text-xs mb-0.5">Phone</p>
-                  <p className="text-[#2c2825] text-sm">{answers.phone}</p>
-                </div>
-              </div>
-            </div>
+            {/* Pipeline link */}
+            <Link
+              href="/pipeline"
+              className="flex items-center justify-center gap-1.5 text-xs text-[#8c8580] hover:text-[#2c2825] bg-white border border-[#e8e4de] rounded-xl py-2.5 transition-colors"
+            >
+              <ExternalLink size={11} /> View in pipeline board
+            </Link>
           </div>
         </div>
       </div>

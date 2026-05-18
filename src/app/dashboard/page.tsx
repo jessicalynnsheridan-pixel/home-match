@@ -4,7 +4,7 @@ import { useState } from "react";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
-import { Download, SlidersHorizontal } from "lucide-react";
+import { Download, Flame, Zap, Eye, AlertCircle } from "lucide-react";
 
 const SCORE_FILTERS: (LeadScore | "All")[] = ["All", "Hot", "Warm", "Browsing"];
 const STATUS_FILTERS: (LeadStatus | "All")[] = [
@@ -90,119 +90,104 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-          <div>
-            <p className="text-[#b8a88a] text-sm font-medium tracking-widest uppercase mb-1">
-              Realtor Dashboard
-            </p>
-            <h1 className="text-2xl font-semibold text-[#2c2825]">Buyer Leads</h1>
-          </div>
+      <div className="max-w-5xl mx-auto px-5 lg:px-8 py-8">
+
+        {/* ── Header ─────────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-semibold text-[#2c2825]">Leads</h1>
           <button
             onClick={() => exportLeads(filtered)}
-            className="flex items-center gap-2 border border-[#e8e4de] text-[#2c2825] text-sm px-5 py-2.5 rounded-full hover:border-[#2c2825] transition-colors bg-white"
+            className="flex items-center gap-1.5 border border-[#e8e4de] text-[#8c8580] text-xs px-4 py-2 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white"
           >
-            <Download size={15} />
-            Export CSV
+            <Download size={12} /> Export
           </button>
         </div>
 
-        {/* Stats bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        {/* ── Stats strip ────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
           {[
-            { label: "Total Leads", value: mockLeads.length },
-            { label: "Hot Leads", value: hot },
-            { label: "Warm Leads", value: warm },
-            { label: "New (Uncontacted)", value: newLeads },
+            { label: "Total", value: mockLeads.length, icon: <Eye size={13} />, color: "text-[#8c8580]" },
+            { label: "Hot", value: hot, icon: <Flame size={13} />, color: "text-rose-500" },
+            { label: "Warm", value: warm, icon: <Zap size={13} />, color: "text-amber-500" },
+            { label: "New", value: newLeads, icon: <AlertCircle size={13} />, color: "text-blue-500" },
           ].map((s) => (
-            <div
-              key={s.label}
-              className="bg-white border border-[#e8e4de] rounded-2xl px-5 py-4 shadow-sm"
-            >
-              <p className="text-2xl font-semibold text-[#2c2825]">{s.value}</p>
-              <p className="text-[#8c8580] text-xs mt-1">{s.label}</p>
+            <div key={s.label} className="bg-white border border-[#e8e4de] rounded-xl px-3 py-3 text-center">
+              <div className={`flex justify-center mb-1 ${s.color}`}>{s.icon}</div>
+              <p className="text-lg font-bold text-[#2c2825] leading-none">{s.value}</p>
+              <p className="text-[10px] text-[#8c8580] mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
 
-        {/* Filters */}
-        <div className="bg-white border border-[#e8e4de] rounded-2xl p-5 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, email, or city..."
-              className="flex-1 border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7]"
-            />
-
-            {/* Score filter */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <SlidersHorizontal size={14} className="text-[#8c8580] shrink-0" />
-              {SCORE_FILTERS.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setScoreFilter(f)}
-                  className={`text-xs px-3.5 py-1.5 rounded-full border transition-all ${
-                    scoreFilter === f
-                      ? "bg-[#2c2825] text-white border-[#2c2825]"
-                      : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-
-            {/* Status filter */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {STATUS_FILTERS.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setStatusFilter(f)}
-                  className={`text-xs px-3.5 py-1.5 rounded-full border transition-all ${
-                    statusFilter === f
-                      ? "bg-[#2c2825] text-white border-[#2c2825]"
-                      : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-
-            {/* Priority toggle */}
+        {/* ── Search + filters ────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row gap-2 mb-5">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name, email, city…"
+            className="flex-1 border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-white"
+          />
+          <div className="flex gap-1.5 flex-wrap">
+            {SCORE_FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setScoreFilter(f)}
+                className={`text-xs px-3 py-2 rounded-xl border transition-all ${
+                  scoreFilter === f
+                    ? "bg-[#2c2825] text-white border-[#2c2825]"
+                    : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"
+                }`}
+              >
+                {f}
+              </button>
+            ))}
             <button
               onClick={() => setPriorityOnly((v) => !v)}
-              className={`text-xs px-3.5 py-1.5 rounded-full border transition-all whitespace-nowrap ${
+              className={`text-xs px-3 py-2 rounded-xl border transition-all ${
                 priorityOnly
-                  ? "bg-[#b8a88a] text-[#2c2825] border-[#b8a88a] font-medium"
-                  : "bg-white text-[#2c2825] border-[#e8e4de] hover:border-[#2c2825]"
+                  ? "bg-[#b8a88a]/20 text-[#8c6a3e] border-[#b8a88a]"
+                  : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825]"
               }`}
             >
-              Priority only
+              ★ Priority
             </button>
           </div>
         </div>
 
-        {/* Lead count */}
-        <p className="text-[#8c8580] text-sm mb-5">
-          Showing {filtered.length} of {mockLeads.length} leads
+        {/* ── Status filter row ───────────────────────────────────────────── */}
+        <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setStatusFilter(f)}
+              className={`text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap transition-all shrink-0 ${
+                statusFilter === f
+                  ? "bg-[#2c2825] text-white border-[#2c2825]"
+                  : "bg-white text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Lead count ─────────────────────────────────────────────────── */}
+        <p className="text-[#b8b4b0] text-xs mb-4">
+          {filtered.length} of {mockLeads.length} leads
         </p>
 
-        {/* Lead grid */}
+        {/* ── Lead list ──────────────────────────────────────────────────── */}
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {filtered.map((lead) => (
               <LeadCard key={lead.id} lead={lead} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white border border-[#e8e4de] rounded-2xl">
-            <p className="text-[#2c2825] font-medium mb-2">No leads match your filters</p>
-            <p className="text-[#8c8580] text-sm">Try adjusting the filters above.</p>
+          <div className="text-center py-16 bg-white border border-[#e8e4de] rounded-2xl">
+            <p className="text-[#2c2825] font-medium mb-1">No leads match</p>
+            <p className="text-[#8c8580] text-sm">Try adjusting your filters.</p>
           </div>
         )}
       </div>
