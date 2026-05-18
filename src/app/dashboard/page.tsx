@@ -1097,16 +1097,16 @@ export default function DashboardPage() {
           {/* Stat pills — horizontal scroll on mobile, row on desktop */}
           <div className="flex overflow-x-auto gap-2 mt-8 -mx-1 px-1 pb-1 scrollbar-hide sm:flex-wrap sm:overflow-visible sm:gap-3">
             {[
-              { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", text: "text-[#2c2825]", sub: "text-[#8c8580]", icon: <Users size={13} className="text-[#b8a88a]" /> },
-              { label: "Hot", value: hot, bg: "bg-rose-50 border border-rose-100", text: "text-rose-700", sub: "text-rose-400", icon: <Flame size={13} className="text-rose-400" /> },
-              { label: "Warm", value: warm, bg: "bg-amber-50 border border-amber-100", text: "text-amber-700", sub: "text-amber-400", icon: <Zap size={13} className="text-amber-400" /> },
-              { label: "New", value: newLeads, bg: "bg-sky-50 border border-sky-100", text: "text-sky-700", sub: "text-sky-400", icon: <TrendingUp size={13} className="text-sky-400" /> },
+              { label: "Total Leads", value: allLeads.length, bg: "bg-white border border-[#e8e2d8]", icon: <Users size={13} className="text-[#b8a88a]" /> },
+              { label: "Hot",         value: hot,            bg: "bg-rose-50 border border-rose-100",   icon: <Flame size={13} className="text-rose-400" /> },
+              { label: "Warm",        value: warm,           bg: "bg-amber-50 border border-amber-100", icon: <Zap size={13} className="text-amber-400" /> },
+              { label: "New",         value: newLeads,       bg: "bg-sky-50 border border-sky-100",     icon: <TrendingUp size={13} className="text-sky-400" /> },
             ].map((stat) => (
               <div key={stat.label} className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm shrink-0 ${stat.bg}`}>
                 {stat.icon}
                 <div>
-                  <p className={`text-base sm:text-xl font-bold leading-none ${stat.text}`}>{stat.value}</p>
-                  <p className={`text-[10px] mt-0.5 ${stat.sub}`}>{stat.label}</p>
+                  <p className="text-base sm:text-xl font-bold leading-none text-[#2c2825]">{stat.value}</p>
+                  <p className="text-[10px] mt-0.5 text-[#8c8580]">{stat.label}</p>
                 </div>
               </div>
             ))}
