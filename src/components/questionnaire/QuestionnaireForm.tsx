@@ -223,10 +223,9 @@ export default function QuestionnaireForm() {
         </div>
         <button
           onClick={() => setStarted(true)}
-          className="w-full max-w-xs flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-base py-4 rounded-2xl transition-all btn-press"
-          style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30)" }}
+          className="w-full max-w-xs flex items-center justify-center gap-2 bg-[#2c2825] text-white font-semibold text-base py-4 rounded-2xl transition-all btn-press hover:bg-[#1a1714]"
         >
-          Start my profile ✨
+          Start my profile
         </button>
         <p className="text-[#c4bfb9] text-xs mt-4">Your answers are private and go only to your realtor.</p>
       </div>
