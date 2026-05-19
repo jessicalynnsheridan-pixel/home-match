@@ -550,6 +550,15 @@ export default function AutomationsWidget({ leads, realtorName = "Your name" }: 
         )}
       </div>
 
+      {/* Instruction banner */}
+      {queue.length > 0 && logs !== null && (
+        <div className="px-4 py-2.5 border-b border-[#f0ece6] bg-[#fffbf0]">
+          <p className="text-[11px] text-[#92400e]">
+            <span className="font-semibold">Action needed:</span> Review and send each personalised email below. Click &ldquo;Edit &amp; send&rdquo; to preview, tweak the tone, and send directly to your client.
+          </p>
+        </div>
+      )}
+
       {/* Queue */}
       <div>
         {logs === null ? (
