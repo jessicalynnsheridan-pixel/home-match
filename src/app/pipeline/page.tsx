@@ -84,7 +84,13 @@ function mapSupabaseLead(row: Record<string, unknown>): Lead {
     realtorNotes: [],
     reminders: [],
     savedHomeIds: [],
-    answers: row.answers as Lead["answers"],
+    answers: {
+      firstName: "", lastName: "", email: "", phone: "",
+      mustHaves: [], dealBreakers: [], lifestylePriorities: [],
+      mortgageChecklist: [], homeFeeling: [], neighbourhoodVibe: [],
+      proximityPriorities: [], currentFrustration: [],
+      ...(row.answers as Partial<Lead["answers"]> ?? {}),
+    } as Lead["answers"],
   };
 }
 

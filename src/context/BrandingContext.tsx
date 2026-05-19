@@ -69,7 +69,7 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
     setBranding((prev) => {
       const next = { ...prev, ...patch };
       // Always save to localStorage as immediate fallback
-      localStorage.setItem("homematch_branding", JSON.stringify(next));
+      try { localStorage.setItem("homematch_branding", JSON.stringify(next)); } catch { /* quota exceeded or private browsing */ }
       // Persist to Supabase user metadata (best-effort, non-blocking)
       createClient().auth.updateUser({ data: { branding: next } }).catch(() => { /* ignore */ });
       return next;
@@ -77,7 +77,7 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   }
 
   function reset() {
-    localStorage.removeItem("homematch_branding");
+    try { localStorage.removeItem("homematch_branding"); } catch { /* ignore */ }
     createClient().auth.updateUser({ data: { branding: null } }).catch(() => { /* ignore */ });
     setBranding(DEFAULTS);
   }
