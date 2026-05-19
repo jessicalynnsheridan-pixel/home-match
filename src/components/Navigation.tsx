@@ -175,8 +175,8 @@ export default function Navigation() {
                           : isDark ? "hover:bg-white/6" : "hover:bg-[#faf9f7]"
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#eef6f0" }}>
-                        <Home size={15} style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#2a7a4b" }} />
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#f5f0e8" }}>
+                        <Home size={15} style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#b8956a" }} />
                       </div>
                       <div>
                         <p className={`text-sm font-medium leading-none mb-0.5 ${isDark ? "text-white/80" : "text-[#2c2825]"}`}>My Home Hub</p>
@@ -398,11 +398,11 @@ export default function Navigation() {
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border mb-2 transition-all ${
                 isActive("/portal")
                   ? isDark ? "bg-white/8 border-white/15" : "bg-white border-[#b8a88a]/40"
-                  : isDark ? "bg-white/4 border-white/8" : "bg-emerald-50 border-emerald-200"
+                  : isDark ? "bg-white/4 border-white/8" : "bg-[#f5f0e8] border-[#e0d5c5]"
               }`}
             >
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#d1fae5" }}>
-                <Home size={14} style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#059669" }} />
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#ede5d8" }}>
+                <Home size={14} style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#b8956a" }} />
               </div>
               <div>
                 <p className={`text-xs font-semibold ${isDark ? "text-white/90" : "text-[#2c2825]"}`}>My Home Hub</p>
