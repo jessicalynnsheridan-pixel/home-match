@@ -23,24 +23,24 @@ export function formatDate(iso: string): string {
 export function getScoreColor(score: string): string {
   switch (score) {
     case "Hot":
-      return "bg-rose-100 text-rose-700 border-rose-200";
+      return "bg-[#f2e9e5] text-[#8b4a38] border-[#dcc8be]";
     case "Warm":
-      return "bg-amber-100 text-amber-700 border-amber-200";
+      return "bg-[#f2ede0] text-[#8b6a30] border-[#e0d0b0]";
     case "Browsing":
-      return "bg-slate-100 text-slate-600 border-slate-200";
+      return "bg-[#f0eeea] text-[#7a7268] border-[#dbd6ce]";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "bg-[#f0eeea] text-[#7a7268] border-[#dbd6ce]";
   }
 }
 
 export function getStatusColor(status: string): string {
   switch (status) {
-    case "New Lead":       return "bg-blue-50 text-blue-700 border-blue-200";
-    case "Qualified":      return "bg-violet-50 text-violet-700 border-violet-200";
-    case "Showing Booked": return "bg-teal-50 text-teal-700 border-teal-200";
-    case "Offer Stage":    return "bg-orange-50 text-orange-700 border-orange-200";
-    case "Closed":         return "bg-emerald-50 text-emerald-700 border-emerald-200";
-    default:               return "bg-slate-100 text-slate-600";
+    case "New Lead":       return "bg-[#eaecf0] text-[#4a5468] border-[#c4c8d4]";
+    case "Qualified":      return "bg-[#ede8f0] text-[#6a5878] border-[#c8bcd4]";
+    case "Showing Booked": return "bg-[#e8eeec] text-[#3c6460] border-[#b8ccc8]";
+    case "Offer Stage":    return "bg-[#f0e8e4] text-[#7a5040] border-[#d4c0b8]";
+    case "Closed":         return "bg-[#eaf0e8] text-[#4a6648] border-[#c0d0be]";
+    default:               return "bg-[#f0eeea] text-[#7a7268] border-[#dbd6ce]";
   }
 }
 
