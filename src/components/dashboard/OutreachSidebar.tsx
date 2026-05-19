@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Lead, QuestionnaireAnswers } from "@/types";
-import { Mail, Send, Copy, CheckCheck, ExternalLink } from "lucide-react";
+import { Mail, Send, Copy, CheckCheck, ExternalLink, Pencil, X } from "lucide-react";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -117,6 +117,8 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [variantIdx, setVariantIdx] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editedBody, setEditedBody] = useState("");
 
   const rName = realtorName || "[Your Name]";
   const rPhone = realtorPhone || "";
@@ -132,14 +134,26 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
   const current = variants[variantIdx];
 
   function selectDay(key: string) {
-    if (selectedDay === key) { setSelectedDay(null); return; }
+    if (selectedDay === key) { setSelectedDay(null); setEditing(false); return; }
     setSelectedDay(key);
     setVariantIdx(0);
+    setEditing(false);
+  }
+
+  function switchVariant(i: number) {
+    setVariantIdx(i);
+    setEditing(false);
+  }
+
+  const displayBody = editing ? editedBody : current?.body ?? "";
+
+  function startEditing() {
+    setEditedBody(current?.body ?? "");
+    setEditing(true);
   }
 
   function copyBody() {
-    if (!current) return;
-    const text = `${current.body}${rPhone ? `\n\n${rPhone}` : ""}`;
+    const text = `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`;
     navigator.clipboard?.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -199,7 +213,7 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
             {variants.map((v, i) => (
               <button
                 key={i}
-                onClick={() => setVariantIdx(i)}
+                onClick={() => switchVariant(i)}
                 className="text-[9px] font-bold px-2 py-1 rounded-full transition-colors"
                 style={variantIdx === i
                   ? { background: "#2c2825", color: "#fff" }
@@ -223,26 +237,45 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
           <div className="px-3 pt-1 pb-2">
             <div className="flex items-center justify-between mb-1">
               <p className="text-[9px] text-[#8c8580] uppercase tracking-wider">Body</p>
-              <button onClick={copyBody} className="flex items-center gap-1 text-[10px] text-[#8c8580] hover:text-[#2c2825] transition-colors">
-                {copied ? <CheckCheck size={10} className="text-emerald-500" /> : <Copy size={10} />}
-                {copied ? "Copied" : "Copy"}
-              </button>
+              <div className="flex items-center gap-2">
+                <button onClick={copyBody} className="flex items-center gap-1 text-[10px] text-[#8c8580] hover:text-[#2c2825] transition-colors">
+                  {copied ? <CheckCheck size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+                <button
+                  onClick={() => editing ? setEditing(false) : startEditing()}
+                  className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
+                  style={{ color: editing ? "#8c8580" : "#b8a88a" }}
+                >
+                  {editing ? <X size={10} /> : <Pencil size={10} />}
+                  {editing ? "Done" : "Edit"}
+                </button>
+              </div>
             </div>
-            <pre className="text-[10px] text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans bg-[#f5f3f0] border border-[#e8e4de] rounded-lg px-2.5 py-2.5 max-h-52 overflow-y-auto">
-              {current.body}
-            </pre>
+            {editing ? (
+              <textarea
+                value={editedBody}
+                onChange={(e) => setEditedBody(e.target.value)}
+                rows={10}
+                className="w-full text-[10px] text-[#2c2825] leading-relaxed font-sans bg-white border border-[#b8a88a] rounded-lg px-2.5 py-2.5 resize-none outline-none focus:border-[#2c2825] transition-colors"
+              />
+            ) : (
+              <pre className="text-[10px] text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans bg-[#f5f3f0] border border-[#e8e4de] rounded-lg px-2.5 py-2.5 max-h-52 overflow-y-auto">
+                {displayBody}
+              </pre>
+            )}
           </div>
 
           {/* Send buttons */}
           <div className="px-3 pb-3 flex flex-col gap-1.5">
             <button
-              onClick={() => window.open(gmailUrl(lead.answers.email, current.subject, `${current.body}${rPhone ? `\n\n${rPhone}` : ""}`), "_blank")}
+              onClick={() => window.open(gmailUrl(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`), "_blank")}
               className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#2c2825] text-white text-[11px] font-semibold hover:bg-[#1a1512] transition-colors"
             >
               <Send size={11} /> Open in Gmail <ExternalLink size={9} className="opacity-60" />
             </button>
             <a
-              href={outlookUrl(lead.answers.email, current.subject, `${current.body}${rPhone ? `\n\n${rPhone}` : ""}`)}
+              href={outlookUrl(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`)}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-[#e8e4de] text-[#2c2825] text-[11px] font-semibold hover:bg-[#f5f3f0] transition-colors"
