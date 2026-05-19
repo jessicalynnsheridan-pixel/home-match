@@ -14,12 +14,14 @@ function fmtBudget(min?: number, max?: number) {
   if (max) return `up to ${fmt(max)}`;
   return "budget TBD";
 }
-function gmailUrl(to: string, subject: string, body: string) {
-  return `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+function openGmail(to: string, subject: string, body: string) {
+  const url = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(url, "gmail_compose", "width=960,height=720,left=200,top=100");
 }
 function outlookUrl(to: string, subject: string, body: string) {
   return `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
+function isValidPhone(p: string) { return p.replace(/\D/g, "").length >= 7; }
 
 // ─── Personalised variants ────────────────────────────────────────────────────
 
@@ -121,7 +123,7 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
   const [editedBody, setEditedBody] = useState("");
 
   const rName = realtorName || "[Your Name]";
-  const rPhone = realtorPhone || "";
+  const rPhone = realtorPhone && isValidPhone(realtorPhone) ? realtorPhone : "";
 
   const variantsByDay: Record<string, Variant[]> = {
     day1: day1Variants(lead.answers, rName),
@@ -269,7 +271,7 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
           {/* Send buttons */}
           <div className="px-3 pb-3 flex flex-col gap-1.5">
             <button
-              onClick={() => window.open(gmailUrl(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`), "_blank")}
+              onClick={() => openGmail(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`)}
               className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#2c2825] text-white text-[11px] font-semibold hover:bg-[#1a1512] transition-colors"
             >
               <Send size={11} /> Open in Gmail <ExternalLink size={9} className="opacity-60" />
