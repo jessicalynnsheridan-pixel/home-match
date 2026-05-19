@@ -966,7 +966,7 @@ export default function DashboardPage() {
     if (search) {
       const q = search.toLowerCase();
       const name = `${lead.answers.firstName} ${lead.answers.lastName}`.toLowerCase();
-      if (!name.includes(q) && !lead.answers.preferredCity.toLowerCase().includes(q) && !lead.answers.email.toLowerCase().includes(q)) return false;
+      if (!name.includes(q) && !lead.answers.preferredCity?.toLowerCase().includes(q) && !lead.answers.email?.toLowerCase().includes(q)) return false;
     }
     return true;
   }
