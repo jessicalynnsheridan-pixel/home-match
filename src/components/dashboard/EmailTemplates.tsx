@@ -1,10 +1,252 @@
 "use client";
 
 import { useState } from "react";
-import { Lead } from "@/types";
+import { Lead, QuestionnaireAnswers } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { Copy, CheckCheck, Zap, Mail, MessageSquare, Phone, Clock, ExternalLink, Calendar, Settings } from "lucide-react";
+import { Copy, CheckCheck, Zap, Mail, MessageSquare, Phone, Clock, ExternalLink, Calendar, Settings, Send } from "lucide-react";
 import Link from "next/link";
+
+// ─── Budget helper ────────────────────────────────────────────────────────────
+
+function fmt(n: number) {
+  return n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(1)}M` : `$${(n / 1_000).toFixed(0)}k`;
+}
+function fmtBudget(min?: number, max?: number) {
+  if (min && max) return `${fmt(min)} to ${fmt(max)}`;
+  if (max) return `up to ${fmt(max)}`;
+  return "budget TBD";
+}
+
+// ─── Day 1/3/7 personalised variants ─────────────────────────────────────────
+
+interface Variant { label: string; subject: string; body: string; }
+
+function day1Variants(a: QuestionnaireAnswers, realtorName: string): Variant[] {
+  const first = a.firstName, city = a.preferredCity;
+  const feeling = a.homeFeeling?.[0] ?? "", feeling2 = a.homeFeeling?.[1];
+  const vibe = a.sundayMorning, hoods = a.preferredNeighbourhoods;
+  const style = a.modernVsCozy, must1 = a.mustHaves?.[0];
+  const notes = a.additionalNotes?.trim(), frustration = a.currentFrustration?.[0];
+  const budget = fmtBudget(a.budgetMin, a.budgetMax);
+  const subject = `Your home search is officially on, ${first} 🏡`;
+
+  const v1 = `Hi ${first},\n\nI just went through your profile and I love what you're looking for.\n\n${feeling ? `A ${feeling.toLowerCase()}${feeling2 ? ` that doubles as a ${feeling2.toLowerCase()}` : ""}${vibe ? `. Someone whose ideal Sunday starts with ${vibe.toLowerCase()}` : ""}. You're not just looking for a house. You have a feeling in mind, and that's exactly how the best searches start.` : `You're not just looking for a house. You have a feeling in mind.`}\n\nI've noted everything: ${hoods ? `the ${hoods} neighbourhoods` : `the ${city} pockets`} you're drawn to, ${must1 ? `the ${must1.toLowerCase()} at the top of your list` : "the features that matter most"}, and the things you're leaving behind. I'll be in touch this week.\n\nWarm regards,\n${realtorName}`;
+
+  const v2 = `Hi ${first},\n\nYour profile is in. I've gone through every detail.\n\nCity: ${city}${hoods ? ` (${hoods})` : ""}\nProperty: ${a.propertyType || "Any"}, ${a.bedrooms}bd / ${a.bathrooms}ba\nBudget: ${budget}\nTimeline: ${a.timeline || "Flexible"}\nStyle: ${style || "Open"}\nTop must-haves: ${a.mustHaves?.slice(0, 3).join(", ") || "see full profile"}\n\nI'll have a shortlist ready when we connect.\n\nLooking forward to it,\n${realtorName}`;
+
+  let hook = notes && notes.length > 15
+    ? `I caught what you wrote: "${notes.split(".")[0]}." That context is exactly what helps me move faster for you.`
+    : frustration
+    ? `The "${frustration.toLowerCase()}" situation you mentioned really stood out. The right home genuinely changes it.`
+    : `You clearly know what you want, and that already puts you ahead.`;
+
+  const v3 = `Hi ${first},\n\nYour profile came through. Thank you for being so thorough.\n\n${hook}\n\nI'll reach out this week to introduce myself. No pressure, just a proper conversation.\n\nTalk soon,\n${realtorName}`;
+
+  return [
+    { label: "Lifestyle", subject, body: v1 },
+    { label: "Practical", subject, body: v2 },
+    { label: "Their story", subject, body: v3 },
+  ];
+}
+
+function day3Variants(a: QuestionnaireAnswers, realtorName: string): Variant[] {
+  const first = a.firstName, city = a.preferredCity, timeline = a.timeline;
+  const vibe = a.neighbourhoodVibe?.[0], must1 = a.mustHaves?.[0];
+  const feeling = a.homeFeeling?.[0]?.toLowerCase() ?? "home";
+  const subject = `Just checking in, ${first} 👋`;
+
+  const v1 = `Hi ${first},\n\nJust wanted to check in and make sure everything landed okay.\n\nNo agenda here. Genuinely just curious how you're feeling about the search. Have any questions come up?\n\nI'm here whenever you're ready.\n\nWarmly,\n${realtorName}`;
+
+  const v2 = `Hi ${first},\n\nQuick question. When you picture ${city}, is there a specific neighbourhood feel you keep coming back to?${vibe ? ` You mentioned "${vibe.toLowerCase()}" and that's exactly the kind of detail that helps me tighten the search.` : " That kind of thing helps me tighten the search significantly."}\n\nNo pressure at all. Just thinking ahead for you.\n\n${realtorName}`;
+
+  const momentumHook = timeline === "ASAP"
+    ? `You're on an ASAP timeline, so I want to make sure we're moving at the pace that works for you.`
+    : timeline === "1-3 months"
+    ? `With a 1 to 3 month window, now is a good time to lock in a few viewings. The right ones go fast.`
+    : `There's no rush on your end, and that's actually a strong position.`;
+
+  const v3 = `Hi ${first},\n\n${momentumHook}\n\nI've been keeping an eye on ${city} since you submitted. Specifically the${must1 ? ` "${must1.toLowerCase()}"` : " " + feeling} options in your range. Want to get on a quick call this week?\n\nHere whenever you are,\n${realtorName}`;
+
+  return [
+    { label: "Warm", subject, body: v1 },
+    { label: "Curious", subject, body: v2 },
+    { label: "Momentum", subject, body: v3 },
+  ];
+}
+
+function day7Variants(a: QuestionnaireAnswers, realtorName: string): Variant[] {
+  const first = a.firstName, city = a.preferredCity, hoods = a.preferredNeighbourhoods;
+  const budget = fmtBudget(a.budgetMin, a.budgetMax), must1 = a.mustHaves?.[0];
+  const notes = a.additionalNotes?.trim();
+  const subject = `Still thinking about ${city}, ${first}?`;
+
+  const v1 = `Hi ${first},\n\nJust a quick note. No pressure at all. Still here whenever you're ready.\n\nBuying a home is a big decision, and sometimes life gets busy. That's completely normal.\n\nIf you ever want to talk through your search, I'm just a reply away.\n\n${realtorName}`;
+
+  const v2 = `Hi ${first},\n\nI've been watching the ${city} market in your range (${budget}) this week${hoods ? `. Especially around ${hoods.split(",")[0].trim()}` : ""}.\n\nThere are a few things worth talking through. Nothing urgent, but the kind of context that's useful when you're ready to move.\n\nHappy to do a quick 15-minute call whenever it suits you.\n\n${realtorName}`;
+
+  const personalHook = notes && notes.length > 15
+    ? `I keep coming back to what you wrote: "${notes.split(".")[0].toLowerCase()}." That's really what we're solving for.`
+    : must1
+    ? `The ${must1.toLowerCase()} you're after is a specific ask, and I've had a few ideas in the back of my mind I'd love to run by you.`
+    : `Your search has stayed at the top of my mind. You know exactly what you want, and I want to help you find it.`;
+
+  const v3 = `Hi ${first},\n\n${personalHook}\n\nWhenever you're ready to pick this up, even just for a conversation, I'd love to reconnect.\n\n${realtorName}`;
+
+  return [
+    { label: "Easy", subject, body: v1 },
+    { label: "Market", subject, body: v2 },
+    { label: "Personal", subject, body: v3 },
+  ];
+}
+
+// ─── Template day config ──────────────────────────────────────────────────────
+
+const DAY_TEMPLATES = [
+  { key: "day1", day: "Day 1", emoji: "🏡", trigger: "Send right away — welcome them", tagBg: "#dcfce7", tagColor: "#166534", accentColor: "#059669", toneLabels: ["Lifestyle", "Practical", "Their story"] },
+  { key: "day3", day: "Day 3", emoji: "👋", trigger: "Check in after 3 days of no reply", tagBg: "#fef3c7", tagColor: "#92400e", accentColor: "#d97706", toneLabels: ["Warm", "Curious", "Momentum"] },
+  { key: "day7", day: "Day 7", emoji: "📍", trigger: "Final nudge after a week of silence", tagBg: "#ede9fe", tagColor: "#4c1d95", accentColor: "#7c3aed", toneLabels: ["Easy", "Market", "Personal"] },
+];
+
+// ─── Personalised template card section ───────────────────────────────────────
+
+function PersonalisedTemplates({ lead, realtorName, realtorPhone }: { lead: Lead; realtorName: string; realtorPhone: string }) {
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [variantIdx, setVariantIdx] = useState(0);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const rName = realtorName || "[Your Name]";
+  const rPhone = realtorPhone || "[Your phone]";
+
+  const variantsByDay: Record<string, Variant[]> = {
+    day1: day1Variants(lead.answers, rName),
+    day3: day3Variants(lead.answers, rName),
+    day7: day7Variants(lead.answers, rName),
+  };
+
+  const selected = DAY_TEMPLATES.find((t) => t.key === selectedDay);
+  const variants = selectedDay ? variantsByDay[selectedDay] : [];
+  const currentVariant = variants[variantIdx];
+
+  function selectDay(key: string) {
+    if (selectedDay === key) { setSelectedDay(null); return; }
+    setSelectedDay(key);
+    setVariantIdx(0);
+  }
+
+  function copyBody() {
+    const text = `${currentVariant.body}\n\n${rPhone}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => { setCopied("body"); setTimeout(() => setCopied(null), 2000); });
+    }
+  }
+
+  return (
+    <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-[#e8e4de]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#fef3c7" }}>
+            <Mail size={14} style={{ color: "#d97706" }} />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-[#2c2825]">Personalised Email Templates</p>
+            <p className="text-[11px] text-[#8c8580] mt-0.5">Each one is written from {lead.answers.firstName}&apos;s quiz answers — pick a day and tone</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Day cards */}
+      <div className="p-4 grid grid-cols-3 gap-2.5">
+        {DAY_TEMPLATES.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => selectDay(t.key)}
+            className="text-left rounded-xl border transition-all p-3"
+            style={{
+              borderColor: selectedDay === t.key ? t.accentColor : "#e8e4de",
+              background: selectedDay === t.key ? "#ffffff" : "#faf9f7",
+              boxShadow: selectedDay === t.key ? `0 0 0 2px ${t.accentColor}22` : "none",
+            }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: t.tagBg, color: t.tagColor }}>{t.day}</span>
+              <span className="text-sm">{t.emoji}</span>
+            </div>
+            <p className="text-[11px] text-[#2c2825] font-semibold leading-snug mb-1.5">{t.trigger}</p>
+            <div className="flex flex-wrap gap-1">
+              {t.toneLabels.map((tone) => (
+                <span key={tone} className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: t.tagBg, color: t.tagColor }}>{tone}</span>
+              ))}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Expanded: tone + body */}
+      {selected && currentVariant && (
+        <div className="border-t border-[#f0ece6]">
+          {/* Tone selector */}
+          <div className="px-4 py-3 flex items-center gap-2 border-b border-[#f5f3f0]" style={{ background: "#faf9f7" }}>
+            <span className="text-[10px] font-semibold text-[#8c8580]">Tone:</span>
+            {variants.map((v, i) => (
+              <button
+                key={i}
+                onClick={() => setVariantIdx(i)}
+                className="text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors"
+                style={variantIdx === i
+                  ? { background: "#2c2825", color: "#ffffff" }
+                  : { background: "#ffffff", color: "#8c8580", border: "1px solid #e8e4de" }
+                }
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Subject */}
+          <div className="px-4 pt-3 pb-2">
+            <p className="text-[10px] text-[#8c8580] uppercase tracking-wider mb-1.5">Subject</p>
+            <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-3.5 py-2.5 text-xs text-[#2c2825] font-medium">
+              {currentVariant.subject}
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="px-4 pt-1 pb-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-[10px] text-[#8c8580] uppercase tracking-wider">Body</p>
+              <button onClick={copyBody} className="flex items-center gap-1 text-xs text-[#8c8580] hover:text-[#2c2825] transition-colors">
+                {copied === "body" ? <CheckCheck size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                {copied === "body" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <pre className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-3.5 py-3 text-[11px] text-[#2c2825] leading-relaxed whitespace-pre-wrap font-sans">
+              {currentVariant.body}
+            </pre>
+          </div>
+
+          {/* Send buttons */}
+          <div className="px-4 pb-4 flex flex-col sm:flex-row gap-2">
+            <button
+              onClick={() => openGmail(lead.answers.email, currentVariant.subject, `${currentVariant.body}\n\n${rPhone}`)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#2c2825] text-white text-xs font-semibold hover:bg-[#1a1512] transition-colors"
+            >
+              <Send size={12} /> Open in Gmail <ExternalLink size={10} className="opacity-60" />
+            </button>
+            <a
+              href={outlookUrl(lead.answers.email, currentVariant.subject, `${currentVariant.body}\n\n${rPhone}`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[#2c2825] text-[#2c2825] text-xs font-semibold hover:bg-[#f5f3f0] transition-colors"
+            >
+              <Send size={12} /> Outlook <ExternalLink size={10} className="opacity-40" />
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Send helpers ─────────────────────────────────────────────────────────────
 
@@ -346,6 +588,9 @@ export default function EmailTemplates({ lead, realtorName, realtorPhone }: { le
 
   return (
     <div className="space-y-3">
+
+      {/* ── Personalised Day 1 / 3 / 7 templates ──────────────────────────── */}
+      <PersonalisedTemplates lead={lead} realtorName={rName} realtorPhone={rPhone} />
 
       {/* ── Lead contact bar ───────────────────────────────────────────────── */}
       <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-2xl px-4 py-3 flex items-center gap-3 flex-wrap">
