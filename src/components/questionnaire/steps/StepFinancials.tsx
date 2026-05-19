@@ -33,14 +33,14 @@ export default function StepFinancials({ answers, update, onNext, onBack, onSubm
   return (
     <div>
       <StepHeader
-        title="Let's talk financial readiness."
-        subtitle="No judgment, no pressure. This helps us show you what's genuinely within reach."
+        title="Where are you in the process?"
+        subtitle="No right or wrong answer here — this just helps your realtor know how to best support you."
       />
 
       <div className="space-y-7">
         {/* Pre-approval */}
         <div>
-          <FieldLabel>Mortgage pre-approval status</FieldLabel>
+          <FieldLabel>Mortgage pre-approval</FieldLabel>
           <div className="flex flex-wrap gap-3 mt-1">
             {PRE_APPROVAL_OPTIONS.map((opt) => (
               <ToggleChip
@@ -55,7 +55,7 @@ export default function StepFinancials({ answers, update, onNext, onBack, onSubm
 
         {/* Current ownership */}
         <div>
-          <FieldLabel>Current home ownership status</FieldLabel>
+          <FieldLabel>Your current situation</FieldLabel>
           <div className="flex flex-wrap gap-3 mt-1">
             {OWNERSHIP_OPTIONS.map((opt) => (
               <ToggleChip

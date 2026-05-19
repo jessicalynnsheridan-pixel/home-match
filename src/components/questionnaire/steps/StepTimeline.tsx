@@ -2,7 +2,15 @@
 
 import { BuyingTimeline } from "@/types";
 import { StepProps } from "./shared";
-import { formatCurrency } from "@/lib/utils";
+
+const BUDGET_RANGES = [
+  { label: "Under $500K",    sub: "Starter or condo",         min: 200000,  max: 500000  },
+  { label: "$500K – $750K",  sub: "Solid starter homes",      min: 500000,  max: 750000  },
+  { label: "$750K – $1M",    sub: "Mid-range detached",       min: 750000,  max: 1000000 },
+  { label: "$1M – $1.5M",    sub: "Premium neighbourhoods",   min: 1000000, max: 1500000 },
+  { label: "$1.5M – $2.5M",  sub: "Luxury segment",          min: 1500000, max: 2500000 },
+  { label: "$2.5M+",         sub: "Ultra-premium",            min: 2500000, max: 5000000 },
+];
 
 const TIMELINES: { value: BuyingTimeline; emoji: string; sub: string }[] = [
   { value: "ASAP",           emoji: "🔥", sub: "I'm actively searching now" },
@@ -67,44 +75,27 @@ export default function StepTimeline({ answers, update, onNext }: StepProps) {
 
       {/* Budget */}
       <div className="rounded-2xl p-6 mb-8" style={{ background: "#ffffff", border: "1px solid #e0dbd4", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-        <p className="text-sm font-semibold text-[#2c2825] mb-1">What&apos;s your budget?</p>
-        <p className="text-[#8c8580] text-xs mb-6">Drag the sliders, don&apos;t stress the exact number.</p>
-
-        <div className="flex justify-between items-baseline mb-6">
-          <div>
-            <p className="text-[#8c8580] text-xs mb-0.5">Min</p>
-            <p className="text-[#2c2825] font-bold text-xl">{formatCurrency(answers.budgetMin)}</p>
-          </div>
-          <div className="text-[#b8b4b0] text-lg font-light">-</div>
-          <div className="text-right">
-            <p className="text-[#8c8580] text-xs mb-0.5">Max</p>
-            <p className="text-[#2c2825] font-bold text-xl">{formatCurrency(answers.budgetMax)}</p>
-          </div>
-        </div>
-
-        <div className="space-y-5">
-          <div>
-            <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-2">Minimum</p>
-            <input type="range" min={200000} max={5000000} step={25000}
-              value={answers.budgetMin}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                update("budgetMin", Math.min(val, answers.budgetMax - 100000));
-              }}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <p className="text-[#b8a88a] text-xs uppercase tracking-wider mb-2">Maximum</p>
-            <input type="range" min={200000} max={5000000} step={25000}
-              value={answers.budgetMax}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                update("budgetMax", Math.max(val, answers.budgetMin + 100000));
-              }}
-              className="w-full"
-            />
-          </div>
+        <p className="text-sm font-semibold text-[#2c2825] mb-1">What&apos;s your budget range?</p>
+        <p className="text-[#8c8580] text-xs mb-5">Pick the range that feels right. No need to have the exact number.</p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {BUDGET_RANGES.map((b) => {
+            const selected = answers.budgetMin === b.min && answers.budgetMax === b.max;
+            return (
+              <button
+                key={b.label}
+                type="button"
+                onClick={() => { update("budgetMin", b.min); update("budgetMax", b.max); }}
+                className="flex flex-col items-start px-4 py-3.5 rounded-xl text-left transition-all btn-press"
+                style={{
+                  background: selected ? "linear-gradient(135deg, #b8956a 0%, #8a6840 100%)" : "#faf9f7",
+                  border: selected ? "2px solid rgba(184,168,138,0.7)" : "2px solid #e0dbd4",
+                }}
+              >
+                <span className="text-base font-bold" style={{ color: selected ? "#fff" : "#2c2825" }}>{b.label}</span>
+                <span className="text-xs mt-0.5" style={{ color: selected ? "rgba(255,255,255,0.75)" : "#8c8580" }}>{b.sub}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

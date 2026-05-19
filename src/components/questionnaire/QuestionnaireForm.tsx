@@ -10,6 +10,7 @@ import StepTradeoffs from "./steps/StepTradeoffs";
 import StepTimeline from "./steps/StepTimeline";
 import StepLocation from "./steps/StepLocation";
 import StepProperty from "./steps/StepProperty";
+import StepMustHaves from "./steps/StepMustHaves";
 import StepFinancials from "./steps/StepFinancials";
 import StepNotes from "./steps/StepNotes";
 import { ArrowLeft } from "lucide-react";
@@ -22,6 +23,7 @@ const STEP_MOMENTS = [
   "Getting real about timing.",
   "Narrowing in on your world.",
   "What home looks like for you.",
+  "You know exactly what matters.",
   "Where you stand financially.",
   "Almost there.",
 ];
@@ -65,12 +67,12 @@ const INITIAL: QuestionnaireAnswers = {
 
 const STEP_LABELS = [
   "Your Vibe", "About You", "Trade-offs", "Timeline",
-  "Location", "The Home", "Finances", "Anything else",
+  "Location", "The Home", "Must-Haves", "Finances", "Anything else",
 ];
 
 const STEP_COMPONENTS = [
   StepVibe, StepContact, StepTradeoffs, StepTimeline,
-  StepLocation, StepProperty, StepFinancials, StepNotes,
+  StepLocation, StepProperty, StepMustHaves, StepFinancials, StepNotes,
 ];
 
 function scoreAnswers(answers: QuestionnaireAnswers): LeadScore {
@@ -103,6 +105,7 @@ function calcMatchScore(answers: QuestionnaireAnswers, score: LeadScore): number
 export default function QuestionnaireForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(INITIAL);
   const [showMoment, setShowMoment] = useState(false);
@@ -173,6 +176,36 @@ export default function QuestionnaireForm() {
 
   const StepComponent = STEP_COMPONENTS[step];
   const stepProps = { answers, update, onNext: next, onBack: back, onSubmit: submit, isSubmitting, submitError };
+
+  // ─── Intro screen ─────────────────────────────────────────────────────────
+  if (!started) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center min-h-[70vh] text-center px-2">
+        <div className="mb-6 text-5xl">🏡</div>
+        <h1 className="text-4xl sm:text-5xl font-bold text-[#2c2825] leading-tight mb-4">
+          Find your perfect home.
+        </h1>
+        <p className="text-[#8c8580] text-base leading-relaxed max-w-sm mb-3">
+          Answer a few questions so your realtor can match you with homes that actually fit your life — not just your checklist.
+        </p>
+        <div className="flex items-center justify-center gap-3 mb-10 text-xs text-[#b8a88a] font-medium">
+          <span>⏱ 3 minutes</span>
+          <span>·</span>
+          <span>No account needed</span>
+          <span>·</span>
+          <span>Goes straight to your realtor</span>
+        </div>
+        <button
+          onClick={() => setStarted(true)}
+          className="w-full max-w-xs flex items-center justify-center gap-2 text-[#1a1512] font-semibold text-base py-4 rounded-2xl transition-all btn-press"
+          style={{ background: "linear-gradient(135deg, #c9a870 0%, #a07840 100%)", boxShadow: "0 8px 32px rgba(201,168,112,0.30)" }}
+        >
+          Start my profile ✨
+        </button>
+        <p className="text-[#c4bfb9] text-xs mt-4">Your answers are private and go only to your realtor.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
