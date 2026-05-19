@@ -37,43 +37,43 @@ function getConversationStarters(lead: Lead): Starter[] {
 
   if (answers.sundayMorning) {
     const map: Record<string, Starter> = {
-      "Hosting people":    { hook: `"I pulled a few homes with open-plan living you'd love to host in — want me to send them over?"`, why: "Sunday morning = hosting. Lead with lifestyle, not square footage.", type: "lifestyle", tag: "Lifestyle" },
-      "Total quiet":       { hook: `"You mentioned wanting quiet — I've got a couple of dead-end streets with zero through-traffic. Interested?"`, why: "They value calm over convenience. Don't pitch busy areas.", type: "lifestyle", tag: "Lifestyle" },
-      "Outside with kids": { hook: `"There's a place in [neighbourhood] with a huge yard and a park two doors down — thought of you immediately."`, why: "Family & outdoor space is their anchor priority.", type: "lifestyle", tag: "Lifestyle" },
-      "Solo, no plans":    { hook: `"One of these homes has a private patio that's basically made for a slow morning and good coffee."`, why: "They value personal retreat space — paint that picture.", type: "lifestyle", tag: "Lifestyle" },
+      "Hosting people":    { hook: `"I pulled a few homes with open-plan living you'd love to host in. Want me to send them over?"`, why: "Sunday morning = hosting. Lead with lifestyle, not square footage.", type: "lifestyle", tag: "Lifestyle" },
+      "Total quiet":       { hook: `"You mentioned wanting quiet. I've got a couple of dead-end streets with zero through-traffic. Interested?"`, why: "They value calm over convenience. Don't pitch busy areas.", type: "lifestyle", tag: "Lifestyle" },
+      "Outside with kids": { hook: `"There's a place in [neighbourhood] with a huge yard and a park two doors down. Thought of you immediately."`, why: "Family & outdoor space is their anchor priority.", type: "lifestyle", tag: "Lifestyle" },
+      "Solo, no plans":    { hook: `"One of these homes has a private patio, basically made for a slow morning and good coffee."`, why: "They value personal retreat space. Paint that picture.", type: "lifestyle", tag: "Lifestyle" },
       "Getting out":       { hook: `"How important is walkability to you? A couple of these are five minutes from everything."`, why: "They want to be embedded in the neighbourhood, not just in it.", type: "preference", tag: "Location" },
-      "Slow & cozy":       { hook: `"I have a listing with the coziest reading nook — genuinely thought of you when I saw it."`, why: "Emotional, comfort-driven buyer. Sell feeling, not specs.", type: "lifestyle", tag: "Lifestyle" },
+      "Slow & cozy":       { hook: `"I have a listing with the coziest reading nook. Genuinely thought of you when I saw it."`, why: "Emotional, comfort-driven buyer. Sell feeling, not specs.", type: "lifestyle", tag: "Lifestyle" },
     };
     const match = map[answers.sundayMorning];
     if (match) starters.push(match);
   }
 
   if (answers.tradeoffQuietVsEnergy === "Quiet & calm") {
-    starters.push({ hook: `"I'm ruling out anything near a main road for you — even if the price looks good, it won't feel right."`, why: "Proactively filtering for them builds massive trust.", type: "preference", tag: "Neighbourhood" });
+    starters.push({ hook: `"I'm ruling out anything near a main road for you. Even if the price looks good, it won't feel right."`, why: "Proactively filtering for them builds massive trust.", type: "preference", tag: "Neighbourhood" });
   } else if (answers.tradeoffQuietVsEnergy === "Buzz & energy") {
-    starters.push({ hook: `"Are you open to [urban area]? Walkable, busy, great vibe — sounds like your speed."`, why: "Energy seekers respond to lifestyle descriptions, not location stats.", type: "preference", tag: "Neighbourhood" });
+    starters.push({ hook: `"Are you open to [urban area]? Walkable, busy, great vibe. Sounds like your speed."`, why: "Energy seekers respond to lifestyle descriptions, not location stats.", type: "preference", tag: "Neighbourhood" });
   }
 
   if (answers.tradeoffNewVsCharacter === "Character home") {
-    starters.push({ hook: `"Any interest in older homes with original details? Hardwood, crown moulding, that kind of character?"`, why: "Character buyers often can't find what they want on MLS — be the one who knows where to look.", type: "preference", tag: "Property Type" });
+    starters.push({ hook: `"Any interest in older homes with original details? Hardwood, crown moulding, that kind of character?"`, why: "Character buyers often can't find what they want on MLS. Be the one who knows where to look.", type: "preference", tag: "Property Type" });
   } else if (answers.tradeoffNewVsCharacter === "New build") {
     starters.push({ hook: `"Are you open to new builds or pre-construction? A few solid options are coming up soon."`, why: "New build buyers often want to customise. Get ahead of inventory.", type: "preference", tag: "Property Type" });
   }
 
   if (answers.tradeoffPrivacyVsWalkability === "Privacy") {
-    starters.push({ hook: `"You mentioned privacy matters — I'm looking at homes with good setbacks and tree cover. Anything specific that matters most?"`, why: "Privacy buyers often have a specific need. Draw it out early.", type: "preference", tag: "Must-Have" });
+    starters.push({ hook: `"You mentioned privacy matters. I'm looking at homes with good setbacks and tree cover. Anything specific?"`, why: "Privacy buyers often have a specific need. Draw it out early.", type: "preference", tag: "Must-Have" });
   }
 
   if (answers.preApprovalStatus === "Not yet" || answers.preApprovalStatus === "In progress") {
-    starters.push({ hook: `"Have you connected with a mortgage broker yet? Happy to make an intro — it makes your offer much stronger."`, why: "Helping with financing = becoming indispensable before they even see a home.", type: "financing", tag: "Financing" });
+    starters.push({ hook: `"Have you connected with a mortgage broker yet? Happy to make an intro. It makes your offer much stronger."`, why: "Helping with financing = becoming indispensable before they even see a home.", type: "financing", tag: "Financing" });
   }
 
   if (answers.mustHaves && answers.mustHaves.length > 0) {
-    starters.push({ hook: `"You flagged ${answers.mustHaves.slice(0, 2).join(" and ")} as non-negotiables — I'm holding firm on those. Sound right?"`, why: "Repeating their must-haves back shows you read their profile. Rare. Memorable.", type: "musthave", tag: "Must-Haves" });
+    starters.push({ hook: `"You flagged ${answers.mustHaves.slice(0, 2).join(" and ")} as non-negotiables. I'm holding firm on those. Sound right?"`, why: "Repeating their must-haves back shows you read their profile. Rare. Memorable.", type: "musthave", tag: "Must-Haves" });
   }
 
   if (answers.additionalNotes) {
-    starters.push({ hook: `"You mentioned: '${answers.additionalNotes.slice(0, 80)}${answers.additionalNotes.length > 80 ? "…" : ""}' — tell me more about that."`, why: "They took time to write this. Referencing it signals you paid attention.", type: "notes", tag: "Their Words" });
+    starters.push({ hook: `"You mentioned: '${answers.additionalNotes.slice(0, 80)}${answers.additionalNotes.length > 80 ? "…" : ""}'. Tell me more about that."`, why: "They took time to write this. Referencing it signals you paid attention.", type: "notes", tag: "Their Words" });
   }
 
   return starters.slice(0, 4);
@@ -181,16 +181,16 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
   if (answers.sundayMorning === "Total quiet" || answers.sundayMorning === "Slow & cozy") {
     availabilityHints.push("☀️ Prefers weekday showings");
   } else if (answers.sundayMorning === "Getting out" || answers.sundayMorning === "Outside with kids") {
-    availabilityHints.push("☀️ Flexible — weekends work");
+    availabilityHints.push("☀️ Flexible, weekends work");
   } else if (answers.sundayMorning === "Hosting people" || answers.sundayMorning === "Solo, no plans") {
-    availabilityHints.push("🌆 Weekends likely busy — book ahead");
+    availabilityHints.push("🌆 Weekends likely busy, book ahead");
   }
   if (answers.timeline === "ASAP" || answers.timeline === "1-3 months") {
     availabilityHints.push("🌆 Urgently available");
   } else if (answers.timeline === "3-6 months") {
     availabilityHints.push("☀️ Flexible timeline");
   } else if (answers.timeline === "6-12 months" || answers.timeline === "Just exploring") {
-    availabilityHints.push("🌆 No rush — schedule when ready");
+    availabilityHints.push("🌆 No rush, schedule when ready");
   }
   if (availabilityHints.length === 0) availabilityHints.push("Contact to confirm availability");
 

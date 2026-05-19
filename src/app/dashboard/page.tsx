@@ -381,7 +381,7 @@ function getScheduleEvents(leads: Lead[]): ScheduleEvent[] {
         id: `call-${lead.id}`,
         type: "call",
         label: `Call ${lead.answers.firstName} ${lead.answers.lastName}`,
-        sub: "Hot lead — reach out today",
+        sub: "Hot lead. Reach out today",
         time: "ASAP",
         leadId: lead.id,
       });
@@ -670,7 +670,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
     insights.push({
       icon: <Target size={14} className="text-emerald-500" />,
       text: `${offerLeads.length} lead${offerLeads.length > 1 ? "s" : ""} at Offer Stage`,
-      sub: "You're close — keep momentum",
+      sub: "You're close. Keep momentum",
       color: "text-[#2c2825]",
       bg: "bg-emerald-50 border-emerald-200",
       action: "View leads →",

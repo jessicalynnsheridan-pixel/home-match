@@ -151,7 +151,7 @@ export default function ResultsPage() {
               {name ? `${name}, you're all set.` : "You're all set."} ✨
             </h1>
             <p className="text-[#e8e4de]/70 text-base leading-relaxed max-w-md mx-auto mb-6">
-              Your profile is now with your realtor. They&apos;ll review your preferences and be in touch — usually within a few hours.
+              Your profile is now with your realtor. They&apos;ll review your preferences and be in touch, usually within a few hours.
             </p>
 
             {/* Realtor confirmation pill */}

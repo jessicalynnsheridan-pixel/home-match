@@ -1095,7 +1095,7 @@ export default function BuyerPortalPage() {
               </div>
             ) : (
               <>
-                <p className="text-[#8c8580] text-sm mb-5">Check off everything below, then alert {realtorFirst} — they'll get an urgent notification the moment you hit send.</p>
+                <p className="text-[#8c8580] text-sm mb-5">Check off everything below, then alert {realtorFirst}. They'll get an urgent notification the moment you hit send.</p>
 
                 {/* Progress bar */}
                 <div className="mb-5">
@@ -1199,7 +1199,7 @@ export default function BuyerPortalPage() {
                   className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-white text-sm font-bold px-6 py-4 rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed btn-press"
                 >
                   <Zap size={16} />
-                  {offerSending ? "Alerting your realtor…" : `Alert ${realtorFirst} — I'm ready to offer`}
+                  {offerSending ? "Alerting your realtor…" : `Alert ${realtorFirst}: I'm ready to offer`}
                 </button>
                 {offerChecked.size === 0 && (
                   <p className="text-center text-xs text-[#b8b4b0] mt-2">Check at least one item to unlock</p>

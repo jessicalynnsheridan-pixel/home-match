@@ -3,10 +3,10 @@
 import { StepProps, NavButtons } from "./shared";
 
 const MUST_HAVES = [
-  "Chef's kitchen", "Home office", "Private backyard", "Garage",
-  "Open floor plan", "Natural light", "Primary on main floor", "Basement suite",
-  "EV charging", "Pool", "Fireplace", "High ceilings",
-  "New build", "Quiet street", "Walking distance to shops", "Good school district",
+  "Home office", "Backyard", "Garage", "Open plan",
+  "Natural light", "High ceilings", "In-suite laundry", "EV charging",
+  "Pool", "Fireplace", "New build", "Quiet street",
+  "Near shops and cafes", "Good schools", "Storage", "Primary on main",
 ];
 
 const DEAL_BREAKERS = [

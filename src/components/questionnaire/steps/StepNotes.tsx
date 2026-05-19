@@ -9,7 +9,7 @@ const PROMPTS = [
   { emoji: "🐾", text: "I have pets and need a yard" },
   { emoji: "🏠", text: "I need to sell my current home first" },
   { emoji: "⏰", text: "I have a specific move-in deadline" },
-  { emoji: "🔨", text: "I'd prefer move-in ready — no renovations" },
+  { emoji: "🔨", text: "I'd prefer move-in ready, no renovations" },
   { emoji: "🔍", text: "I've been searching for a while with no luck" },
   { emoji: "💼", text: "This is partly an investment decision" },
 ];
@@ -61,7 +61,7 @@ export default function StepNotes({ answers, update, onNext, onBack, onSubmit, i
         <textarea
           value={answers.additionalNotes}
           onChange={(e) => update("additionalNotes", e.target.value)}
-          placeholder="Or write anything here — your situation, your timeline, what you've tried, what matters most..."
+          placeholder="Or write anything here: your situation, your timeline, what you've tried, what matters most..."
           rows={4}
           className="w-full bg-white border border-[#e0dbd4] rounded-xl px-4 py-3.5 text-sm text-[#2c2825] placeholder:text-[#b8b4b0] focus:outline-none focus:border-[#b8a88a] transition-all resize-none leading-relaxed"
         />

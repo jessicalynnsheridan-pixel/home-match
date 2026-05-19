@@ -24,7 +24,7 @@ function getMoment(step: number, answers: QuestionnaireAnswers): string {
 
   switch (step) {
     case 0: {
-      if (vibe) return `"${vibe}" — that's a home worth searching for.`;
+      if (vibe) return `"${vibe}". That's a home worth searching for.`;
       return "Your vibe is taking shape.";
     }
     case 1:
@@ -38,7 +38,7 @@ function getMoment(step: number, answers: QuestionnaireAnswers): string {
       return "Getting real about timing.";
     }
     case 4: {
-      if (city) return `${city} — let's find your place there.`;
+      if (city) return `${city}. Let's find your place there.`;
       return "Narrowing in on your world.";
     }
     case 5:
@@ -210,7 +210,7 @@ export default function QuestionnaireForm() {
           Find your perfect home.
         </h1>
         <p className="text-[#8c8580] text-base leading-relaxed max-w-sm mb-3">
-          Answer a few questions so your realtor can match you with homes that actually fit your life — not just your checklist.
+          Answer a few questions so your realtor can match you with homes that actually fit your life, not just your checklist.
         </p>
         <div className="flex items-center justify-center gap-3 mb-10 text-xs text-[#b8a88a] font-medium">
           <span>⏱ 3 minutes</span>

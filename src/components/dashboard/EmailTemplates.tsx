@@ -141,7 +141,7 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
 
   // Notes callback
   const notesLine = answers.additionalNotes
-    ? `I also read your note: "${answers.additionalNotes.slice(0, 120)}${answers.additionalNotes.length > 120 ? "..." : ""}" — that context is genuinely useful.`
+    ? `I also read your note: "${answers.additionalNotes.slice(0, 120)}${answers.additionalNotes.length > 120 ? "..." : ""}". That context was genuinely helpful.`
     : "";
 
   // Finance line
@@ -225,7 +225,7 @@ function buildFollowUpEmail(lead: Lead): { subject: string; body: string } {
   const location = answers.preferredCity || "your target area";
 
   return {
-    subject: `Following up, ${name} — still thinking about you`,
+    subject: `Following up, ${name}. Still thinking about you`,
     body: `Hi ${name},
 
 Just following up on my note from earlier this week. I wanted to make sure it didn't get lost.

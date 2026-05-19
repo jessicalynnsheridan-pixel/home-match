@@ -34,7 +34,7 @@ export default function StepFinancials({ answers, update, onNext, onBack, onSubm
     <div>
       <StepHeader
         title="Where are you in the process?"
-        subtitle="No right or wrong answer here — this just helps your realtor know how to best support you."
+        subtitle="No right or wrong answer here. This just helps your realtor know how to best support you."
       />
 
       <div className="space-y-7">
