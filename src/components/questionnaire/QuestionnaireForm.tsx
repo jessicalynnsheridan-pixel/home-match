@@ -170,7 +170,9 @@ export default function QuestionnaireForm() {
     setSubmitError(null);
 
     try {
-      sessionStorage.setItem("homematch_answers", JSON.stringify(answers));
+      const serialised = JSON.stringify(answers);
+      sessionStorage.setItem("homematch_answers", serialised);
+      localStorage.setItem("homematch_answers", serialised);
     } catch { /* ignore */ }
 
     const realtorId = searchParams.get("r");

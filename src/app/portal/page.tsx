@@ -363,7 +363,7 @@ export default function BuyerPortalPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        const raw = sessionStorage.getItem("homematch_answers");
+        const raw = sessionStorage.getItem("homematch_answers") ?? localStorage.getItem("homematch_answers");
         if (raw) { setAnswers(JSON.parse(raw)); setIsRealUser(true); }
       } catch { /* ignore */ }
       try {
@@ -459,13 +459,13 @@ export default function BuyerPortalPage() {
           {/* Stat row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Readiness", value: `${readiness.overall}/100`, sub: readiness.label, color: readiness.overall >= 70 ? "text-emerald-400" : "text-[#b8a88a]" },
-              { label: "Budget", value: formatCurrency(answers.budgetMin ?? 0), sub: `to ${formatCurrency(answers.budgetMax ?? 0)}`, color: "text-white" },
-              { label: "Timeline", value: answers.timeline || "Not set", sub: "buying horizon", color: "text-white" },
-              { label: "Saved Homes", value: String(savedIds.size), sub: "in Dream Collection", color: savedIds.size > 0 ? "text-rose-400" : "text-white" },
+              { label: "Readiness", value: `${readiness.overall}/100`, sub: readiness.label, accent: readiness.overall >= 70 ? "bg-emerald-500/20 border-emerald-500/30" : "bg-amber-500/20 border-amber-500/30", color: readiness.overall >= 70 ? "text-emerald-300" : "text-amber-300" },
+              { label: "Budget", value: formatCurrency(answers.budgetMin ?? 0), sub: `to ${formatCurrency(answers.budgetMax ?? 0)}`, accent: "bg-sky-500/20 border-sky-500/30", color: "text-sky-300" },
+              { label: "Timeline", value: answers.timeline || "Not set", sub: "buying horizon", accent: "bg-violet-500/20 border-violet-500/30", color: "text-violet-300" },
+              { label: "Saved Homes", value: String(savedIds.size), sub: "in Dream Collection", accent: savedIds.size > 0 ? "bg-rose-500/20 border-rose-500/30" : "bg-white/10 border-white/10", color: savedIds.size > 0 ? "text-rose-300" : "text-white/60" },
             ].map((s) => (
-              <div key={s.label} className="bg-white/10 rounded-2xl px-4 py-3.5">
-                <p className="text-white/40 text-[10px] uppercase tracking-wider mb-1">{s.label}</p>
+              <div key={s.label} className={`border rounded-2xl px-4 py-3.5 ${s.accent}`}>
+                <p className="text-white/50 text-[10px] uppercase tracking-wider mb-1">{s.label}</p>
                 <p className={`font-bold text-base leading-tight ${s.color}`}>{s.value}</p>
                 <p className="text-white/40 text-[10px] mt-0.5">{s.sub}</p>
               </div>
@@ -484,7 +484,7 @@ export default function BuyerPortalPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all shrink-0 ${
                   activeTab === tab.id
-                    ? "bg-[#2c2825] text-white"
+                    ? "bg-[#2c2825] text-[#b8a88a] shadow-sm"
                     : "text-[#8c8580] hover:text-[#2c2825] hover:bg-[#faf9f7]"
                 }`}
               >
@@ -569,9 +569,9 @@ export default function BuyerPortalPage() {
                   <div key={dim.label}>
                     <div className="flex justify-between text-xs mb-1.5">
                       <span className="text-[#2c2825] font-medium">{dim.label}</span>
-                      <span className="text-[#8c8580]">{dim.detail}</span>
+                      <span className={`font-semibold ${dim.score >= 75 ? "text-emerald-600" : dim.score >= 50 ? "text-[#b8a88a]" : "text-amber-500"}`}>{dim.detail}</span>
                     </div>
-                    <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden">
+                    <div className="h-2 bg-[#f0ece6] rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-700 ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
                         style={{ width: `${dim.score}%` }}
@@ -605,17 +605,17 @@ export default function BuyerPortalPage() {
             {/* Quick action row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "Browse Homes", icon: <Heart size={16} />, tab: "homes" as const, badge: newMatchCount > 0 ? `${newMatchCount} new` : null },
-                { label: "Run Calculator", icon: <Calculator size={16} />, tab: "calculator" as const, badge: null },
-                { label: "Book Showing", icon: <CalendarDays size={16} />, tab: "showings" as const, badge: null },
-                { label: "Buying Guide", icon: <BookOpen size={16} />, tab: "journey" as const, badge: null },
+                { label: "Browse Homes", icon: <Heart size={16} />, tab: "homes" as const, badge: newMatchCount > 0 ? `${newMatchCount} new` : null, iconBg: "bg-rose-50 text-rose-500", border: "hover:border-rose-200" },
+                { label: "Run Calculator", icon: <Calculator size={16} />, tab: "calculator" as const, badge: null, iconBg: "bg-sky-50 text-sky-500", border: "hover:border-sky-200" },
+                { label: "Book Showing", icon: <CalendarDays size={16} />, tab: "showings" as const, badge: null, iconBg: "bg-violet-50 text-violet-500", border: "hover:border-violet-200" },
+                { label: "Buying Guide", icon: <BookOpen size={16} />, tab: "journey" as const, badge: null, iconBg: "bg-emerald-50 text-emerald-600", border: "hover:border-emerald-200" },
               ].map((a) => (
                 <button
                   key={a.label}
                   onClick={() => setActiveTab(a.tab)}
-                  className="relative bg-white border border-[#e8e4de] rounded-2xl px-4 py-5 flex flex-col items-center gap-2 hover:border-[#b8a88a] transition-all btn-press text-center"
+                  className={`relative bg-white border border-[#e8e4de] rounded-2xl px-4 py-5 flex flex-col items-center gap-2 transition-all btn-press text-center ${a.border}`}
                 >
-                  <div className="text-[#b8a88a]">{a.icon}</div>
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${a.iconBg}`}>{a.icon}</div>
                   <span className="text-xs font-medium text-[#2c2825]">{a.label}</span>
                   {a.badge && (
                     <span className="absolute top-2 right-2 bg-rose-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5">{a.badge}</span>
@@ -769,12 +769,12 @@ export default function BuyerPortalPage() {
                   </select>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-amber-50 to-[#fdf8f0] border border-amber-200 rounded-2xl p-6 text-center mb-4">
-                <p className="text-[#8c8580] text-xs font-semibold uppercase tracking-widest mb-2">Estimated Monthly Payment</p>
-                <p className="text-4xl sm:text-5xl font-bold text-[#2c2825]">
+              <div className="bg-gradient-to-br from-sky-500 to-violet-600 rounded-2xl p-6 text-center mb-4 shadow-lg">
+                <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-2">Estimated Monthly Payment</p>
+                <p className="text-4xl sm:text-5xl font-bold text-white">
                   {formatCurrency(Math.round(calcMonthlyPayment(calcPrice, calc.downPct / 100, calc.rate / 100, calc.years)))}
                 </p>
-                <p className="text-[#8c8580] text-xs mt-2">Principal & Interest · {calc.downPct}% down · {calc.rate}% rate · {calc.years}yr</p>
+                <p className="text-white/60 text-xs mt-2">Principal & Interest · {calc.downPct}% down · {calc.rate}% rate · {calc.years}yr</p>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[
