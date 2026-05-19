@@ -34,7 +34,7 @@ export function NavButtons({
       {isLast ? (
         <>
           {submitError && (
-            <p className="text-sm text-rose-600 text-center mb-4 bg-rose-50 border border-rose-100 rounded-xl px-4 py-3">
+            <p className="text-sm text-[#8b4a38] text-center mb-4 bg-[#f2e9e5] border border-[#dcc8be] rounded-xl px-4 py-3">
               {submitError}
             </p>
           )}
