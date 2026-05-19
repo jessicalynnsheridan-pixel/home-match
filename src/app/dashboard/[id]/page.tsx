@@ -112,7 +112,13 @@ export default function LeadDetailPage() {
           realtorNotes: getLeadNotes(row.id as string),
           reminders: getLeadReminders(row.id as string),
           savedHomeIds: [],
-          answers: row.answers as Lead["answers"],
+          answers: {
+            firstName: "", lastName: "", email: "", phone: "",
+            mustHaves: [], dealBreakers: [], lifestylePriorities: [],
+            mortgageChecklist: [], homeFeeling: [], neighbourhoodVibe: [],
+            proximityPriorities: [], currentFrustration: [],
+            ...(row.answers as Partial<Lead["answers"]> ?? {}),
+          } as Lead["answers"],
         });
       }
     });
@@ -227,7 +233,7 @@ export default function LeadDetailPage() {
           <div className="flex items-center gap-3">
             {/* Avatar */}
             <div className="w-10 h-10 rounded-full bg-[#2c2825] text-white flex items-center justify-center text-sm font-bold shrink-0">
-              {answers.firstName.charAt(0)}{answers.lastName.charAt(0)}
+              {(answers.firstName || "?").charAt(0)}{(answers.lastName || "").charAt(0)}
             </div>
 
             {/* Name + meta */}

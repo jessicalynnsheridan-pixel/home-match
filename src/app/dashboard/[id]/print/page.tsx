@@ -167,7 +167,7 @@ export default function PrintProfilePage() {
               <div>
                 <SectionTitle>Must-Haves</SectionTitle>
                 <div className="flex flex-wrap gap-2">
-                  {answers.mustHaves.map((i) => (
+                  {(answers.mustHaves ?? []).map((i) => (
                     <span key={i} className="bg-[#2c2825] text-white text-xs px-3 py-1.5 rounded-full">{i}</span>
                   ))}
                 </div>
@@ -175,7 +175,7 @@ export default function PrintProfilePage() {
               <div>
                 <SectionTitle>Deal Breakers</SectionTitle>
                 <div className="flex flex-wrap gap-2">
-                  {answers.dealBreakers.map((i) => (
+                  {(answers.dealBreakers ?? []).map((i) => (
                     <span key={i} className="bg-rose-50 text-rose-700 border border-rose-200 text-xs px-3 py-1.5 rounded-full">{i}</span>
                   ))}
                 </div>
@@ -183,11 +183,11 @@ export default function PrintProfilePage() {
             </div>
 
             {/* Lifestyle priorities */}
-            {answers.lifestylePriorities.length > 0 && (
+            {(answers.lifestylePriorities ?? []).length > 0 && (
               <div>
                 <SectionTitle>Lifestyle Priorities</SectionTitle>
                 <div className="flex flex-wrap gap-2">
-                  {answers.lifestylePriorities.map((i) => (
+                  {(answers.lifestylePriorities ?? []).map((i) => (
                     <span key={i} className="bg-[#f5f3f0] border border-[#e8e4de] text-[#2c2825] text-xs px-3 py-1.5 rounded-full">{i}</span>
                   ))}
                 </div>
@@ -198,7 +198,7 @@ export default function PrintProfilePage() {
             <div>
               <SectionTitle>Mortgage Readiness</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {answers.mortgageChecklist.map((item) => (
+                {(answers.mortgageChecklist ?? []).map((item) => (
                   <div
                     key={item.id}
                     className={`text-xs px-3 py-2 rounded-xl border text-center ${
