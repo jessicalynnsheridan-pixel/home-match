@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Settings, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import { Menu, X, Settings, Sparkles, ClipboardList, HelpCircle, Flame, List, Building2, UserPlus, Mail, Plug, LayoutDashboard, LogOut, ChevronDown, Home } from "lucide-react";
 import { useBranding } from "@/context/BrandingContext";
 import { createClient } from "@/lib/supabase/client";
 
@@ -83,11 +83,18 @@ export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<"buyers" | "realtors" | "account" | null>(null);
   const [realtorUser, setRealtorUser] = useState<{ name: string; email: string; initials: string } | null>(null);
+  const [hasBuyerProfile, setHasBuyerProfile] = useState(false);
 
   const isDark = DARK_PAGES.some((p) => pathname.startsWith(p));
 
   const buyerPages = ["/portal", "/listings", "/questionnaire", "/results"];
   const showRealtorPill = buyerPages.some((p) => pathname.startsWith(p));
+
+  useEffect(() => {
+    try {
+      setHasBuyerProfile(!!localStorage.getItem("homematch_answers"));
+    } catch { /* ignore */ }
+  }, [pathname]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -158,6 +165,27 @@ export default function Navigation() {
               <div className={`absolute top-full left-0 mt-1 border rounded-2xl shadow-xl p-2 w-72 animate-fade-in z-50 ${
                 isDark ? "bg-[#1a1612] border-white/10" : "bg-white border-[#e8e4de]"
               }`}>
+                {hasBuyerProfile && (
+                  <>
+                    <Link
+                      href="/portal"
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                        isActive("/portal")
+                          ? isDark ? "bg-white/8" : "bg-[#f5f3f0]"
+                          : isDark ? "hover:bg-white/6" : "hover:bg-[#faf9f7]"
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#eef6f0" }}>
+                        <Home size={15} style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#2a7a4b" }} />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium leading-none mb-0.5 ${isDark ? "text-white/80" : "text-[#2c2825]"}`}>My Home Hub</p>
+                        <p className={`text-xs ${isDark ? "text-white/35" : "text-[#8c8580]"}`}>Your matches, tools & journey</p>
+                      </div>
+                    </Link>
+                    <div className={`mx-2 my-1 h-px ${isDark ? "bg-white/8" : "bg-[#e8e4de]"}`} />
+                  </>
+                )}
                 {buyerFeatures.map((f) => {
                   const Icon = f.icon;
                   const active = isActive(f.href);
@@ -363,6 +391,25 @@ export default function Navigation() {
           <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1 ${isDark ? "text-[#c9a870]/70" : "text-[#b8a88a]"}`}>
             For Buyers
           </p>
+          {hasBuyerProfile && (
+            <Link
+              href="/portal"
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border mb-2 transition-all ${
+                isActive("/portal")
+                  ? isDark ? "bg-white/8 border-white/15" : "bg-white border-[#b8a88a]/40"
+                  : isDark ? "bg-white/4 border-white/8" : "bg-emerald-50 border-emerald-200"
+              }`}
+            >
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#d1fae5" }}>
+                <Home size={14} style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#059669" }} />
+              </div>
+              <div>
+                <p className={`text-xs font-semibold ${isDark ? "text-white/90" : "text-[#2c2825]"}`}>My Home Hub</p>
+                <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/30" : "text-[#8c8580]"}`}>Your matches, tools & journey</p>
+              </div>
+            </Link>
+          )}
           <div className="grid grid-cols-2 gap-2 mb-3">
             {buyerFeatures.map((f) => {
               const Icon = f.icon;
