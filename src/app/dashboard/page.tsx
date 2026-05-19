@@ -1333,35 +1333,48 @@ export default function DashboardPage() {
           <div className="space-y-4">
 
             {/* Buyer link card */}
-            <div className="bg-gradient-to-br from-[#f5f0e8] to-[#ede6d8] border border-[#ddd6c8] rounded-2xl p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-1">
-                <Link2 size={13} className="text-[#b8a88a]" />
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
-              </div>
-              <p className="text-[#6b6560] text-xs mb-4 leading-relaxed">
-                Share this link. Buyers fill out the questionnaire and land directly in your dashboard.
-              </p>
-              {shareableLink ? (
-                <>
-                  <div className="bg-white/80 border border-[#ddd6c8] rounded-xl px-3 py-2.5 mb-3">
-                    <p className="text-[10px] text-[#8c8580] truncate">{shareableLink}</p>
-                  </div>
-                  <button
-                    onClick={copyLink}
-                    className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-xl transition-all ${
-                      copied
-                        ? "bg-emerald-500 text-white"
-                        : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
-                    }`}
-                  >
-                    {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
-                  </button>
-                </>
-              ) : (
-                <div className="bg-white/60 rounded-xl px-3 py-2.5">
-                  <p className="text-[10px] text-[#8c8580]">Sign in to get your link</p>
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-[#2c2825]/10">
+              {/* Dark header */}
+              <div className="bg-[#2c2825] px-5 pt-5 pb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Link2 size={13} className="text-[#b8a88a]" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
                 </div>
-              )}
+                <p className="text-white text-sm font-semibold leading-snug mb-0.5">Turn your link into leads</p>
+                <p className="text-[#b8a88a] text-[11px] leading-relaxed">Share it anywhere. Buyers complete a personalised quiz and land straight in your pipeline.</p>
+              </div>
+
+              {/* Feature pills */}
+              <div className="bg-[#3a3430] px-5 py-3 flex flex-wrap gap-2">
+                {["📋 Smart quiz", "📬 Auto-emails", "🔥 Lead scoring", "📊 Pipeline view"].map(f => (
+                  <span key={f} className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-[#e8e0d4]">{f}</span>
+                ))}
+              </div>
+
+              {/* Link + CTA */}
+              <div className="bg-white px-5 py-4">
+                {shareableLink ? (
+                  <>
+                    <div className="bg-[#f5f3f0] border border-[#e8e4de] rounded-xl px-3 py-2.5 mb-3">
+                      <p className="text-[10px] text-[#8c8580] truncate">{shareableLink}</p>
+                    </div>
+                    <button
+                      onClick={copyLink}
+                      className={`w-full flex items-center justify-center gap-2 text-sm font-bold py-3 rounded-xl transition-all ${
+                        copied
+                          ? "bg-emerald-500 text-white"
+                          : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
+                      }`}
+                    >
+                      {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
+                    </button>
+                  </>
+                ) : (
+                  <div className="bg-[#f5f3f0] rounded-xl px-3 py-2.5">
+                    <p className="text-[10px] text-[#8c8580]">Sign in to get your link</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Automations */}
