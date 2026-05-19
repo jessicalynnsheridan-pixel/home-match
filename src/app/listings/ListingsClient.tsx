@@ -56,7 +56,7 @@ export default function ListingsClient({ initialListings }: { initialListings: L
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        const raw = sessionStorage.getItem("homematch_answers");
+        const raw = sessionStorage.getItem("homematch_answers") ?? localStorage.getItem("homematch_answers");
         if (raw) {
           setBuyerAnswers(JSON.parse(raw));
           setSortByMatch(true); // auto-sort by match when profile exists

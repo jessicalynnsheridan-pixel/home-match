@@ -251,11 +251,11 @@ export default function ResultsPage() {
                 />
                 <SummaryRow label="Pre-approval" value={answers.preApprovalStatus || "-"} />
 
-                {answers.mustHaves.length > 0 && (
+                {(answers.mustHaves ?? []).length > 0 && (
                   <div className="pt-3 border-t border-[#f0ece6]">
                     <p className="text-[#8c8580] text-xs uppercase tracking-wider mb-2">Must-haves</p>
                     <div className="flex flex-wrap gap-2">
-                      {answers.mustHaves.map((item) => (
+                      {(answers.mustHaves ?? []).map((item) => (
                         <span key={item} className="bg-[#f5f3f0] border border-[#e8e4de] text-[#2c2825] text-xs px-3 py-1 rounded-full">
                           {item}
                         </span>

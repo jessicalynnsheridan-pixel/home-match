@@ -722,9 +722,9 @@ export default function BuyerPortalPage() {
                 <p className="text-xs text-[#8c8580] mb-3 font-medium uppercase tracking-wider">What your budget gets you in {answers.preferredCity || "your area"}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                   {[
-                    { range: formatCurrency(answers.budgetMin), label: "Entry point: townhomes or smaller detached with good bones" },
+                    { range: formatCurrency(answers.budgetMin ?? 0), label: "Entry point: townhomes or smaller detached with good bones" },
                     { range: formatCurrency(Math.round(midPrice)), label: "Mid-range: detached with space and the right neighbourhood" },
-                    { range: formatCurrency(answers.budgetMax), label: "Top of range: larger lots, elevated finishes, less compromise" },
+                    { range: formatCurrency(answers.budgetMax ?? 0), label: "Top of range: larger lots, elevated finishes, less compromise" },
                   ].map((b) => (
                     <div key={b.range} className="flex items-start gap-2">
                       <span className="text-[#b8a88a] font-semibold shrink-0">{b.range}</span>
@@ -850,7 +850,7 @@ export default function BuyerPortalPage() {
                     e.preventDefault();
                     setShowingForm((prev) => ({ ...prev, submitting: true }));
                     let realtorId: string | null = null;
-                    try { const raw = sessionStorage.getItem("homematch_answers"); if (raw) realtorId = JSON.parse(raw).realtorId ?? null; } catch { /* ignore */ }
+                    try { const raw = sessionStorage.getItem("homematch_answers") ?? localStorage.getItem("homematch_answers"); if (raw) realtorId = JSON.parse(raw).realtorId ?? null; } catch { /* ignore */ }
                     if (!realtorId) realtorId = new URLSearchParams(window.location.search).get("r");
                     try {
                       const res = await fetch("/api/showings/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ realtorId, buyerName: answers.firstName || "", buyerEmail: answers.email || "", preferredDates: showingForm.dates, preferredTime: showingForm.time, message: showingForm.message }) });
@@ -944,7 +944,7 @@ export default function BuyerPortalPage() {
                     <button disabled={offerChecked.size === 0 || offerSending} onClick={async () => {
                       setOfferSending(true);
                       let realtorId: string | null = null;
-                      try { const raw = sessionStorage.getItem("homematch_answers"); if (raw) realtorId = JSON.parse(raw).realtorId ?? null; } catch { /* ignore */ }
+                      try { const raw = sessionStorage.getItem("homematch_answers") ?? localStorage.getItem("homematch_answers"); if (raw) realtorId = JSON.parse(raw).realtorId ?? null; } catch { /* ignore */ }
                       if (!realtorId) realtorId = new URLSearchParams(window.location.search).get("r");
                       try { await fetch("/api/offer-interest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ realtorId, buyerName: answers.firstName || "Your buyer", buyerEmail: answers.email || "", propertyNote: offerNote, preApprovalStatus: answers.preApprovalStatus, checklistCompleted: offerChecked.size }) }); } catch { /* ignore */ }
                       setOfferSending(false); setOfferSent(true);

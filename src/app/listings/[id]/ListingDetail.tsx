@@ -176,7 +176,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
     // setTimeout so setState fires in a callback (satisfies react-hooks/set-state-in-effect)
     const timer = setTimeout(() => {
       try {
-        const raw = sessionStorage.getItem("homematch_answers");
+        const raw = sessionStorage.getItem("homematch_answers") ?? localStorage.getItem("homematch_answers");
         if (raw) setBuyerAnswers(JSON.parse(raw));
       } catch { /* ignore */ }
     }, 0);
