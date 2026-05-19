@@ -148,12 +148,17 @@ export default function ResultsPage() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-semibold text-white mb-3 leading-tight">
-              {name ? `${name}, your taste profile` : "Your taste profile"}<br />
-              is live. ✨
+              {name ? `${name}, you're all set.` : "You're all set."} ✨
             </h1>
-            <p className="text-[#e8e4de]/70 text-base leading-relaxed max-w-md mx-auto">
-              We&apos;ve built your personal home fingerprint. Every listing you see from here on is matched to you, your lifestyle, your vibe, your priorities.
+            <p className="text-[#e8e4de]/70 text-base leading-relaxed max-w-md mx-auto mb-6">
+              Your profile is now with your realtor. They&apos;ll review your preferences and be in touch — usually within a few hours.
             </p>
+
+            {/* Realtor confirmation pill */}
+            <div className="inline-flex items-center gap-2 bg-white/10 text-[#e8e4de] text-xs px-4 py-2.5 rounded-xl border border-white/15">
+              <span className="text-base">📬</span>
+              <span>Profile sent · Your realtor has everything they need</span>
+            </div>
 
             {/* Score reveal */}
             {readiness && (
@@ -269,15 +274,15 @@ export default function ResultsPage() {
             celebrated ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          {/* Primary CTA, see your matches */}
+          {/* Primary CTA */}
           <Link
-            href="/listings"
+            href="/portal"
             className="flex items-center justify-between gap-4 bg-[#b8a88a] hover:bg-[#c9b99b] text-[#2c2825] rounded-2xl p-5 transition-all btn-press group shadow-lg"
           >
             <div>
-              <p className="font-semibold text-sm mb-0.5">See your matched homes</p>
+              <p className="font-semibold text-sm mb-0.5">Explore your Home Hub</p>
               <p className="text-[#2c2825]/70 text-xs">
-                Every listing is now scored against your taste profile
+                Affordability tools, neighbourhood scores, and your matches
               </p>
             </div>
             <ArrowRight size={18} className="shrink-0 group-hover:translate-x-1 transition-transform" />

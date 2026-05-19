@@ -15,18 +15,42 @@ import StepFinancials from "./steps/StepFinancials";
 import StepNotes from "./steps/StepNotes";
 import { ArrowLeft } from "lucide-react";
 
-// ─── Motivational copy shown between steps ─────────────────────────────────────
-const STEP_MOMENTS = [
-  "Your vibe is taking shape.",
-  "Nice to meet you.",
-  "Honest instincts. Better matches.",
-  "Getting real about timing.",
-  "Narrowing in on your world.",
-  "What home looks like for you.",
-  "You know exactly what matters.",
-  "Where you stand financially.",
-  "Almost there.",
-];
+// ─── Personalised motivational copy shown between steps ────────────────────────
+function getMoment(step: number, answers: QuestionnaireAnswers): string {
+  const first = answers.firstName ? `, ${answers.firstName}` : "";
+  const vibe = answers.homeFeeling?.[0];
+  const city = answers.preferredCity;
+  const timeline = answers.timeline;
+
+  switch (step) {
+    case 0: {
+      if (vibe) return `"${vibe}" — that's a home worth searching for.`;
+      return "Your vibe is taking shape.";
+    }
+    case 1:
+      return answers.firstName ? `Nice to meet you, ${answers.firstName}.` : "Nice to meet you.";
+    case 2:
+      return "Honest instincts. Better matches.";
+    case 3: {
+      if (timeline === "ASAP") return `Let's move fast${first}.`;
+      if (timeline === "1-3 months") return "The right home is closer than you think.";
+      if (timeline === "Just exploring") return "No pressure. Just possibilities.";
+      return "Getting real about timing.";
+    }
+    case 4: {
+      if (city) return `${city} — let's find your place there.`;
+      return "Narrowing in on your world.";
+    }
+    case 5:
+      return "Getting clearer by the minute.";
+    case 6:
+      return "You know exactly what matters.";
+    case 7:
+      return `Almost done${first}.`;
+    default:
+      return "Your profile is coming together.";
+  }
+}
 
 const INITIAL: QuestionnaireAnswers = {
   homeFeeling: [],
@@ -127,7 +151,7 @@ export default function QuestionnaireForm() {
 
   function next() {
     if (step < totalSteps - 1) {
-      const text = STEP_MOMENTS[step] || "Your profile is coming together.";
+      const text = getMoment(step, answers);
       setMomentText(text);
       setShowMoment(true);
       momentTimer.current = setTimeout(() => {
