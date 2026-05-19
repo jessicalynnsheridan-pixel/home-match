@@ -9,7 +9,6 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import AutomationsWidget from "@/components/dashboard/AutomationsWidget";
 
-const SCORE_FILTERS: (LeadScore | "All")[] = ["All", "Hot", "Warm", "Browsing"];
 const STATUS_FILTERS: (LeadStatus | "All")[] = [
   "All", "New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed",
 ];
@@ -628,9 +627,8 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
 }
 
 // ─── Smart Insights Bar ───────────────────────────────────────────────────────
-function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
+function SmartInsightsBar({ leads, onStatusFilter, onSearch }: {
   leads: Lead[];
-  onScoreFilter: (f: LeadScore | "All") => void;
   onStatusFilter: (f: LeadStatus | "All") => void;
   onSearch: (q: string) => void;
 }) {
@@ -662,7 +660,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
       color: "text-[#2c2825]",
       bg: "bg-white border-[#e8e4de]",
       action: "Show them →",
-      onClick: () => { onScoreFilter(coldLeads[0].score as LeadScore); onStatusFilter("All"); },
+      onClick: () => { onStatusFilter("All"); },
     });
   }
 
@@ -674,7 +672,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
       color: "text-[#2c2825]",
       bg: "bg-emerald-50 border-emerald-200",
       action: "View leads →",
-      onClick: () => { onStatusFilter("Offer Stage"); onScoreFilter("All"); },
+      onClick: () => { onStatusFilter("Offer Stage"); },
     });
   }
 
@@ -686,7 +684,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
       color: "text-[#2c2825]",
       bg: "bg-white border-[#e8e4de]",
       action: "Show hot leads →",
-      onClick: () => { onScoreFilter("Hot"); onStatusFilter("All"); },
+      onClick: () => { onStatusFilter("All"); },
     });
   }
 
@@ -701,7 +699,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
       color: "text-[#2c2825]",
       bg: "bg-white border-[#e8e4de]",
       action: "Find them →",
-      onClick: () => { onSearch(urgentTimeline.answers.firstName ?? ""); onScoreFilter("All"); onStatusFilter("All"); },
+      onClick: () => { onSearch(urgentTimeline.answers.firstName ?? ""); onStatusFilter("All"); },
     });
   }
 
@@ -713,7 +711,7 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
       color: "text-[#2c2825]",
       bg: "bg-emerald-50 border-emerald-200",
       action: "View all →",
-      onClick: () => { onScoreFilter("All"); onStatusFilter("All"); },
+      onClick: () => { onStatusFilter("All"); },
     });
   }
 
@@ -915,10 +913,9 @@ function RevenueWidget({ leads }: { leads: Lead[] }) {
 }
 
 export default function DashboardPage() {
-  const [scoreFilter, setScoreFilter] = useState<LeadScore | "All">("All");
+
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "All">("All");
   const [search, setSearch] = useState("");
-  const [priorityOnly, setPriorityOnly] = useState(false);
   const [realLeads, setRealLeads] = useState<Lead[]>([]);
   const [realtorName, setRealtorName] = useState<string>("");
   const [realtorId, setRealtorId] = useState<string>("");
@@ -959,9 +956,7 @@ export default function DashboardPage() {
   }
 
   function filterLead(lead: Lead): boolean {
-    if (scoreFilter !== "All" && lead.score !== scoreFilter) return false;
     if (statusFilter !== "All" && lead.status !== statusFilter) return false;
-    if (priorityOnly && !lead.isPriority) return false;
     if (search) {
       const q = search.toLowerCase();
       const name = `${lead.answers.firstName} ${lead.answers.lastName}`.toLowerCase();
@@ -1196,7 +1191,6 @@ export default function DashboardPage() {
             {!loading && allLeads.length > 0 && (
               <SmartInsightsBar
                 leads={allLeads}
-                onScoreFilter={setScoreFilter}
                 onStatusFilter={setStatusFilter}
                 onSearch={setSearch}
               />
@@ -1221,15 +1215,8 @@ export default function DashboardPage() {
                   className="w-full border border-[#e8e4de] rounded-xl px-4 py-2.5 text-sm text-[#2c2825] placeholder:text-[#c4bfb9] focus:outline-none focus:border-[#2c2825] bg-[#faf9f7] mb-3"
                 />
 
-                {/* Mobile: two compact selects */}
+                {/* Mobile: status select only */}
                 <div className="flex gap-2 mb-3 sm:hidden">
-                  <select
-                    value={scoreFilter}
-                    onChange={(e) => setScoreFilter(e.target.value as LeadScore | "All")}
-                    className="flex-1 border border-[#e8e4de] rounded-xl px-3 py-2 text-xs text-[#2c2825] bg-[#faf9f7] focus:outline-none focus:border-[#2c2825]"
-                  >
-                    {SCORE_FILTERS.map((f) => <option key={f} value={f}>{f === "All" ? "All Scores" : f}</option>)}
-                  </select>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as LeadStatus | "All")}
@@ -1237,32 +1224,14 @@ export default function DashboardPage() {
                   >
                     {STATUS_FILTERS.map((f) => <option key={f} value={f}>{f === "All" ? "All Stages" : f}</option>)}
                   </select>
-                  <button
-                    onClick={() => setPriorityOnly((v) => !v)}
-                    className={`px-3 py-2 rounded-xl border text-xs transition-all flex items-center gap-1 shrink-0 ${priorityOnly ? "bg-[#b8a88a]/20 text-[#8c6a3e] border-[#b8a88a]" : "bg-white text-[#8c8580] border-[#e8e4de]"}`}
-                  >
-                    <Star size={10} />
-                  </button>
                 </div>
 
-                {/* Desktop: chip buttons */}
+                {/* Desktop: status chips only */}
                 <div className="hidden sm:block">
-                  <div className="flex gap-1.5 flex-wrap mb-3">
-                    {SCORE_FILTERS.map((f) => (
-                      <button key={f} onClick={() => setScoreFilter(f)}
-                        className={`text-xs px-3 py-2 rounded-xl border transition-all ${scoreFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"}`}>
-                        {f}
-                      </button>
-                    ))}
-                    <button onClick={() => setPriorityOnly((v) => !v)}
-                      className={`text-xs px-3 py-2 rounded-xl border transition-all flex items-center gap-1 ${priorityOnly ? "bg-[#b8a88a]/20 text-[#8c6a3e] border-[#b8a88a]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825]"}`}>
-                      <Star size={10} /> Priority
-                    </button>
-                  </div>
                   <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
                     {STATUS_FILTERS.map((f) => (
                       <button key={f} onClick={() => setStatusFilter(f)}
-                        className={`text-xs px-3 py-1.5 rounded-lg border whitespace-nowrap transition-all shrink-0 ${statusFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:text-[#2c2825]"}`}>
+                        className={`text-xs px-3 py-2 rounded-xl border whitespace-nowrap transition-all shrink-0 ${statusFilter === f ? "bg-[#2c2825] text-white border-[#2c2825]" : "bg-white text-[#8c8580] border-[#e8e4de] hover:border-[#2c2825] hover:text-[#2c2825]"}`}>
                         {f}
                       </button>
                     ))}
