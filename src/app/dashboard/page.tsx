@@ -727,9 +727,9 @@ function SmartInsightsBar({ leads, onScoreFilter, onStatusFilter, onSearch }: {
         >
           <div className="mt-0.5 shrink-0">{ins.icon}</div>
           <div className="flex-1 min-w-0">
-            <p className={`text-xs font-semibold ${ins.color}`}>{ins.text}</p>
-            <p className="text-[10px] text-[#8c8580] mt-0.5 leading-relaxed">{ins.sub}</p>
-            <p className="text-[11px] font-bold mt-2 text-[#b8a88a]">{ins.action}</p>
+            <p className={`text-xs font-semibold leading-snug ${ins.color}`}>{ins.text}</p>
+            <p className="text-xs text-[#8c8580] mt-1 leading-relaxed">{ins.sub}</p>
+            <p className="text-xs font-bold mt-2 text-[#b8a88a]">{ins.action}</p>
           </div>
         </button>
       ))}
@@ -1069,9 +1069,9 @@ export default function DashboardPage() {
                 const fmt = (n: number) => n >= 1000000 ? `$${(n/1000000).toFixed(1)}M` : n >= 1000 ? `$${Math.round(n/1000)}K` : `$${Math.round(n)}`;
                 return commission > 0 ? (
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#b8a88a] mb-0.5">Est. Commission</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-[#b8a88a] mb-0.5">Est. Commission</p>
                     <p className="text-3xl sm:text-4xl font-bold text-[#2c2825] leading-none">{fmt(commission)}</p>
-                    <p className="text-[10px] text-[#b8b4b0] mt-1">{active.length} active lead{active.length !== 1 ? "s" : ""} · 2.5%</p>
+                    <p className="text-xs text-[#b8b4b0] mt-1">{active.length} active lead{active.length !== 1 ? "s" : ""} · 2.5%</p>
                     <button
                       onClick={() => exportLeads(filtered)}
                       className="mt-2 flex items-center gap-1.5 border border-[#d8d2c8] text-[#8c8580] text-xs px-3 py-1.5 rounded-full hover:border-[#2c2825] hover:text-[#2c2825] transition-colors bg-white/60 ml-auto"
@@ -1103,7 +1103,7 @@ export default function DashboardPage() {
                 {stat.icon}
                 <div>
                   <p className="text-base sm:text-xl font-bold leading-none text-[#2c2825]">{stat.value}</p>
-                  <p className="text-[10px] mt-0.5 text-[#8c8580]">{stat.label}</p>
+                  <p className="text-xs mt-0.5 text-[#8c8580]">{stat.label}</p>
                 </div>
               </div>
             ))}
@@ -1338,16 +1338,16 @@ export default function DashboardPage() {
               <div className="bg-[#2c2825] px-5 pt-5 pb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Link2 size={13} className="text-[#b8a88a]" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-[#b8a88a]">Your Buyer Link</p>
                 </div>
-                <p className="text-white text-sm font-semibold leading-snug mb-0.5">Turn your link into leads</p>
-                <p className="text-[#b8a88a] text-[11px] leading-relaxed">Share it anywhere. Buyers complete a personalised quiz and land straight in your pipeline.</p>
+                <p className="text-white text-base font-semibold leading-snug mb-1">Turn your link into leads</p>
+                <p className="text-[#b8a88a] text-xs leading-relaxed">Share it anywhere. Buyers complete a personalised quiz and land straight in your pipeline.</p>
               </div>
 
               {/* Feature pills */}
               <div className="bg-[#3a3430] px-5 py-3 flex flex-wrap gap-2">
                 {["📋 Smart quiz", "📬 Auto-emails", "🔥 Lead scoring", "📊 Pipeline view"].map(f => (
-                  <span key={f} className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-[#e8e0d4]">{f}</span>
+                  <span key={f} className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 text-[#e8e0d4]">{f}</span>
                 ))}
               </div>
 
