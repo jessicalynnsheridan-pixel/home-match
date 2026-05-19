@@ -437,37 +437,37 @@ export default function BuyerPortalPage() {
     <div className="min-h-screen bg-[#faf9f7]">
 
       {/* ── Hero header ──────────────────────────────────────────────────────── */}
-      <div className="bg-[#2c2825] px-6 pt-8 pb-6">
+      <div className="bg-white border-b border-[#e8e4de] px-6 pt-8 pb-6">
         <div className="max-w-5xl mx-auto">
           {/* Greeting + realtor online indicator */}
           <div className="flex items-start justify-between mb-6">
             <div>
               <p className="text-[#b8a88a] text-xs font-semibold tracking-widest uppercase mb-1">Your Home Hub</p>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-[#2c2825]">
                 {getGreeting()}{firstName ? `, ${firstName}` : ""}.
               </h1>
-              <p className="text-white/50 text-sm mt-1">
+              <p className="text-[#8c8580] text-sm mt-1">
                 {isRealUser ? "Built around you. Your matches, your pace." : "Your personalised home search hub."}
               </p>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5 shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-white/70 text-xs font-medium">{realtorFirst} is active</span>
+            <div className="flex items-center gap-2 bg-[#f5f3f0] border border-[#e8e4de] rounded-full px-3 py-1.5 shrink-0">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[#5c5550] text-xs font-medium">{realtorFirst} is active</span>
             </div>
           </div>
 
           {/* Stat row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Readiness", value: `${readiness.overall}/100`, sub: readiness.label, accent: readiness.overall >= 70 ? "bg-emerald-500/20 border-emerald-500/30" : "bg-amber-500/20 border-amber-500/30", color: readiness.overall >= 70 ? "text-emerald-300" : "text-amber-300" },
-              { label: "Budget", value: formatCurrency(answers.budgetMin ?? 0), sub: `to ${formatCurrency(answers.budgetMax ?? 0)}`, accent: "bg-sky-500/20 border-sky-500/30", color: "text-sky-300" },
-              { label: "Timeline", value: answers.timeline || "Not set", sub: "buying horizon", accent: "bg-violet-500/20 border-violet-500/30", color: "text-violet-300" },
-              { label: "Saved Homes", value: String(savedIds.size), sub: "in Dream Collection", accent: savedIds.size > 0 ? "bg-rose-500/20 border-rose-500/30" : "bg-white/10 border-white/10", color: savedIds.size > 0 ? "text-rose-300" : "text-white/60" },
+              { label: "Readiness", value: `${readiness.overall}/100`, sub: readiness.label, accent: readiness.overall >= 70 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200", color: readiness.overall >= 70 ? "text-emerald-600" : "text-amber-600" },
+              { label: "Budget", value: formatCurrency(answers.budgetMin ?? 0), sub: `to ${formatCurrency(answers.budgetMax ?? 0)}`, accent: "bg-sky-50 border-sky-200", color: "text-sky-600" },
+              { label: "Timeline", value: answers.timeline || "Not set", sub: "buying horizon", accent: "bg-violet-50 border-violet-200", color: "text-violet-600" },
+              { label: "Saved Homes", value: String(savedIds.size), sub: "in Dream Collection", accent: savedIds.size > 0 ? "bg-rose-50 border-rose-200" : "bg-[#faf9f7] border-[#e8e4de]", color: savedIds.size > 0 ? "text-rose-600" : "text-[#8c8580]" },
             ].map((s) => (
               <div key={s.label} className={`border rounded-2xl px-4 py-3.5 ${s.accent}`}>
-                <p className="text-white/50 text-[10px] uppercase tracking-wider mb-1">{s.label}</p>
+                <p className="text-[#8c8580] text-[10px] uppercase tracking-wider mb-1">{s.label}</p>
                 <p className={`font-bold text-base leading-tight ${s.color}`}>{s.value}</p>
-                <p className="text-white/40 text-[10px] mt-0.5">{s.sub}</p>
+                <p className="text-[#8c8580] text-[10px] mt-0.5">{s.sub}</p>
               </div>
             ))}
           </div>
