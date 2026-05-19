@@ -179,18 +179,18 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
   // Derive availability hints from questionnaire answers
   const availabilityHints: string[] = [];
   if (answers.sundayMorning === "Total quiet" || answers.sundayMorning === "Slow & cozy") {
-    availabilityHints.push("Prefers weekday showings");
+    availabilityHints.push("☀️ Prefers weekday showings");
   } else if (answers.sundayMorning === "Getting out" || answers.sundayMorning === "Outside with kids") {
-    availabilityHints.push("Flexible — weekends work");
+    availabilityHints.push("☀️ Flexible — weekends work");
   } else if (answers.sundayMorning === "Hosting people" || answers.sundayMorning === "Solo, no plans") {
-    availabilityHints.push("Weekends likely busy — book ahead");
+    availabilityHints.push("🌆 Weekends likely busy — book ahead");
   }
   if (answers.timeline === "ASAP" || answers.timeline === "1-3 months") {
-    availabilityHints.push("Urgently available");
+    availabilityHints.push("🌆 Urgently available");
   } else if (answers.timeline === "3-6 months") {
-    availabilityHints.push("Flexible timeline");
+    availabilityHints.push("☀️ Flexible timeline");
   } else if (answers.timeline === "6-12 months" || answers.timeline === "Just exploring") {
-    availabilityHints.push("No rush — schedule when ready");
+    availabilityHints.push("🌆 No rush — schedule when ready");
   }
   if (availabilityHints.length === 0) availabilityHints.push("Contact to confirm availability");
 
@@ -224,14 +224,11 @@ export default function BuyerBrief({ lead }: { lead: Lead }) {
       )}
 
       {/* ── Showing Availability ──────────────────────────────────────────────── */}
-      <div style={{ background: "#ede9fe", border: "1px solid #c4b5fd", borderRadius: "12px", padding: "14px 16px" }}>
-        <div className="flex items-center gap-2 mb-2.5">
-          <Star size={12} style={{ color: "#7c3aed" }} />
-          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6d28d9" }}>Showing Availability</p>
-        </div>
+      <div className="bg-white border border-[#e8e4de] rounded-xl p-3.5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[#b8a88a] mb-2.5">Showing Availability</p>
         <div className="flex flex-wrap gap-2">
           {availabilityHints.map((h) => (
-            <span key={h} className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "#c4b5fd", color: "#3b0764" }}>{h}</span>
+            <span key={h} className="text-xs font-semibold px-3 py-1 rounded-full bg-[#f5f3f0] text-[#2c2825]">{h}</span>
           ))}
         </div>
       </div>
