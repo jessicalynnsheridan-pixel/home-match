@@ -18,6 +18,7 @@ import { ArrowLeft, Star, Plus, Trash2, Home, Printer, ExternalLink, Info, Phone
 import { calcBuyerReadiness } from "@/lib/buyerMatch";
 import { calcBuyerIntelligence } from "@/lib/buyerIntelligence";
 import BuyerIntelligencePanel from "@/components/dashboard/BuyerIntelligence";
+import OutreachSidebar from "@/components/dashboard/OutreachSidebar";
 import Link from "next/link";
 
 const STATUS_OPTIONS: LeadStatus[] = [
@@ -426,6 +427,9 @@ export default function LeadDetailPage() {
 
           {/* ── Right sidebar ───────────────────────────────────────────── */}
           <div className="space-y-4">
+            {/* Personalised outreach templates */}
+            <OutreachSidebar lead={lead} realtorName={realtorName} realtorPhone={realtorPhone} />
+
             {/* Follow-up reminders */}
             <FollowUpReminders reminders={lead.reminders} onChange={updateReminders} />
 
