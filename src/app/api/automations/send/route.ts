@@ -60,7 +60,7 @@ function emailDay1(realtorName: string, answers: LeadAnswers) {
         </div>
         <div style="padding:28px 32px;border:1px solid #e8e4de;border-top:none;border-radius:0 0 16px 16px">
           <p style="font-size:15px;color:#2c2825;margin:0 0 16px">Hi ${first},</p>
-          <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 20px">Thanks for submitting your profile - I've received everything and I'm already reviewing your search criteria. Here's what I have on file for you:</p>
+          <p style="font-size:14px;color:#5c5550;line-height:1.7;margin:0 0 20px">Thanks for submitting your profile. I've received everything and I'm already reviewing your search criteria. Here's what I have on file for you:</p>
           <div style="background:#faf9f7;border-radius:12px;padding:18px 20px;margin-bottom:24px;border:1px solid #f0ece6">
             <table style="width:100%;border-collapse:collapse">
               <tr><td style="padding:8px 0;border-bottom:1px solid #ede9e3;color:#8c8580;font-size:12px;width:40%">Looking in</td><td style="padding:8px 0;border-bottom:1px solid #ede9e3;font-size:13px;font-weight:600">${city}</td></tr>

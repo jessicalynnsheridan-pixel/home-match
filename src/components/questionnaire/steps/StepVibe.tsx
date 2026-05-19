@@ -146,7 +146,7 @@ export default function StepVibe({ answers, update, onNext }: StepProps) {
           Your ideal<br />
           <span className="text-gradient-gold">Sunday morning?</span>
         </h2>
-        <p className="text-[#8c8580] text-sm">Tap one - it moves to the next automatically.</p>
+        <p className="text-[#8c8580] text-sm">Tap one. It moves to the next automatically.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">

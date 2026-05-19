@@ -131,7 +131,7 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
   if (outdoor) insights.push("outdoor space over interior finishes");
 
   const insightLine = insights.length
-    ? `You also told us you'd choose ${insights.slice(0, 2).join(" and ")} - that helps me filter out a lot of the noise before I even show you anything.`
+    ? `You also told us you'd choose ${insights.slice(0, 2).join(" and ")}. That helps me filter out a lot of the noise before I even show you anything.`
     : "";
 
   // Must-haves line
@@ -141,12 +141,12 @@ function buildPersonalizedEmail(lead: Lead): { subject: string; body: string } {
 
   // Notes callback
   const notesLine = answers.additionalNotes
-    ? `I also read your note: "${answers.additionalNotes.slice(0, 120)}${answers.additionalNotes.length > 120 ? "..." : ""}" - that context is genuinely useful.`
+    ? `I also read your note: "${answers.additionalNotes.slice(0, 120)}${answers.additionalNotes.length > 120 ? "..." : ""}" — that context is genuinely useful.`
     : "";
 
   // Finance line
   const financeLine = preApproved
-    ? `With your financing already in place, we're not waiting on anything - we can move when the right home shows up.`
+    ? `With your financing already in place, we're not waiting on anything. We can move when the right home shows up.`
     : answers.preApprovalStatus === "In progress"
     ? `Once your pre-approval comes through, we'll be in a great position to move quickly.`
     : "";
@@ -165,11 +165,11 @@ ${notesLine}
 
 I'm looking specifically in ${location}, within your ${budget} range. ${financeLine}
 
-I have a couple of properties already in mind that I think are worth a conversation. Nothing that will waste your time - I've already filtered based on what you told us matters most.
+I have a couple of properties already in mind that I think are worth a conversation. Nothing that will waste your time. I've already filtered based on what you told us matters most.
 
 Would you be open to a 15-minute call this week? I can walk you through what I've found and we can go from there.
 
-No pressure either way - just wanted to reach out as a real person, not an automated email.
+No pressure either way. Just wanted to reach out as a real person, not an automated email.
 
 Warmly,`
     .split("\n")
@@ -178,7 +178,7 @@ Warmly,`
     .trim();
 
   return {
-    subject: `${name} - I've reviewed your profile and have a few homes in mind`,
+    subject: `${name}, I've reviewed your profile and have a few homes in mind`,
     body,
   };
 }
@@ -190,10 +190,10 @@ function buildTextMessage(lead: Lead): string {
   const feeling = answers.homeFeeling?.[0]?.toLowerCase();
 
   if (answers.timeline === "ASAP" || answers.timeline === "1-3 months") {
-    return `Hi ${name}, it's YOUR_NAME from HomeMatch. I've reviewed your profile - ${feeling ? `love that you want something ${feeling}` : "great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
+    return `Hi ${name}, it's YOUR_NAME from HomeMatch. I've reviewed your profile. ${feeling ? `Love that you want something ${feeling}` : "Great taste"}. I have 2 properties in ${location} I think fit what you described. Worth a quick call this week?`;
   }
 
-  return `Hi ${name}, it's YOUR_NAME. I came across your HomeMatch profile - sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
+  return `Hi ${name}, it's YOUR_NAME. I came across your HomeMatch profile. Sounds like you know exactly what you're looking for in ${location}. Happy to share what I'm seeing in the market when you're ready. No rush.`;
 }
 
 function buildCallScript(lead: Lead): string {
@@ -204,16 +204,16 @@ function buildCallScript(lead: Lead): string {
   const sunday = answers.sundayMorning;
 
   return `OPENING (first 20 seconds)
-"Hi ${name}, it's YOUR_NAME - I'm a realtor connected through HomeMatch. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
+"Hi ${name}, it's YOUR_NAME. I'm a realtor connected through HomeMatch. You filled out a profile recently and I wanted to reach out personally. Is now an okay time for 5 minutes?"
 
 IF YES - PERSONALISE IMMEDIATELY
-"I read through your answers and I have to say - you were really specific, which I appreciate. You mentioned wanting something ${feeling}${sunday ? `, and ${sunday.toLowerCase()} as your ideal Sunday vibe` : ""}. That tells me exactly what to look for."
+"I read through your answers and I have to say, you were really specific, which I appreciate. You mentioned wanting something ${feeling}${sunday ? `, and ${sunday.toLowerCase()} as your ideal Sunday vibe` : ""}. That tells me exactly what to look for."
 
 THE PIVOT
 "I've actually already flagged a couple of properties in ${location} that I think fit what you described - not just on paper, but for the lifestyle you're after. Can I send you a quick overview today?"
 
 IF THEY PUSH BACK
-"Totally understand. I'll send you an email with what I have in mind - no commitment, just a starting point. Does [email] still work?"
+"Totally understand. I'll send you an email with what I have in mind. No commitment, just a starting point. Does [email] still work?"
 
 CLOSING
 "Perfect. I'll send that over by [time]. And if you want to just reply with any feedback, I'll refine from there. Look forward to working with you."`;
@@ -225,14 +225,14 @@ function buildFollowUpEmail(lead: Lead): { subject: string; body: string } {
   const location = answers.preferredCity || "your target area";
 
   return {
-    subject: `Following up - ${name}, still thinking about you`,
+    subject: `Following up, ${name} — still thinking about you`,
     body: `Hi ${name},
 
 Just following up on my note from earlier this week. I wanted to make sure it didn't get lost.
 
 I've been keeping a close eye on ${location} and a couple of things have come up that match what you described in your profile.
 
-If now isn't the right time, that's completely fine - I'll keep your profile active and reach out when something genuinely strong comes through.
+If now isn't the right time, that's completely fine. I'll keep your profile active and reach out when something genuinely strong comes through.
 
 But if you did want to chat, I'm easy to reach. A 10-minute call is all it takes to know whether it's worth pursuing.
 
