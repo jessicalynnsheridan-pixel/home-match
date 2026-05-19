@@ -530,34 +530,35 @@ export default function AutomationsWidget({ leads, realtorName = "Your name" }: 
   return (
     <div className="bg-white border border-[#e8e4de] rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3.5 border-b border-[#f0ece6] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: "#fef3c7" }}>
-            <Zap size={13} style={{ color: "#d97706" }} />
+      <div className="px-4 pt-4 pb-3.5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#fef3c7" }}>
+              <Mail size={15} style={{ color: "#d97706" }} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#2c2825] leading-tight">
+                {logs === null
+                  ? "Checking your queue…"
+                  : queue.length > 0
+                  ? `${queue.length} client email${queue.length !== 1 ? "s" : ""} ready to send 👋`
+                  : "You're all caught up!"}
+              </p>
+              <p className="text-[11px] text-[#8c8580] mt-0.5 leading-snug">
+                {queue.length > 0
+                  ? "Each one is personalised from their quiz. Review, tweak if you like, and hit send."
+                  : "No emails queued right now."}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-bold text-[#2c2825]">Automations</p>
-            <p className="text-[10px] text-[#8c8580]">Client email queue</p>
-          </div>
+          {logs !== null && queue.length > 0 && (
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shrink-0 mt-0.5" style={{ background: "#fef3c7", color: "#92400e" }}>
+              {queue.length} queued
+            </span>
+          )}
         </div>
-        {logs !== null && (
-          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full"
-            style={queue.length > 0
-              ? { background: "#fef3c7", color: "#92400e" }
-              : { background: "#f0fdf4", color: "#166534" }}>
-            {queue.length > 0 ? `${queue.length} queued` : "All sent"}
-          </span>
-        )}
       </div>
-
-      {/* Instruction banner */}
-      {queue.length > 0 && logs !== null && (
-        <div className="px-4 py-2.5 border-b border-[#f0ece6] bg-[#fffbf0]">
-          <p className="text-[11px] text-[#92400e]">
-            <span className="font-semibold">Action needed:</span> Review and send each personalised email below. Click &ldquo;Edit &amp; send&rdquo; to preview, tweak the tone, and send directly to your client.
-          </p>
-        </div>
-      )}
+      <div className="border-b border-[#f0ece6]" />
 
       {/* Queue */}
       <div>
