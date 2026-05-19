@@ -238,9 +238,9 @@ ${realtorName}`;
 // ─── Day config ───────────────────────────────────────────────────────────────
 
 const DAY_CONFIG: Record<AutomationType, { label: string; tagBg: string; tagColor: string }> = {
-  day1: { label: "Day 1",  tagBg: "#dcfce7", tagColor: "#166534" },
-  day3: { label: "Day 3",  tagBg: "#fef3c7", tagColor: "#92400e" },
-  day7: { label: "Day 7",  tagBg: "#ede9fe", tagColor: "#4c1d95" },
+  day1: { label: "Day 1",  tagBg: "#e8eeea", tagColor: "#3c5e48" },
+  day3: { label: "Day 3",  tagBg: "#f5eedd", tagColor: "#7a5a28" },
+  day7: { label: "Day 7",  tagBg: "#ede8f2", tagColor: "#5c4870" },
 };
 
 // ─── Queue builder ────────────────────────────────────────────────────────────
@@ -444,19 +444,19 @@ interface TemplatePreview {
 const TEMPLATE_PREVIEWS: TemplatePreview[] = [
   { day: "Day 1", trigger: "Sent to buyer as soon as you click Send", subject: "Your home search is officially on 🏡",
     body: `Hi [First name],\n\nI just finished reading through your profile and I love what you're looking for. A peaceful retreat that also feels like a family nest. Someone whose ideal Sunday starts with total quiet. You're not just looking for a house. You have a feeling in mind.\n\nI've noted everything: the Rosedale, Forest Hill, Lawrence Park neighbourhoods, the chef's kitchen at the top of your list, the private backyard. I'll be in touch this week.\n\nWarm regards,\n[Your name]`,
-    tagBg: "#dcfce7", tagColor: "#166534", color: "#059669" },
+    tagBg: "#e8eeea", tagColor: "#3c5e48", color: "#3c5e48" },
   { day: "Day 3", trigger: "Appears after 3 days if uncontacted",
     subject: "Just checking in 👋",
     body: `Hi [First name],\n\nJust wanted to check in. No agenda here. Genuinely just curious how you're feeling about the search. Have any questions come up?\n\nI'm here whenever you're ready.\n\nWarmly,\n[Your name]`,
-    tagBg: "#fef3c7", tagColor: "#92400e", color: "#d97706" },
+    tagBg: "#f5eedd", tagColor: "#7a5a28", color: "#7a5a28" },
   { day: "Day 7", trigger: "Appears after 7 days if still uncontacted",
     subject: "Still thinking about [City]?",
     body: `Hi [First name],\n\nJust a quick note. No pressure at all. Still here whenever you're ready.\n\nIf you ever want to talk through your search, I'm just a reply away.\n\n[Your name]`,
-    tagBg: "#ede9fe", tagColor: "#4c1d95", color: "#7c3aed" },
+    tagBg: "#ede8f2", tagColor: "#5c4870", color: "#5c4870" },
   { day: "Realtor alert", trigger: "Auto-sent to you when a Hot/Warm lead goes quiet for 5+ days",
     subject: "🔥 Inactivity alert: [Name] ([X] days)",
     body: `Hi [Realtor],\n\nYour Hot lead [Name] hasn't had any recorded contact in [X] days.\n\nHot leads cool fast. A quick check-in today keeps the relationship alive.\n\n→ View [Name]'s Profile`,
-    tagBg: "#ffedd5", tagColor: "#9a3412", color: "#ea580c" },
+    tagBg: "#f0e8e4", tagColor: "#7a5040", color: "#c4785c" },
 ];
 
 function TemplateCard({ t }: { t: TemplatePreview }) {
@@ -533,8 +533,8 @@ export default function AutomationsWidget({ leads, realtorName = "Your name" }: 
       <div className="px-4 pt-4 pb-3.5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#fef3c7" }}>
-              <Mail size={15} style={{ color: "#d97706" }} />
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#f5eedd" }}>
+              <Mail size={15} style={{ color: "#7a5a28" }} />
             </div>
             <div>
               <p className="text-sm font-bold text-[#2c2825] leading-tight">
@@ -552,7 +552,7 @@ export default function AutomationsWidget({ leads, realtorName = "Your name" }: 
             </div>
           </div>
           {logs !== null && queue.length > 0 && (
-            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shrink-0 mt-0.5" style={{ background: "#fef3c7", color: "#92400e" }}>
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shrink-0 mt-0.5" style={{ background: "#f5eedd", color: "#7a5a28" }}>
               {queue.length} queued
             </span>
           )}

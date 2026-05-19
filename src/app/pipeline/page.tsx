@@ -31,46 +31,46 @@ function getPlaybook(lead: Lead): Playbook {
     return {
       icon: <Phone size={11} />,
       action: "Call within 2 hours",
-      color: "#dc2626",
-      bg: "#fef2f2",
-      border: "#fecaca",
+      color: "#8b4a38",
+      bg: "#f2e9e5",
+      border: "#dcc8be",
     };
   }
   if (score === "Hot") {
     return {
       icon: <Mail size={11} />,
       action: "Email today, call tomorrow",
-      color: "#d97706",
-      bg: "#fffbeb",
-      border: "#fde68a",
+      color: "#8b6a30",
+      bg: "#f5eedc",
+      border: "#e0d0b0",
     };
   }
   if (score === "Warm") {
     return {
       icon: <MessageSquare size={11} />,
       action: "Email now, follow up in 5 days",
-      color: "#2563eb",
-      bg: "#eff6ff",
-      border: "#bfdbfe",
+      color: "#4a5468",
+      bg: "#eaecf0",
+      border: "#c4c8d4",
     };
   }
   return {
     icon: <Clock size={11} />,
     action: "Monthly touch - no rush",
-    color: "#6b7280",
-    bg: "#f9fafb",
-    border: "#e5e7eb",
+    color: "#7a7268",
+    bg: "#f5f3f0",
+    border: "#e8e4de",
   };
 }
 
 const STAGES: LeadStatus[] = ["New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed"];
 
 const STAGE_META: Record<LeadStatus, { label: string; description: string; color: string; dot: string }> = {
-  "New Lead":       { label: "New Lead",       description: "Just submitted",          color: "border-blue-200 bg-blue-50",   dot: "bg-blue-400" },
-  "Qualified":      { label: "Qualified",       description: "Reviewed & engaged",      color: "border-violet-200 bg-violet-50", dot: "bg-violet-400" },
-  "Showing Booked": { label: "Showing Booked",  description: "Viewing scheduled",       color: "border-teal-200 bg-teal-50",   dot: "bg-teal-400" },
-  "Offer Stage":    { label: "Offer Stage",     description: "Making an offer",         color: "border-orange-200 bg-orange-50", dot: "bg-orange-400" },
-  "Closed":         { label: "Closed",          description: "Deal complete",           color: "border-emerald-200 bg-emerald-50", dot: "bg-emerald-400" },
+  "New Lead":       { label: "New Lead",       description: "Just submitted",          color: "border-[#c4c8d4] bg-[#eaecf0]",   dot: "bg-[#7888a8]" },
+  "Qualified":      { label: "Qualified",       description: "Reviewed & engaged",      color: "border-[#c8bcd4] bg-[#ede8f0]",   dot: "bg-[#9880b0]" },
+  "Showing Booked": { label: "Showing Booked",  description: "Viewing scheduled",       color: "border-[#b8ccc8] bg-[#e8eeec]",   dot: "bg-[#5e9090]" },
+  "Offer Stage":    { label: "Offer Stage",     description: "Making an offer",         color: "border-[#d4c0b8] bg-[#f0e8e4]",   dot: "bg-[#c4785c]" },
+  "Closed":         { label: "Closed",          description: "Deal complete",           color: "border-[#c0d0be] bg-[#eaf0e8]",   dot: "bg-[#5e8860]" },
 };
 
 function mapSupabaseLead(row: Record<string, unknown>): Lead {
@@ -267,7 +267,7 @@ function PipelineCard({
         </div>
         <div className="flex items-center gap-1.5">
           {overdueReminders.length > 0 && (
-            <span className="w-2 h-2 rounded-full bg-rose-500" title="Overdue reminder" />
+            <span className="w-2 h-2 rounded-full bg-[#c4785c]" title="Overdue reminder" />
           )}
           <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${getScoreColor(lead.score)}`}>
             {lead.score}
@@ -284,7 +284,7 @@ function PipelineCard({
         <div className="h-1.5 bg-[#e8e4de] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full ${
-              lead.matchScore >= 80 ? "bg-rose-400" : lead.matchScore >= 50 ? "bg-amber-400" : "bg-slate-300"
+              lead.matchScore >= 80 ? "bg-[#c4785c]" : lead.matchScore >= 50 ? "bg-[#c4924a]" : "bg-[#c8c4be]"
             }`}
             style={{ width: `${lead.matchScore}%` }}
           />

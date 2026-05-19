@@ -137,9 +137,9 @@ function day7Variants(a: QuestionnaireAnswers, rName: string): Variant[] {
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const DAY_CONFIG = [
-  { key: "day1", day: "Day 1", emoji: "🏡", trigger: "Welcome — send right away", tagBg: "#dcfce7", tagColor: "#166534", accentColor: "#059669", tones: ["Lifestyle", "Practical", "Their story"] },
-  { key: "day3", day: "Day 3", emoji: "👋", trigger: "Check-in after 3 days", tagBg: "#fef3c7", tagColor: "#92400e", accentColor: "#d97706", tones: ["Warm", "Curious", "Momentum"] },
-  { key: "day7", day: "Day 7", emoji: "📍", trigger: "Final nudge after a week", tagBg: "#ede9fe", tagColor: "#4c1d95", accentColor: "#7c3aed", tones: ["Easy", "Market", "Personal"] },
+  { key: "day1", day: "Day 1", emoji: "🏡", trigger: "Welcome — send right away", tagBg: "#e8eeea", tagColor: "#3c5e48", accentColor: "#5e8860", tones: ["Lifestyle", "Practical", "Their story"] },
+  { key: "day3", day: "Day 3", emoji: "👋", trigger: "Check-in after 3 days", tagBg: "#f5eedd", tagColor: "#7a5a28", accentColor: "#c4924a", tones: ["Warm", "Curious", "Momentum"] },
+  { key: "day7", day: "Day 7", emoji: "📍", trigger: "Final nudge after a week", tagBg: "#ede8f2", tagColor: "#5c4870", accentColor: "#9880b0", tones: ["Easy", "Market", "Personal"] },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -204,8 +204,8 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-[#e8e4de]">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#fef3c7" }}>
-            <Mail size={13} style={{ color: "#d97706" }} />
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#f5eedd" }}>
+            <Mail size={13} style={{ color: "#7a5a28" }} />
           </div>
           <div>
             <p className="text-sm font-semibold text-[#2c2825]">Personalised Outreach</p>
@@ -278,7 +278,7 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
               <p className="text-[9px] text-[#8c8580] uppercase tracking-wider">Body</p>
               <div className="flex items-center gap-2">
                 <button onClick={copyBody} className="flex items-center gap-1 text-[10px] text-[#8c8580] hover:text-[#2c2825] transition-colors">
-                  {copied ? <CheckCheck size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                  {copied ? <CheckCheck size={10} className="text-[#4a6648]" /> : <Copy size={10} />}
                   {copied ? "Copied" : "Copy"}
                 </button>
                 <button
@@ -358,8 +358,8 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
                       <span
                         className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: entry.day === "Day 1" ? "#dcfce7" : entry.day === "Day 3" ? "#fef3c7" : "#ede9fe",
-                          color: entry.day === "Day 1" ? "#166534" : entry.day === "Day 3" ? "#92400e" : "#4c1d95",
+                          background: entry.day === "Day 1" ? "#e8eeea" : entry.day === "Day 3" ? "#f5eedd" : "#ede8f2",
+                          color: entry.day === "Day 1" ? "#3c5e48" : entry.day === "Day 3" ? "#7a5a28" : "#5c4870",
                         }}
                       >
                         {entry.day}

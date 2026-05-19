@@ -129,34 +129,34 @@ function buildActionQueue(leads: Lead[]): ActionItem[] {
 
 const PRIORITY_CONFIG = {
   urgent: {
-    cardBg: "bg-rose-50/50",
-    border: "border border-rose-100",
-    leftBar: "bg-rose-400",
-    badge: "bg-rose-100 text-rose-700 border border-rose-200",
+    cardBg: "bg-[#fdf7f5]",
+    border: "border border-[#e8d5ce]",
+    leftBar: "bg-[#c4785c]",
+    badge: "bg-[#f2e9e5] text-[#8b4a38] border border-[#dcc8be]",
     badgeLabel: "Urgent",
-    iconBg: "bg-rose-100 text-rose-600",
-    ctaBg: "bg-rose-500 hover:bg-rose-600 text-white",
-    expandBg: "bg-rose-50/70",
+    iconBg: "bg-[#f2e9e5] text-[#8b4a38]",
+    ctaBg: "bg-[#8b4a38] hover:bg-[#7a3f31] text-white",
+    expandBg: "bg-[#fdf7f5]",
   },
   high: {
-    cardBg: "bg-amber-50/50",
-    border: "border border-amber-100",
-    leftBar: "bg-amber-400",
-    badge: "bg-amber-100 text-amber-700 border border-amber-200",
+    cardBg: "bg-[#fdf9f0]",
+    border: "border border-[#e0d4b8]",
+    leftBar: "bg-[#c4924a]",
+    badge: "bg-[#f2ede0] text-[#8b6a30] border border-[#e0d0b0]",
     badgeLabel: "Today",
-    iconBg: "bg-amber-100 text-amber-600",
-    ctaBg: "bg-amber-500 hover:bg-amber-600 text-white",
-    expandBg: "bg-amber-50/70",
+    iconBg: "bg-[#f2ede0] text-[#8b6a30]",
+    ctaBg: "bg-[#8b6a30] hover:bg-[#7a5a28] text-white",
+    expandBg: "bg-[#fdf9f0]",
   },
   medium: {
-    cardBg: "bg-sky-50/50",
-    border: "border border-sky-100",
-    leftBar: "bg-sky-400",
-    badge: "bg-sky-100 text-sky-700 border border-sky-200",
+    cardBg: "bg-[#f5f6f8]",
+    border: "border border-[#d4d8e0]",
+    leftBar: "bg-[#7888a8]",
+    badge: "bg-[#eaecf0] text-[#4a5468] border border-[#c4c8d4]",
     badgeLabel: "This week",
-    iconBg: "bg-sky-100 text-sky-600",
-    ctaBg: "bg-sky-600 hover:bg-sky-700 text-white",
-    expandBg: "bg-sky-50/70",
+    iconBg: "bg-[#eaecf0] text-[#4a5468]",
+    ctaBg: "bg-[#4a5468] hover:bg-[#3c4458] text-white",
+    expandBg: "bg-[#f5f6f8]",
   },
 };
 
@@ -241,10 +241,10 @@ function ActionQueueItem({
               {/* Checkbox */}
               <button
                 onClick={(e) => { e.stopPropagation(); onToggleCheck(); }}
-                className="shrink-0 w-6 h-6 rounded-lg border-2 border-white/70 flex items-center justify-center hover:border-emerald-400 transition-colors bg-white/50"
+                className="shrink-0 w-6 h-6 rounded-lg border-2 border-white/70 flex items-center justify-center hover:border-[#5e8860] transition-colors bg-white/50"
                 aria-label={isChecked ? "Mark incomplete" : "Mark complete"}
               >
-                {isChecked && <Check size={12} className="text-emerald-600" />}
+                {isChecked && <Check size={12} className="text-[#4a6648]" />}
               </button>
 
               <ChevronDown size={14} className={`shrink-0 text-[#9c9590] transition-transform ${isExpanded ? "rotate-180" : ""}`} />
@@ -396,10 +396,10 @@ function getScheduleEvents(leads: Lead[]): ScheduleEvent[] {
 }
 
 const EVENT_CONFIG = {
-  showing: { icon: MapPin,  bg: "bg-sky-50",    border: "border-sky-100",   dot: "bg-sky-400",    text: "text-sky-700"   },
-  call:    { icon: Phone,   bg: "bg-rose-50",   border: "border-rose-100",  dot: "bg-rose-400",   text: "text-rose-700"  },
-  reminder:{ icon: Bell,    bg: "bg-amber-50",  border: "border-amber-100", dot: "bg-amber-400",  text: "text-amber-700" },
-  followup:{ icon: Mail,    bg: "bg-violet-50", border: "border-violet-100",dot: "bg-violet-400", text: "text-violet-700"},
+  showing: { icon: MapPin,  bg: "bg-[#f0f2f5]",  border: "border-[#d4d8e0]",  dot: "bg-[#7888a8]",  text: "text-[#4a5468]"  },
+  call:    { icon: Phone,   bg: "bg-[#fdf5f3]",  border: "border-[#e8d5ce]",  dot: "bg-[#c4785c]",  text: "text-[#8b4a38]"  },
+  reminder:{ icon: Bell,    bg: "bg-[#fdf9f0]",  border: "border-[#e0d4b8]",  dot: "bg-[#c4924a]",  text: "text-[#8b6a30]"  },
+  followup:{ icon: Mail,    bg: "bg-[#f5f0fa]",  border: "border-[#dcd4e8]",  dot: "bg-[#9880b0]",  text: "text-[#6a5878]"  },
 };
 
 function ScheduleWidget({ leads }: { leads: Lead[] }) {
@@ -573,7 +573,7 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
           <CalendarDays size={13} className="text-[#b8a88a]" />
           <p className="text-xs font-bold text-[#2c2825]">Showing Requests</p>
           {pending.length > 0 && (
-            <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pending.length}</span>
+            <span className="bg-[#c4785c] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pending.length}</span>
           )}
         </div>
       </div>
@@ -585,13 +585,13 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
       ) : (
         <div className="divide-y divide-[#f5f2ee]">
           {pending.map((req) => (
-            <div key={req.id} className="px-4 py-3.5 bg-amber-50/50">
+            <div key={req.id} className="px-4 py-3.5 bg-[#fdf9f0]">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>
                   <p className="text-xs font-semibold text-[#2c2825]">{req.buyer_name || "Buyer"}</p>
                   <p className="text-[10px] text-[#b8a88a] font-medium">{req.preferred_dates}{req.preferred_time ? ` · ${req.preferred_time}` : ""}</p>
                 </div>
-                <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium shrink-0">Pending</span>
+                <span className="text-[10px] bg-[#f2ede0] text-[#8b6a30] px-2 py-0.5 rounded-full font-medium shrink-0">Pending</span>
               </div>
               {req.message && (
                 <p className="text-[10px] text-[#8c8580] italic mb-2.5 leading-relaxed">&ldquo;{req.message}&rdquo;</p>
@@ -600,14 +600,14 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
                 <button
                   disabled={updating === req.id}
                   onClick={() => updateStatus(req.id, "confirmed")}
-                  className="flex-1 flex items-center justify-center gap-1 bg-emerald-500 text-white text-[11px] font-semibold py-2 rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                  className="flex-1 flex items-center justify-center gap-1 bg-[#4a6648] text-white text-[11px] font-semibold py-2 rounded-lg hover:bg-[#3c5840] transition-colors disabled:opacity-60"
                 >
                   <Check size={11} /> Confirm
                 </button>
                 <button
                   disabled={updating === req.id}
                   onClick={() => updateStatus(req.id, "declined")}
-                  className="flex-1 flex items-center justify-center gap-1 border border-[#e8e4de] text-[#8c8580] text-[11px] font-medium py-2 rounded-lg hover:border-rose-300 hover:text-rose-500 transition-colors disabled:opacity-60"
+                  className="flex-1 flex items-center justify-center gap-1 border border-[#e8e4de] text-[#8c8580] text-[11px] font-medium py-2 rounded-lg hover:border-[#c4785c] hover:text-[#8b4a38] transition-colors disabled:opacity-60"
                 >
                   <X size={11} /> Decline
                 </button>
@@ -616,12 +616,12 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
           ))}
           {recent.map((req) => (
             <div key={req.id} className="px-4 py-3 flex items-center gap-3">
-              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${req.status === "confirmed" ? "bg-emerald-400" : "bg-slate-300"}`} />
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${req.status === "confirmed" ? "bg-[#5e8860]" : "bg-[#c8c4be]"}`} />
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-medium text-[#2c2825] truncate">{req.buyer_name}</p>
                 <p className="text-[10px] text-[#8c8580]">{req.preferred_dates}</p>
               </div>
-              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${req.status === "confirmed" ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${req.status === "confirmed" ? "bg-[#eaf0e8] text-[#4a6648]" : "bg-[#f0eeea] text-[#7a7268]"}`}>
                 {req.status === "confirmed" ? "Confirmed" : "Declined"}
               </span>
             </div>
@@ -672,11 +672,11 @@ function SmartInsightsBar({ leads, onStatusFilter, onSearch }: {
 
   if (offerLeads.length > 0) {
     insights.push({
-      icon: <Target size={14} className="text-emerald-500" />,
+      icon: <Target size={14} className="text-[#4a6648]" />,
       text: `${offerLeads.length} lead${offerLeads.length > 1 ? "s" : ""} at Offer Stage`,
       sub: "You're close. Keep momentum",
       color: "text-[#2c2825]",
-      bg: "bg-emerald-50 border-emerald-200",
+      bg: "bg-[#eaf0e8] border-[#c0d0be]",
       action: "View leads →",
       onClick: () => { onStatusFilter("Offer Stage"); },
     });
@@ -711,11 +711,11 @@ function SmartInsightsBar({ leads, onStatusFilter, onSearch }: {
 
   if (insights.length === 0) {
     insights.push({
-      icon: <Activity size={14} className="text-emerald-500" />,
+      icon: <Activity size={14} className="text-[#4a6648]" />,
       text: "Pipeline looking healthy",
       sub: "No urgent actions right now",
       color: "text-[#2c2825]",
-      bg: "bg-emerald-50 border-emerald-200",
+      bg: "bg-[#eaf0e8] border-[#c0d0be]",
       action: "View all →",
       onClick: () => { onStatusFilter("All"); },
     });
@@ -804,7 +804,7 @@ function GiftReminderWidget({ leads }: { leads: Lead[] }) {
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {days <= 7 && !isSent && (
-                    <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-bold">New close</span>
+                    <span className="text-[10px] bg-[#f2ede0] text-[#8b6a30] px-1.5 py-0.5 rounded-full font-bold">New close</span>
                   )}
                   <button onClick={() => setDismissed((p) => new Set([...p, r.id]))} className="text-[#c4bfb9] hover:text-[#8c8580] transition-colors">
                     <X size={12} />
@@ -813,7 +813,7 @@ function GiftReminderWidget({ leads }: { leads: Lead[] }) {
               </div>
               <p className="text-[10px] text-[#b8a88a] italic mb-2.5">💡 {r.suggestion}</p>
               {isSent ? (
-                <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1"><Check size={11} /> Gift sent · Great for referrals</p>
+                <p className="text-[11px] text-[#4a6648] font-semibold flex items-center gap-1"><Check size={11} /> Gift sent · Great for referrals</p>
               ) : (
                 <div className="flex gap-2">
                   <button
@@ -895,21 +895,21 @@ function RevenueWidget({ leads }: { leads: Lead[] }) {
 
           {/* Hot + Warm side by side */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-rose-50 border border-rose-100 rounded-xl px-3 py-2.5">
+            <div className="bg-[#f5efed] border border-[#e8d5ce] rounded-xl px-3 py-2.5">
               <div className="flex items-center gap-1 mb-1">
-                <Flame size={10} className="text-rose-400" />
-                <p className="text-[10px] text-rose-500 font-semibold uppercase tracking-wider">Hot</p>
+                <Flame size={10} className="text-[#c4785c]" />
+                <p className="text-[10px] text-[#8b4a38] font-semibold uppercase tracking-wider">Hot</p>
               </div>
               <p className="text-lg font-bold text-[#2c2825]">{formatCommission(hotCommission)}</p>
-              <p className="text-[10px] text-rose-400 mt-0.5">{hotLeads.length} lead{hotLeads.length !== 1 ? "s" : ""}</p>
+              <p className="text-[10px] text-[#c4785c] mt-0.5">{hotLeads.length} lead{hotLeads.length !== 1 ? "s" : ""}</p>
             </div>
-            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2.5">
+            <div className="bg-[#faf5ec] border border-[#e0d4b8] rounded-xl px-3 py-2.5">
               <div className="flex items-center gap-1 mb-1">
-                <Zap size={10} className="text-amber-400" />
-                <p className="text-[10px] text-amber-500 font-semibold uppercase tracking-wider">Warm</p>
+                <Zap size={10} className="text-[#c4924a]" />
+                <p className="text-[10px] text-[#8b6a30] font-semibold uppercase tracking-wider">Warm</p>
               </div>
               <p className="text-lg font-bold text-[#2c2825]">{formatCommission(warmCommission)}</p>
-              <p className="text-[10px] text-amber-400 mt-0.5">{warmLeads.length} lead{warmLeads.length !== 1 ? "s" : ""}</p>
+              <p className="text-[10px] text-[#c4924a] mt-0.5">{warmLeads.length} lead{warmLeads.length !== 1 ? "s" : ""}</p>
             </div>
           </div>
         </div>
@@ -1122,10 +1122,10 @@ export default function DashboardPage() {
             {/* Section header card */}
             <div className="bg-white rounded-2xl px-5 py-3.5 flex items-center justify-between shadow-sm border border-[#ece8e2]">
               <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-[#c4785c] animate-pulse" />
                 <h2 className="text-sm font-semibold text-[#2c2825]">Today&apos;s Priority Actions</h2>
                 {activeItems.length > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f2e9e5] text-[#8b4a38] border border-[#dcc8be]">
                     {activeItems.length} remaining
                   </span>
                 )}
@@ -1138,16 +1138,16 @@ export default function DashboardPage() {
             {/* Action items */}
             {actionQueue.length === 0 ? (
               <div className="bg-white rounded-2xl px-5 py-10 text-center shadow-sm border border-[#ece8e2]">
-                <CheckCircle2 size={28} className="text-emerald-400 mx-auto mb-3" />
-                <p className="text-emerald-700 font-semibold text-sm mb-1">You&apos;re all caught up</p>
+                <CheckCircle2 size={28} className="text-[#5e8860] mx-auto mb-3" />
+                <p className="text-[#4a6648] font-semibold text-sm mb-1">You&apos;re all caught up</p>
                 <p className="text-[#8c8580] text-xs">Share your buyer link to grow your pipeline.</p>
               </div>
             ) : (
               <>
                 {activeItems.length === 0 && doneItems.length > 0 ? (
-                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl px-5 py-10 text-center">
-                    <CheckCircle2 size={28} className="text-emerald-500 mx-auto mb-3" />
-                    <p className="text-emerald-700 font-semibold text-sm">All done for today ✓</p>
+                  <div className="bg-[#eaf0e8] border border-[#c0d0be] rounded-2xl px-5 py-10 text-center">
+                    <CheckCircle2 size={28} className="text-[#5e8860] mx-auto mb-3" />
+                    <p className="text-[#4a6648] font-semibold text-sm">All done for today ✓</p>
                   </div>
                 ) : (
                   <div className="space-y-2.5">
@@ -1180,9 +1180,9 @@ export default function DashboardPage() {
                         <div key={item.id} className="flex items-center gap-3 px-4 py-2.5 opacity-50">
                           <button
                             onClick={() => toggleCheck(item.id)}
-                            className="shrink-0 w-5 h-5 rounded border border-emerald-300 bg-emerald-50 flex items-center justify-center"
+                            className="shrink-0 w-5 h-5 rounded border border-[#c0d0be] bg-[#eaf0e8] flex items-center justify-center"
                           >
-                            <Check size={11} className="text-emerald-600" />
+                            <Check size={11} className="text-[#4a6648]" />
                           </button>
                           <p className="text-xs text-[#8c8580] line-through truncate">{item.label}</p>
                         </div>
@@ -1337,7 +1337,7 @@ export default function DashboardPage() {
                       onClick={copyLink}
                       className={`w-full flex items-center justify-center gap-2 text-sm font-bold py-3 rounded-xl transition-all ${
                         copied
-                          ? "bg-emerald-500 text-white"
+                          ? "bg-[#4a6648] text-white"
                           : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
                       }`}
                     >
@@ -1370,9 +1370,9 @@ export default function DashboardPage() {
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8a88a] mb-3">Quick Access</p>
               <div className="space-y-1">
                 {[
-                  { label: "Pipeline Board", href: "/pipeline", icon: <TrendingUp size={13} />, color: "text-sky-500" },
-                  { label: "Listings", href: "/listings", icon: <Eye size={13} />, color: "text-emerald-500" },
-                  { label: "Integrations", href: "/integrations", icon: <AlertCircle size={13} />, color: "text-amber-500" },
+                  { label: "Pipeline Board", href: "/pipeline", icon: <TrendingUp size={13} />, color: "text-[#4a5468]" },
+                  { label: "Listings", href: "/listings", icon: <Eye size={13} />, color: "text-[#4a6648]" },
+                  { label: "Integrations", href: "/integrations", icon: <AlertCircle size={13} />, color: "text-[#8b6a30]" },
                 ].map((item) => (
                   <Link key={item.href} href={item.href}
                     className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#f5f3f0] transition-colors group">

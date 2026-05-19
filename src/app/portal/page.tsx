@@ -297,7 +297,7 @@ function TodaysDiscoveries({
                   <button
                     onClick={() => onToggle(p.id)}
                     className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center shadow transition-all hover:scale-110 active:scale-90 ${
-                      saved ? "bg-rose-500" : "bg-white/90 backdrop-blur-sm"
+                      saved ? "bg-[#8b4a38]" : "bg-white/90 backdrop-blur-sm"
                     }`}
                   >
                     <Heart size={13} className={saved ? "fill-white text-white" : "text-[#8c8580]"} />
@@ -451,7 +451,7 @@ export default function BuyerPortalPage() {
               </p>
             </div>
             <div className="flex items-center gap-2 bg-[#f5f3f0] border border-[#e8e4de] rounded-full px-3 py-1.5 shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#5e8860] animate-pulse" />
               <span className="text-[#5c5550] text-xs font-medium">{realtorFirst} is active</span>
             </div>
           </div>
@@ -459,10 +459,10 @@ export default function BuyerPortalPage() {
           {/* Stat row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Readiness", value: `${readiness.overall}/100`, sub: readiness.label, accent: readiness.overall >= 70 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200", color: readiness.overall >= 70 ? "text-emerald-600" : "text-amber-600" },
-              { label: "Budget", value: formatCurrency(answers.budgetMin ?? 0), sub: `to ${formatCurrency(answers.budgetMax ?? 0)}`, accent: "bg-sky-50 border-sky-200", color: "text-sky-600" },
-              { label: "Timeline", value: answers.timeline || "Not set", sub: "buying horizon", accent: "bg-violet-50 border-violet-200", color: "text-violet-600" },
-              { label: "Saved Homes", value: String(savedIds.size), sub: "in Dream Collection", accent: savedIds.size > 0 ? "bg-rose-50 border-rose-200" : "bg-[#faf9f7] border-[#e8e4de]", color: savedIds.size > 0 ? "text-rose-600" : "text-[#8c8580]" },
+              { label: "Readiness", value: `${readiness.overall}/100`, sub: readiness.label, accent: readiness.overall >= 70 ? "bg-[#eaf0e8] border-[#c0d0be]" : "bg-[#f5eedc] border-[#e0d0b0]", color: readiness.overall >= 70 ? "text-[#4a6648]" : "text-[#8b6a30]" },
+              { label: "Budget", value: formatCurrency(answers.budgetMin ?? 0), sub: `to ${formatCurrency(answers.budgetMax ?? 0)}`, accent: "bg-[#eaecf0] border-[#c4c8d4]", color: "text-[#4a5468]" },
+              { label: "Timeline", value: answers.timeline || "Not set", sub: "buying horizon", accent: "bg-[#ede8f0] border-[#c8bcd4]", color: "text-[#6a5878]" },
+              { label: "Saved Homes", value: String(savedIds.size), sub: "in Dream Collection", accent: savedIds.size > 0 ? "bg-[#f2e9e5] border-[#dcc8be]" : "bg-[#faf9f7] border-[#e8e4de]", color: savedIds.size > 0 ? "text-[#8b4a38]" : "text-[#8c8580]" },
             ].map((s) => (
               <div key={s.label} className={`border rounded-2xl px-4 py-3.5 ${s.accent}`}>
                 <p className="text-[#8c8580] text-[10px] uppercase tracking-wider mb-1">{s.label}</p>
@@ -491,7 +491,7 @@ export default function BuyerPortalPage() {
                 {tab.icon}
                 {tab.label}
                 {tab.id === "homes" && newMatchCount > 0 && (
-                  <span className="bg-rose-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{newMatchCount}</span>
+                  <span className="bg-[#c4785c] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{newMatchCount}</span>
                 )}
               </button>
             ))}
@@ -513,8 +513,8 @@ export default function BuyerPortalPage() {
             {/* Realtor card */}
             <section className="bg-white border border-[#e8e4de] rounded-2xl p-6 animate-fade-up">
               <div className="flex items-center gap-2 mb-5">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Your Advisor · Available Now</p>
+                <div className="w-2 h-2 rounded-full bg-[#5e8860] animate-pulse" />
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#4a6648]">Your Advisor · Available Now</p>
               </div>
               <div className="flex items-start gap-4 mb-5">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2c2825] to-[#5c4a3a] flex items-center justify-center shrink-0 text-white text-xl font-bold shadow-md">
@@ -558,7 +558,7 @@ export default function BuyerPortalPage() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className={`text-2xl font-bold ${readiness.overall >= 80 ? "text-emerald-600" : readiness.overall >= 60 ? "text-[#b8a88a]" : "text-amber-500"}`}>
+                  <p className={`text-2xl font-bold ${readiness.overall >= 80 ? "text-[#4a6648]" : readiness.overall >= 60 ? "text-[#b8a88a]" : "text-[#8b6a30]"}`}>
                     {readiness.overall}<span className="text-sm font-normal text-[#8c8580]">/100</span>
                   </p>
                   <p className="text-xs text-[#8c8580] mt-0.5">{readiness.label}</p>
@@ -569,11 +569,11 @@ export default function BuyerPortalPage() {
                   <div key={dim.label}>
                     <div className="flex justify-between text-xs mb-1.5">
                       <span className="text-[#2c2825] font-medium">{dim.label}</span>
-                      <span className={`font-semibold ${dim.score >= 75 ? "text-emerald-600" : dim.score >= 50 ? "text-[#b8a88a]" : "text-amber-500"}`}>{dim.detail}</span>
+                      <span className={`font-semibold ${dim.score >= 75 ? "text-[#4a6648]" : dim.score >= 50 ? "text-[#b8a88a]" : "text-[#8b6a30]"}`}>{dim.detail}</span>
                     </div>
                     <div className="h-2 bg-[#f0ece6] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-700 ${dim.score >= 75 ? "bg-emerald-500" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-amber-400" : "bg-slate-300"}`}
+                        className={`h-full rounded-full transition-all duration-700 ${dim.score >= 75 ? "bg-[#5e8860]" : dim.score >= 50 ? "bg-[#b8a88a]" : dim.score >= 30 ? "bg-[#c4924a]" : "bg-[#c8c4be]"}`}
                         style={{ width: `${dim.score}%` }}
                       />
                     </div>
@@ -605,10 +605,10 @@ export default function BuyerPortalPage() {
             {/* Quick action row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "Browse Homes", icon: <Heart size={16} />, tab: "homes" as const, badge: newMatchCount > 0 ? `${newMatchCount} new` : null, iconBg: "bg-rose-50 text-rose-500", border: "hover:border-rose-200" },
-                { label: "Run Calculator", icon: <Calculator size={16} />, tab: "calculator" as const, badge: null, iconBg: "bg-sky-50 text-sky-500", border: "hover:border-sky-200" },
-                { label: "Book Showing", icon: <CalendarDays size={16} />, tab: "showings" as const, badge: null, iconBg: "bg-violet-50 text-violet-500", border: "hover:border-violet-200" },
-                { label: "Buying Guide", icon: <BookOpen size={16} />, tab: "journey" as const, badge: null, iconBg: "bg-emerald-50 text-emerald-600", border: "hover:border-emerald-200" },
+                { label: "Browse Homes", icon: <Heart size={16} />, tab: "homes" as const, badge: newMatchCount > 0 ? `${newMatchCount} new` : null, iconBg: "bg-[#f2e9e5] text-[#8b4a38]", border: "hover:border-[#dcc8be]" },
+                { label: "Run Calculator", icon: <Calculator size={16} />, tab: "calculator" as const, badge: null, iconBg: "bg-[#eaecf0] text-[#4a5468]", border: "hover:border-[#c4c8d4]" },
+                { label: "Book Showing", icon: <CalendarDays size={16} />, tab: "showings" as const, badge: null, iconBg: "bg-[#ede8f0] text-[#6a5878]", border: "hover:border-[#c8bcd4]" },
+                { label: "Buying Guide", icon: <BookOpen size={16} />, tab: "journey" as const, badge: null, iconBg: "bg-[#eaf0e8] text-[#4a6648]", border: "hover:border-[#c0d0be]" },
               ].map((a) => (
                 <button
                   key={a.label}
@@ -618,7 +618,7 @@ export default function BuyerPortalPage() {
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${a.iconBg}`}>{a.icon}</div>
                   <span className="text-xs font-medium text-[#2c2825]">{a.label}</span>
                   {a.badge && (
-                    <span className="absolute top-2 right-2 bg-rose-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5">{a.badge}</span>
+                    <span className="absolute top-2 right-2 bg-[#c4785c] text-white text-[9px] font-bold rounded-full px-1.5 py-0.5">{a.badge}</span>
                   )}
                 </button>
               ))}
@@ -675,12 +675,12 @@ export default function BuyerPortalPage() {
                         <p className="text-[#8c8580] text-xs">{n.city} · {n.priceRange}</p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <Star size={12} className={n.fit >= 90 ? "fill-emerald-500 text-emerald-500" : "fill-[#b8a88a] text-[#b8a88a]"} />
-                        <span className={`text-sm font-bold ${n.fit >= 90 ? "text-emerald-600" : "text-[#b8a88a]"}`}>{n.fit}% fit</span>
+                        <Star size={12} className={n.fit >= 90 ? "fill-[#5e8860] text-[#5e8860]" : "fill-[#b8a88a] text-[#b8a88a]"} />
+                        <span className={`text-sm font-bold ${n.fit >= 90 ? "text-[#4a6648]" : "text-[#b8a88a]"}`}>{n.fit}% fit</span>
                       </div>
                     </div>
                     <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden mb-4">
-                      <div className={`h-full rounded-full transition-all duration-700 ${n.fit >= 90 ? "bg-emerald-500" : "bg-[#b8a88a]"}`} style={{ width: `${n.fit}%` }} />
+                      <div className={`h-full rounded-full transition-all duration-700 ${n.fit >= 90 ? "bg-[#5e8860]" : "bg-[#b8a88a]"}`} style={{ width: `${n.fit}%` }} />
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {n.highlights.map((h) => (
@@ -769,7 +769,7 @@ export default function BuyerPortalPage() {
                   </select>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-sky-500 to-violet-600 rounded-2xl p-6 text-center mb-4 shadow-lg">
+              <div className="bg-gradient-to-br from-[#3a4a60] to-[#4a3860] rounded-2xl p-6 text-center mb-4 shadow-lg">
                 <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-2">Estimated Monthly Payment</p>
                 <p className="text-4xl sm:text-5xl font-bold text-white">
                   {formatCurrency(Math.round(calcMonthlyPayment(calcPrice, calc.downPct / 100, calc.rate / 100, calc.years)))}
@@ -815,12 +815,12 @@ export default function BuyerPortalPage() {
                   </div>
                 ))}
               </div>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
+              <div className="bg-[#f5eedc] border border-[#e0d0b0] rounded-xl p-4 flex items-center justify-between">
                 <div>
-                  <p className="text-amber-700 text-xs font-semibold uppercase tracking-wider mb-0.5">Budget beyond purchase price</p>
-                  <p className="text-amber-600/70 text-xs">Excluding first year maintenance</p>
+                  <p className="text-[#8b6a30] text-xs font-semibold uppercase tracking-wider mb-0.5">Budget beyond purchase price</p>
+                  <p className="text-[#8b6a30]/70 text-xs">Excluding first year maintenance</p>
                 </div>
-                <p className="text-amber-800 font-bold text-xl">{formatCurrency(totalHiddenCosts)}</p>
+                <p className="text-[#7a5a28] font-bold text-xl">{formatCurrency(totalHiddenCosts)}</p>
               </div>
             </section>
           </>
@@ -838,8 +838,8 @@ export default function BuyerPortalPage() {
               <p className="text-[#8c8580] text-sm mb-6">Pick a time and we&apos;ll make it happen.</p>
               {showingForm.submitted ? (
                 <div className="flex flex-col items-center justify-center py-8 gap-3">
-                  <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
-                    <CheckCircle size={22} className="text-emerald-500" />
+                  <div className="w-12 h-12 rounded-full bg-[#eaf0e8] border border-[#c0d0be] flex items-center justify-center">
+                    <CheckCircle size={22} className="text-[#5e8860]" />
                   </div>
                   <p className="text-[#2c2825] font-semibold text-center">Request sent!</p>
                   <p className="text-[#8c8580] text-sm text-center">Your realtor will confirm shortly.</p>
@@ -886,13 +886,13 @@ export default function BuyerPortalPage() {
 
             {/* Found the one? */}
             <section className="animate-fade-up">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-t-2xl px-6 py-5 flex items-center gap-3">
+              <div className="bg-gradient-to-r from-[#3c5840] to-[#3c6460] rounded-t-2xl px-6 py-5 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
                   <Home size={18} className="text-white" />
                 </div>
                 <div>
                   <h2 className="text-white font-bold text-lg leading-tight">Found the one?</h2>
-                  <p className="text-emerald-100 text-sm">Let&apos;s get you ready to move fast.</p>
+                  <p className="text-white/70 text-sm">Let&apos;s get you ready to move fast.</p>
                 </div>
                 {offerChecked.size > 0 && (
                   <div className="ml-auto bg-white/20 rounded-full px-3 py-1">
@@ -900,11 +900,11 @@ export default function BuyerPortalPage() {
                   </div>
                 )}
               </div>
-              <div className="bg-white border border-emerald-200 border-t-0 rounded-b-2xl p-6">
+              <div className="bg-white border border-[#c0d0be] border-t-0 rounded-b-2xl p-6">
                 {offerSent ? (
                   <div className="flex flex-col items-center py-8 gap-3 text-center">
-                    <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-300 flex items-center justify-center">
-                      <Zap size={28} className="text-emerald-500" />
+                    <div className="w-16 h-16 rounded-full bg-[#eaf0e8] border-2 border-[#c0d0be] flex items-center justify-center">
+                      <Zap size={28} className="text-[#5e8860]" />
                     </div>
                     <p className="text-[#2c2825] font-bold text-lg">Your realtor has been alerted!</p>
                     <p className="text-[#8c8580] text-sm max-w-xs">{realtorFirst} has been notified with urgency and will be in touch very soon.</p>
@@ -916,10 +916,10 @@ export default function BuyerPortalPage() {
                     <div className="mb-5">
                       <div className="flex justify-between text-xs mb-1.5">
                         <span className="text-[#8c8580]">Offer readiness</span>
-                        <span className={`font-semibold ${offerChecked.size === OFFER_CHECKLIST.length ? "text-emerald-600" : "text-[#2c2825]"}`}>{offerChecked.size} of {OFFER_CHECKLIST.length} complete</span>
+                        <span className={`font-semibold ${offerChecked.size === OFFER_CHECKLIST.length ? "text-[#4a6648]" : "text-[#2c2825]"}`}>{offerChecked.size} of {OFFER_CHECKLIST.length} complete</span>
                       </div>
                       <div className="h-2 bg-[#e8e4de] rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${(offerChecked.size / OFFER_CHECKLIST.length) * 100}%` }} />
+                        <div className="h-full bg-[#5e8860] rounded-full transition-all duration-500" style={{ width: `${(offerChecked.size / OFFER_CHECKLIST.length) * 100}%` }} />
                       </div>
                     </div>
                     <div className="space-y-2.5 mb-6">
@@ -927,19 +927,19 @@ export default function BuyerPortalPage() {
                         const checked = offerChecked.has(item.id);
                         const isAuto = item.auto(answers);
                         return (
-                          <button key={item.id} onClick={() => { if (isAuto) return; setOfferChecked((prev) => { const next = new Set(prev); if (next.has(item.id)) next.delete(item.id); else next.add(item.id); return next; }); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all ${checked ? "bg-emerald-50 border-emerald-300" : "bg-[#faf9f7] border-[#e8e4de] hover:border-emerald-300"} ${isAuto ? "cursor-default" : "cursor-pointer"}`}>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${checked ? "bg-emerald-500 border-emerald-500" : "border-[#d8d4ce]"}`}>
+                          <button key={item.id} onClick={() => { if (isAuto) return; setOfferChecked((prev) => { const next = new Set(prev); if (next.has(item.id)) next.delete(item.id); else next.add(item.id); return next; }); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all ${checked ? "bg-[#eaf0e8] border-[#c0d0be]" : "bg-[#faf9f7] border-[#e8e4de] hover:border-[#c0d0be]"} ${isAuto ? "cursor-default" : "cursor-pointer"}`}>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${checked ? "bg-[#5e8860] border-[#5e8860]" : "border-[#d8d4ce]"}`}>
                               {checked && <Check size={11} className="text-white" />}
                             </div>
-                            <span className={`text-sm flex-1 ${checked ? "text-emerald-800 font-medium" : "text-[#2c2825]"}`}>{item.label}</span>
-                            {isAuto && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium shrink-0">Auto ✓</span>}
+                            <span className={`text-sm flex-1 ${checked ? "text-[#3c5840] font-medium" : "text-[#2c2825]"}`}>{item.label}</span>
+                            {isAuto && <span className="text-[10px] bg-[#eaf0e8] text-[#4a6648] px-2 py-0.5 rounded-full font-medium shrink-0">Auto ✓</span>}
                           </button>
                         );
                       })}
                     </div>
                     <div className="mb-5">
                       <label className="block text-xs font-medium text-[#2c2825] mb-1.5">Which property? <span className="text-[#8c8580] font-normal">(optional)</span></label>
-                      <input type="text" placeholder='e.g. "The one on Rosedale Valley Rd" or address' value={offerNote} onChange={(e) => setOfferNote(e.target.value)} className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] placeholder:text-[#b8a88a]/60 focus:outline-none focus:border-emerald-400 transition-colors" />
+                      <input type="text" placeholder='e.g. "The one on Rosedale Valley Rd" or address' value={offerNote} onChange={(e) => setOfferNote(e.target.value)} className="w-full bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-4 py-3 text-sm text-[#2c2825] placeholder:text-[#b8a88a]/60 focus:outline-none focus:border-[#b8a88a] transition-colors" />
                     </div>
                     <button disabled={offerChecked.size === 0 || offerSending} onClick={async () => {
                       setOfferSending(true);
@@ -948,7 +948,7 @@ export default function BuyerPortalPage() {
                       if (!realtorId) realtorId = new URLSearchParams(window.location.search).get("r");
                       try { await fetch("/api/offer-interest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ realtorId, buyerName: answers.firstName || "Your buyer", buyerEmail: answers.email || "", propertyNote: offerNote, preApprovalStatus: answers.preApprovalStatus, checklistCompleted: offerChecked.size }) }); } catch { /* ignore */ }
                       setOfferSending(false); setOfferSent(true);
-                    }} className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-white text-sm font-bold px-6 py-4 rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed btn-press">
+                    }} className="w-full flex items-center justify-center gap-2 bg-[#3c5840] text-white text-sm font-bold px-6 py-4 rounded-xl hover:bg-[#2e4a32] transition-colors disabled:opacity-40 disabled:cursor-not-allowed btn-press">
                       <Zap size={16} />
                       {offerSending ? "Alerting your realtor…" : `Alert ${realtorFirst}: I'm ready to offer`}
                     </button>
@@ -1001,9 +1001,9 @@ export default function BuyerPortalPage() {
                 <p className="text-[#8c8580] text-sm mb-5">Complete these before your lender appointment to speed up approval.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                   {answers.mortgageChecklist.map((item) => (
-                    <div key={item.id} className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-colors ${item.completed ? "bg-emerald-50 border-emerald-200" : "bg-[#faf9f7] border-[#e8e4de]"}`}>
-                      <CheckCircle size={16} className={item.completed ? "text-emerald-500" : "text-[#e8e4de]"} />
-                      <p className={`text-sm ${item.completed ? "text-emerald-800 line-through" : "text-[#2c2825]"}`}>{item.label}</p>
+                    <div key={item.id} className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-colors ${item.completed ? "bg-[#eaf0e8] border-[#c0d0be]" : "bg-[#faf9f7] border-[#e8e4de]"}`}>
+                      <CheckCircle size={16} className={item.completed ? "text-[#5e8860]" : "text-[#e8e4de]"} />
+                      <p className={`text-sm ${item.completed ? "text-[#3c5840] line-through" : "text-[#2c2825]"}`}>{item.label}</p>
                     </div>
                   ))}
                 </div>
@@ -1012,7 +1012,7 @@ export default function BuyerPortalPage() {
                   <span className="text-[#2c2825] font-medium">{answers.mortgageChecklist.filter((i) => i.completed).length} of {answers.mortgageChecklist.length} complete</span>
                 </div>
                 <div className="h-2 bg-[#e8e4de] rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${(answers.mortgageChecklist.filter((i) => i.completed).length / answers.mortgageChecklist.length) * 100}%` }} />
+                  <div className="h-full bg-[#5e8860] rounded-full transition-all duration-700" style={{ width: `${(answers.mortgageChecklist.filter((i) => i.completed).length / answers.mortgageChecklist.length) * 100}%` }} />
                 </div>
               </section>
             )}
@@ -1071,10 +1071,10 @@ export default function BuyerPortalPage() {
 
 function Stat({ label, value, color = "amber" }: { label: string; value: string; color?: string }) {
   const styles: Record<string, string> = {
-    amber: "bg-amber-50 border-amber-200 text-amber-800",
-    violet: "bg-violet-50 border-violet-200 text-violet-800",
-    emerald: "bg-emerald-50 border-emerald-200 text-emerald-800",
-    rose: "bg-rose-50 border-rose-200 text-rose-700",
+    amber: "bg-[#f5eedc] border-[#e0d0b0] text-[#7a5a28]",
+    violet: "bg-[#ede8f0] border-[#c8bcd4] text-[#6a5878]",
+    emerald: "bg-[#eaf0e8] border-[#c0d0be] text-[#4a6648]",
+    rose: "bg-[#f2e9e5] border-[#dcc8be] text-[#8b4a38]",
   };
   return (
     <div className={`${styles[color] ?? styles.amber} border rounded-xl px-4 py-3`}>
@@ -1106,7 +1106,7 @@ function PortalPropertyCard({
           <button
             onClick={onToggle}
             className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow transition-all hover:scale-110 active:scale-90 ${
-              saved ? "bg-rose-500" : "bg-white/90 backdrop-blur-sm"
+              saved ? "bg-[#8b4a38]" : "bg-white/90 backdrop-blur-sm"
             }`}
           >
             <Heart size={15} className={saved ? "fill-white text-white" : "text-[#8c8580]"} />
@@ -1141,7 +1141,7 @@ function PortalPropertyCard({
             onClick={onToggle}
             className={`w-full text-sm font-medium py-2.5 rounded-full transition-all btn-press ${
               saved
-                ? "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
+                ? "bg-[#f2e9e5] text-[#8b4a38] border border-[#dcc8be] hover:bg-[#ecddd8]"
                 : "bg-[#2c2825] text-white hover:bg-[#1a1714]"
             }`}
           >
