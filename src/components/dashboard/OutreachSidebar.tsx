@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Lead, QuestionnaireAnswers } from "@/types";
-import { Mail, Send, Copy, CheckCheck, ExternalLink, Pencil, X } from "lucide-react";
+import { Mail, Send, Copy, CheckCheck, ExternalLink, Pencil, X, Clock, ChevronDown } from "lucide-react";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -22,6 +22,35 @@ function outlookUrl(to: string, subject: string, body: string) {
   return `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 function isValidPhone(p: string) { return p.replace(/\D/g, "").length >= 7; }
+
+// ─── Outreach log ─────────────────────────────────────────────────────────────
+
+interface LogEntry {
+  sentAt: string;
+  day: string;
+  tone: string;
+  subject: string;
+  via: "Gmail" | "Outlook" | "Copied";
+}
+
+function loadLog(leadId: string): LogEntry[] {
+  try { return JSON.parse(localStorage.getItem(`hm_outreach_log_${leadId}`) ?? "[]"); } catch { return []; }
+}
+function saveLog(leadId: string, entries: LogEntry[]) {
+  try { localStorage.setItem(`hm_outreach_log_${leadId}`, JSON.stringify(entries)); } catch { /* ignore */ }
+}
+function addLogEntry(leadId: string, entry: Omit<LogEntry, "sentAt">): LogEntry[] {
+  const next = [{ ...entry, sentAt: new Date().toISOString() }, ...loadLog(leadId)];
+  saveLog(leadId, next);
+  return next;
+}
+function relativeTime(iso: string) {
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
 
 // ─── Personalised variants ────────────────────────────────────────────────────
 
@@ -121,6 +150,8 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editedBody, setEditedBody] = useState("");
+  const [log, setLog] = useState<LogEntry[]>(() => loadLog(lead.id));
+  const [showLog, setShowLog] = useState(false);
 
   const rName = realtorName || "[Your Name]";
   const rPhone = realtorPhone && isValidPhone(realtorPhone) ? realtorPhone : "";
@@ -154,11 +185,17 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
     setEditing(true);
   }
 
+  function logSend(via: LogEntry["via"]) {
+    if (!selected || !current) return;
+    setLog(addLogEntry(lead.id, { day: selected.day, tone: current.label, subject: current.subject, via }));
+  }
+
   function copyBody() {
     const text = `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`;
     navigator.clipboard?.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      logSend("Copied");
     });
   }
 
@@ -271,7 +308,7 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
           {/* Send buttons */}
           <div className="px-3 pb-3 flex flex-col gap-1.5">
             <button
-              onClick={() => openGmail(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`)}
+              onClick={() => { openGmail(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`); logSend("Gmail"); }}
               className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#2c2825] text-white text-[11px] font-semibold hover:bg-[#1a1512] transition-colors"
             >
               <Send size={11} /> Open in Gmail <ExternalLink size={9} className="opacity-60" />
@@ -280,6 +317,7 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
               href={outlookUrl(lead.answers.email, current.subject, `${displayBody}${rPhone ? `\n\n${rPhone}` : ""}`)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => logSend("Outlook")}
               className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-[#e8e4de] text-[#2c2825] text-[11px] font-semibold hover:bg-[#f5f3f0] transition-colors"
             >
               <Send size={11} /> Outlook <ExternalLink size={9} className="opacity-40" />
@@ -287,6 +325,57 @@ export default function OutreachSidebar({ lead, realtorName, realtorPhone }: { l
           </div>
         </div>
       )}
+
+      {/* ── Sent log ─────────────────────────────────────────────────────── */}
+      <div className="border-t border-[#f0ece6]">
+        <button
+          onClick={() => setShowLog((p) => !p)}
+          className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#faf9f7] transition-colors"
+        >
+          <div className="flex items-center gap-1.5">
+            <Clock size={11} className="text-[#b8a88a]" />
+            <span className="text-[10px] font-semibold text-[#2c2825]">Sent history</span>
+            {log.length > 0 && (
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#f0ece6] text-[#8c8580]">{log.length}</span>
+            )}
+          </div>
+          <ChevronDown
+            size={11}
+            className="text-[#b8a88a] transition-transform"
+            style={{ transform: showLog ? "rotate(180deg)" : "none" }}
+          />
+        </button>
+
+        {showLog && (
+          <div className="px-3 pb-3 space-y-1.5">
+            {log.length === 0 ? (
+              <p className="text-[10px] text-[#b8a88a] text-center py-2">No emails logged yet</p>
+            ) : (
+              log.map((entry, i) => (
+                <div key={i} className="bg-[#faf9f7] border border-[#e8e4de] rounded-xl px-3 py-2">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                        style={{
+                          background: entry.day === "Day 1" ? "#dcfce7" : entry.day === "Day 3" ? "#fef3c7" : "#ede9fe",
+                          color: entry.day === "Day 1" ? "#166534" : entry.day === "Day 3" ? "#92400e" : "#4c1d95",
+                        }}
+                      >
+                        {entry.day}
+                      </span>
+                      <span className="text-[10px] text-[#2c2825] font-medium">{entry.tone}</span>
+                    </div>
+                    <span className="text-[9px] text-[#b8a88a]">{relativeTime(entry.sentAt)}</span>
+                  </div>
+                  <p className="text-[10px] text-[#8c8580] truncate">{entry.subject}</p>
+                  <p className="text-[9px] text-[#b8a88a] mt-0.5">via {entry.via}</p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
