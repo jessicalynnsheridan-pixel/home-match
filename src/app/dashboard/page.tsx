@@ -9,6 +9,7 @@ import { Download, Flame, Zap, Eye, AlertCircle, Copy, Check, Link2, Phone, Mail
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import AutomationsWidget from "@/components/dashboard/AutomationsWidget";
+import MLSSetupGuide from "@/components/dashboard/MLSSetupGuide";
 
 const STATUS_FILTERS: (LeadStatus | "All")[] = [
   "All", "New Lead", "Qualified", "Showing Booked", "Offer Stage", "Closed",
@@ -1335,6 +1336,9 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+
+            {/* MLS Setup Guide */}
+            <MLSSetupGuide />
 
             {/* Automations */}
             <AutomationsWidget leads={allLeads} realtorName={realtorName} />
