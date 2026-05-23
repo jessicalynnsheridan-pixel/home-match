@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { mapSupabaseLead } from "@/lib/mapSupabaseLead";
 import { mockLeads } from "@/data/mockLeads";
 import LeadCard from "@/components/dashboard/LeadCard";
 import { Lead, LeadScore, LeadStatus } from "@/types";
@@ -28,26 +29,6 @@ function exportLeads(leads: Lead[]) {
   URL.revokeObjectURL(url);
 }
 
-function mapSupabaseLead(row: Record<string, unknown>): Lead {
-  return {
-    id: row.id as string,
-    score: (row.score as Lead["score"]) ?? "Browsing",
-    matchScore: (row.match_score as number) ?? 0,
-    status: (row.status as Lead["status"]) ?? "New Lead",
-    isPriority: (row.is_priority as boolean) ?? false,
-    submittedAt: row.submitted_at as string,
-    realtorNotes: [],
-    reminders: [],
-    savedHomeIds: [],
-    answers: {
-      firstName: "", lastName: "", email: "", phone: "",
-      mustHaves: [], dealBreakers: [], lifestylePriorities: [],
-      mortgageChecklist: [], homeFeeling: [], neighbourhoodVibe: [],
-      proximityPriorities: [], currentFrustration: [],
-      ...(row.answers as Partial<Lead["answers"]> ?? {}),
-    } as Lead["answers"],
-  };
-}
 
 function getGreeting(name: string) {
   const h = new Date().getHours();
@@ -362,20 +343,8 @@ function getScheduleEvents(leads: Lead[]): ScheduleEvent[] {
     });
   }
 
-  // Leads with "Showing Booked" status → treat as a scheduled showing today (demo)
-  leads
-    .filter((l) => l.status === "Showing Booked")
-    .forEach((lead, i) => {
-      const times = ["9:30 AM", "11:00 AM", "1:30 PM", "3:00 PM", "4:30 PM"];
-      events.push({
-        id: `showing-${lead.id}`,
-        type: "showing",
-        label: `Showing — ${lead.answers.firstName} ${lead.answers.lastName}`,
-        sub: lead.answers.preferredCity || "Location TBD",
-        time: times[i % times.length],
-        leadId: lead.id,
-      });
-    });
+  // NOTE: Showings are only added to the schedule when a showing request is
+  // explicitly confirmed via the Showing Requests widget — not inferred from lead status.
 
   // Hot leads that are "New Lead" → suggest a call today
   leads
@@ -543,10 +512,10 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
     fetch("/api/showings/list")
       .then((r) => r.json())
       .then((d) => {
-        const real = d.requests ?? [];
-        setRequests(real.length > 0 ? real : MOCK_SHOWING_REQUESTS);
+        // Never fall back to mock data for authenticated realtors — show real requests only
+        setRequests(d.requests ?? []);
       })
-      .catch(() => setRequests(MOCK_SHOWING_REQUESTS))
+      .catch(() => setRequests([]))
       .finally(() => setLoaded(true));
   }, [realtorId]);
 
@@ -581,6 +550,11 @@ function ShowingInboxWidget({ realtorId }: { realtorId: string }) {
       {!loaded ? (
         <div className="px-4 py-5 space-y-2">
           {[1,2].map(i => <div key={i} className="h-14 rounded-xl bg-[#f5f2ee] animate-pulse" />)}
+        </div>
+      ) : requests.length === 0 ? (
+        <div className="px-4 py-6 text-center">
+          <p className="text-[#b8b4b0] text-xs">No showing requests yet.</p>
+          <p className="text-[#c4bfb9] text-[11px] mt-1">Requests from buyers will appear here.</p>
         </div>
       ) : (
         <div className="divide-y divide-[#f5f2ee]">

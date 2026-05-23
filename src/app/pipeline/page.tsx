@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useState, useEffect } from "react";
+import { mapSupabaseLead } from "@/lib/mapSupabaseLead";
 import { mockLeads } from "@/data/mockLeads";
 import { Lead, LeadStatus } from "@/types";
 import { formatCurrency, getScoreColor } from "@/lib/utils";
@@ -73,26 +74,6 @@ const STAGE_META: Record<LeadStatus, { label: string; description: string; color
   "Closed":         { label: "Closed",          description: "Deal complete",           color: "border-[#c0d0be] bg-[#eaf0e8]",   dot: "bg-[#5e8860]" },
 };
 
-function mapSupabaseLead(row: Record<string, unknown>): Lead {
-  return {
-    id: row.id as string,
-    score: (row.score as Lead["score"]) ?? "Browsing",
-    matchScore: (row.match_score as number) ?? 0,
-    status: (row.status as Lead["status"]) ?? "New Lead",
-    isPriority: (row.is_priority as boolean) ?? false,
-    submittedAt: row.submitted_at as string,
-    realtorNotes: [],
-    reminders: [],
-    savedHomeIds: [],
-    answers: {
-      firstName: "", lastName: "", email: "", phone: "",
-      mustHaves: [], dealBreakers: [], lifestylePriorities: [],
-      mortgageChecklist: [], homeFeeling: [], neighbourhoodVibe: [],
-      proximityPriorities: [], currentFrustration: [],
-      ...(row.answers as Partial<Lead["answers"]> ?? {}),
-    } as Lead["answers"],
-  };
-}
 
 export default function PipelinePage() {
   const [realLeads, setRealLeads] = useState<Lead[]>([]);

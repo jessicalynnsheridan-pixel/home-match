@@ -121,7 +121,7 @@ export default function InviteClient({ slug, source = "invite_link", realtorId }
         >
           {[
             { value: "8 min", label: "to build your profile" },
-            { value: "94%", label: "feel truly understood" },
+            { value: "Free", label: "always free for buyers" },
             { value: "$0", label: "always free for buyers" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col items-center">

@@ -40,8 +40,8 @@ const matches = [
 
 const stats = [
   { value: "8 min", label: "to build your profile" },
-  { value: "94%", label: "feel truly understood" },
-  { value: "$0", label: "always free for buyers" },
+  { value: "100%", label: "free for buyers, always" },
+  { value: "$0", label: "no sign-up required" },
   { value: "No pressure", label: "connect only when ready" },
 ];
 

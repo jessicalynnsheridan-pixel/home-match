@@ -89,25 +89,25 @@ export default function RealtorSignupPage() {
     return (
       <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center px-6 py-16">
         <div className="max-w-md w-full text-center">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 size={32} className="text-emerald-600" />
+          <div className="w-16 h-16 rounded-full bg-[#f5eedd] flex items-center justify-center mx-auto mb-6">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a870" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </div>
-          <h1 className="text-2xl font-semibold text-[#2c2825] mb-3">You&apos;re in.</h1>
+          <h1 className="text-2xl font-semibold text-[#2c2825] mb-3">Check your email, {form.firstName}.</h1>
+          <p className="text-[#8c8580] leading-relaxed mb-2">
+            We sent a confirmation link to <span className="font-medium text-[#2c2825]">{form.email}</span>.
+          </p>
           <p className="text-[#8c8580] leading-relaxed mb-8">
-            Your account is active, {form.firstName}. Head to your dashboard to share your buyer link and start capturing leads.
+            Click the link in the email to activate your account, then you can log in and start capturing leads.
           </p>
           <div className="flex flex-col gap-3 items-center">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm px-8 py-3 rounded-full hover:bg-[#1a1714] transition-colors w-full sm:w-auto"
-            >
-              Go to dashboard →
-            </Link>
+            <p className="text-xs text-[#b8a88a] bg-[#fdf9f2] border border-[#e8d8c0] rounded-xl px-4 py-3 max-w-xs">
+              Can&apos;t find it? Check your spam folder or wait a minute and try again.
+            </p>
             <Link
               href="/login"
-              className="text-sm text-[#8c8580] hover:text-[#2c2825] transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-[#2c2825] text-white text-sm px-8 py-3 rounded-full hover:bg-[#1a1714] transition-colors w-full sm:w-auto mt-2"
             >
-              or sign in later
+              Go to sign in →
             </Link>
           </div>
         </div>

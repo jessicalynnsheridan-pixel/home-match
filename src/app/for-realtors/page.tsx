@@ -78,9 +78,9 @@ const testimonials = [
 
 const howItHelps = [
   { icon: Clock, stat: "8 min", label: "Average buyer intake time" },
-  { icon: TrendingUp, stat: "3x", label: "Faster lead qualification" },
-  { icon: Shield, stat: "60%", label: "Less back-and-forth per buyer" },
-  { icon: Users, stat: "94%", label: "Buyer satisfaction with intake" },
+  { icon: TrendingUp, stat: "9 steps", label: "Full buyer profile, fully structured" },
+  { icon: Shield, stat: "Free", label: "Always free for buyers" },
+  { icon: Users, stat: "Real-time", label: "Leads appear in your dashboard instantly" },
 ];
 
 const comparisonRows = [
