@@ -52,18 +52,32 @@ function saveMockOverride(id: string, patch: Partial<Lead>) {
   } catch { /* ignore */ }
 }
 
-// Persist notes and reminders per lead (localStorage, works for both mock and real leads)
+// Mock leads: persist notes/reminders in localStorage
 function getLeadNotes(id: string): RealtorNote[] {
   try { return JSON.parse(localStorage.getItem(`hm_notes_${id}`) ?? "[]"); } catch { return []; }
 }
-function saveLeadNotes(id: string, notes: RealtorNote[]) {
+function saveLeadNotesMock(id: string, notes: RealtorNote[]) {
   try { localStorage.setItem(`hm_notes_${id}`, JSON.stringify(notes)); } catch { /* ignore */ }
 }
 function getLeadReminders(id: string): FollowUpReminder[] {
   try { return JSON.parse(localStorage.getItem(`hm_reminders_${id}`) ?? "[]"); } catch { return []; }
 }
-function saveLeadReminders(id: string, reminders: FollowUpReminder[]) {
+function saveLeadRemindersMock(id: string, reminders: FollowUpReminder[]) {
   try { localStorage.setItem(`hm_reminders_${id}`, JSON.stringify(reminders)); } catch { /* ignore */ }
+}
+
+// Real leads: persist notes/reminders to Supabase (requires realtor_notes + reminders columns on leads table)
+async function saveLeadNotesDb(leadId: string, notes: RealtorNote[]) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from("leads").update({ realtor_notes: notes }).eq("id", leadId).eq("realtor_id", user.id);
+}
+async function saveLeadRemindersDb(leadId: string, reminders: FollowUpReminder[]) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from("leads").update({ reminders }).eq("id", leadId).eq("realtor_id", user.id);
 }
 
 export default function LeadDetailPage() {
@@ -103,27 +117,32 @@ export default function LeadDetailPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
       supabase.from("leads").select("*").eq("id", id).eq("realtor_id", user.id).single().then(({ data }) => {
-      if (data) {
-        const row = data as Record<string, unknown>;
-        setLead({
-          id: row.id as string,
-          score: (row.score as Lead["score"]) ?? "Browsing",
-          matchScore: (row.match_score as number) ?? 0,
-          status: (row.status as Lead["status"]) ?? "New Lead",
-          isPriority: (row.is_priority as boolean) ?? false,
-          submittedAt: row.submitted_at as string,
-          realtorNotes: getLeadNotes(row.id as string),
-          reminders: getLeadReminders(row.id as string),
-          savedHomeIds: [],
-          answers: {
-            firstName: "", lastName: "", email: "", phone: "",
-            mustHaves: [], dealBreakers: [], lifestylePriorities: [],
-            mortgageChecklist: [], homeFeeling: [], neighbourhoodVibe: [],
-            proximityPriorities: [], currentFrustration: [],
-            ...(row.answers as Partial<Lead["answers"]> ?? {}),
-          } as Lead["answers"],
-        });
-      }
+        if (data) {
+          const row = data as Record<string, unknown>;
+          setLead({
+            id: row.id as string,
+            score: (row.score as Lead["score"]) ?? "Browsing",
+            matchScore: (row.match_score as number) ?? 0,
+            status: (row.status as Lead["status"]) ?? "New Lead",
+            isPriority: (row.is_priority as boolean) ?? false,
+            submittedAt: row.submitted_at as string,
+            // Read notes/reminders from DB — fall back to localStorage if columns don't exist yet
+            realtorNotes: Array.isArray(row.realtor_notes)
+              ? (row.realtor_notes as RealtorNote[])
+              : getLeadNotes(row.id as string),
+            reminders: Array.isArray(row.reminders)
+              ? (row.reminders as FollowUpReminder[])
+              : getLeadReminders(row.id as string),
+            savedHomeIds: [],
+            answers: {
+              firstName: "", lastName: "", email: "", phone: "",
+              mustHaves: [], dealBreakers: [], lifestylePriorities: [],
+              mortgageChecklist: [], homeFeeling: [], neighbourhoodVibe: [],
+              proximityPriorities: [], currentFrustration: [],
+              ...(row.answers as Partial<Lead["answers"]> ?? {}),
+            } as Lead["answers"],
+          });
+        }
       });
     });
   }, [id, initialLead]);
@@ -178,6 +197,8 @@ export default function LeadDetailPage() {
     }
   }
 
+  const isMockLead = mockLeads.some((l) => l.id === id);
+
   function addNote() {
     const text = newNote.trim();
     if (!text) return;
@@ -185,7 +206,9 @@ export default function LeadDetailPage() {
     setLead((p) => {
       if (!p) return p;
       const updated = [...p.realtorNotes, note];
-      saveLeadNotes(p.id, updated);
+      // Optimistic update — persist in background
+      if (isMockLead) { saveLeadNotesMock(p.id, updated); }
+      else { saveLeadNotesDb(p.id, updated); }
       return { ...p, realtorNotes: updated };
     });
     setNewNote("");
@@ -195,7 +218,8 @@ export default function LeadDetailPage() {
     setLead((p) => {
       if (!p) return p;
       const updated = p.realtorNotes.filter((n) => n.id !== noteId);
-      saveLeadNotes(p.id, updated);
+      if (isMockLead) { saveLeadNotesMock(p.id, updated); }
+      else { saveLeadNotesDb(p.id, updated); }
       return { ...p, realtorNotes: updated };
     });
   }
@@ -203,7 +227,8 @@ export default function LeadDetailPage() {
   function updateReminders(reminders: FollowUpReminder[]) {
     setLead((p) => {
       if (!p) return p;
-      saveLeadReminders(p.id, reminders);
+      if (isMockLead) { saveLeadRemindersMock(p.id, reminders); }
+      else { saveLeadRemindersDb(p.id, reminders); }
       return { ...p, reminders };
     });
   }

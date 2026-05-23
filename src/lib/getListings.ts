@@ -129,6 +129,31 @@ export async function getListings(): Promise<Listing[]> {
 }
 
 export async function getListing(id: string): Promise<Listing | null> {
-  const listings = await getListings();
-  return listings.find((l) => l.id === id) ?? null;
+  const apiUrl = process.env.RESO_API_URL;
+  const apiToken = process.env.RESO_API_TOKEN;
+
+  // When MLS is connected, fetch just this one listing by key — no full scan
+  if (apiUrl && apiToken) {
+    try {
+      const query = `$filter=ListingKey eq '${encodeURIComponent(id)}'&$expand=Media&$top=1`;
+      const res = await fetch(`${apiUrl}/Property?${query}`, {
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+          Accept: "application/json",
+        },
+        next: { revalidate: 900 },
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        const records: ResoRecord[] = Array.isArray(json.value) ? json.value : [];
+        if (records.length > 0) return mapResoRecord(records[0], 0);
+      }
+    } catch (err) {
+      console.error("[RESO] Single listing fetch failed, falling back to mock:", err);
+    }
+  }
+
+  // Fall back to mock data (scans locally — no network cost)
+  return niagaraListings.find((l) => l.id === id) ?? null;
 }
