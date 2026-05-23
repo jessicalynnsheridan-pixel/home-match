@@ -20,9 +20,9 @@ const PROPERTY_TYPES: PropertyType[] = [
 ];
 
 const STATUS_COLORS: Record<ListingStatus, string> = {
-  Active: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  "Price Reduced": "bg-amber-100 text-amber-700 border-amber-200",
-  "Under Contract": "bg-blue-100 text-blue-700 border-blue-200",
+  Active: "bg-[#eaf0e8] text-[#3c5840] border-[#c0d0be]",
+  "Price Reduced": "bg-[#f5eedd] text-[#7a5a28] border-[#e0d0b0]",
+  "Under Contract": "bg-[#eaecf0] text-[#4a5468] border-[#c4c8d4]",
   Sold: "bg-[#e8e4de] text-[#8c8580] border-transparent",
 };
 
@@ -33,10 +33,10 @@ function formatPrice(p: number) {
 }
 
 function scoreConfig(score: number) {
-  if (score >= 85) return { bg: "bg-emerald-500", text: "text-emerald-600", label: "Exceptional match", dot: "bg-emerald-500" };
-  if (score >= 70) return { bg: "bg-[#b8a88a]",  text: "text-[#b8a88a]",  label: "Strong match",      dot: "bg-[#b8a88a]"  };
-  if (score >= 50) return { bg: "bg-amber-500",   text: "text-amber-600",  label: "Good match",        dot: "bg-amber-500"  };
-  return              { bg: "bg-[#8c8580]",   text: "text-[#8c8580]",  label: "Partial match",     dot: "bg-[#8c8580]"  };
+  if (score >= 85) return { bg: "bg-[#5e8860]", text: "text-[#3c5840]", label: "Exceptional match", dot: "bg-[#5e8860]" };
+  if (score >= 70) return { bg: "bg-[#b8a88a]", text: "text-[#b8a88a]", label: "Strong match",      dot: "bg-[#b8a88a]" };
+  if (score >= 50) return { bg: "bg-[#c4924a]", text: "text-[#8b6a30]", label: "Good match",        dot: "bg-[#c4924a]" };
+  return              { bg: "bg-[#8c8580]", text: "text-[#8c8580]", label: "Partial match",     dot: "bg-[#8c8580]" };
 }
 
 export default function ListingsClient({ initialListings }: { initialListings: Listing[] }) {
@@ -354,7 +354,7 @@ export default function ListingsClient({ initialListings }: { initialListings: L
                           <button
                             onClick={(e) => toggleSave(e, listing.id)}
                             className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all hover:scale-110 active:scale-90 ${
-                              isSaved ? "bg-rose-500" : "bg-white/90 backdrop-blur-sm"
+                              isSaved ? "bg-[#8b4a38]" : "bg-white/90 backdrop-blur-sm"
                             }`}
                           >
                             <Heart size={14} className={isSaved ? "fill-white text-white" : "text-[#8c8580]"} />
@@ -377,7 +377,7 @@ export default function ListingsClient({ initialListings }: { initialListings: L
                               )}
                             </div>
                             {listing.originalPrice && (
-                              <span className="text-[10px] text-amber-300 font-semibold">↓ Price drop</span>
+                              <span className="text-[10px] text-[#c9a870] font-semibold">↓ Price drop</span>
                             )}
                           </div>
 

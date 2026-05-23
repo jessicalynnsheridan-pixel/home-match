@@ -24,9 +24,9 @@ function formatPrice(p: number) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  Active: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  "Price Reduced": "bg-amber-100 text-amber-700 border-amber-200",
-  "Under Contract": "bg-blue-100 text-blue-700 border-blue-200",
+  Active: "bg-[#eaf0e8] text-[#3c5840] border-[#c0d0be]",
+  "Price Reduced": "bg-[#f5eedd] text-[#7a5a28] border-[#e0d0b0]",
+  "Under Contract": "bg-[#eaecf0] text-[#4a5468] border-[#c4c8d4]",
   Sold: "bg-[#e8e4de] text-[#8c8580] border-[#e8e4de]",
 };
 
@@ -154,16 +154,16 @@ function buildVibeInsights(
 }
 
 function scoreColor(s: number) {
-  if (s >= 80) return "text-emerald-600";
+  if (s >= 80) return "text-[#3c5840]";
   if (s >= 60) return "text-[#b8a88a]";
-  if (s >= 40) return "text-amber-600";
+  if (s >= 40) return "text-[#8b6a30]";
   return "text-[#8c8580]";
 }
 
 function scoreBar(s: number) {
-  if (s >= 80) return "bg-emerald-500";
+  if (s >= 80) return "bg-[#5e8860]";
   if (s >= 60) return "bg-[#b8a88a]";
-  if (s >= 40) return "bg-amber-400";
+  if (s >= 40) return "bg-[#c4924a]";
   return "bg-[#e8e4de]";
 }
 
@@ -298,7 +298,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                     <p className="text-white font-semibold text-sm">Your Compatibility Match</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-2xl font-bold ${buyerMatch.overall >= 70 ? "text-emerald-400" : buyerMatch.overall >= 50 ? "text-[#b8a88a]" : "text-amber-400"}`}>
+                    <span className={`text-2xl font-bold ${buyerMatch.overall >= 70 ? "text-[#7ab87a]" : buyerMatch.overall >= 50 ? "text-[#b8a88a]" : "text-[#c4924a]"}`}>
                       {buyerMatch.overall}%
                     </span>
                     <span className="text-[#e8e4de]/70 text-xs">{buyerMatch.label}</span>
@@ -329,7 +329,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                         <ul className="space-y-1.5">
                           {buyerMatch.mustHaveHits.map((h) => (
                             <li key={h} className="flex items-center gap-2 text-xs text-[#2c2825]">
-                              <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+                              <CheckCircle2 size={13} className="text-[#5e8860] shrink-0" />
                               {h}
                             </li>
                           ))}
@@ -349,8 +349,8 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                         <p className="text-xs font-semibold text-[#2c2825] uppercase tracking-wider mb-3">Flagged Items</p>
                         <ul className="space-y-1.5">
                           {buyerMatch.dealBreakerFlags.map((f) => (
-                            <li key={f} className="flex items-center gap-2 text-xs text-amber-700">
-                              <AlertTriangle size={13} className="text-amber-500 shrink-0" />
+                            <li key={f} className="flex items-center gap-2 text-xs text-[#8b6a30]">
+                              <AlertTriangle size={13} className="text-[#c4924a] shrink-0" />
                               {f}
                             </li>
                           ))}
@@ -368,7 +368,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                           <div key={dim.label}>
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
-                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dim.matched ? "bg-emerald-500" : "bg-[#c4bfb9]"}`} />
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dim.matched ? "bg-[#5e8860]" : "bg-[#c4bfb9]"}`} />
                                 <span className="text-xs font-medium text-[#2c2825]">{dim.label}</span>
                               </div>
                               <span className={`text-xs font-semibold ${scoreColor(dim.score)}`}>
@@ -377,7 +377,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                             </div>
                             <div className="h-1.5 bg-[#f0ece6] rounded-full overflow-hidden ml-3.5">
                               <div
-                                className={`h-full rounded-full ${dim.matched ? "bg-emerald-400" : "bg-[#d4cfc9]"}`}
+                                className={`h-full rounded-full ${dim.matched ? "bg-[#5e8860]" : "bg-[#d4cfc9]"}`}
                                 style={{ width: `${dim.score}%` }}
                               />
                             </div>
@@ -469,7 +469,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                   <div className="mb-1">
                     <p className="text-3xl font-light text-[#2c2825]">{formatPrice(listing.price)}</p>
                     <p className="text-sm text-[#8c8580] line-through">{formatPrice(listing.originalPrice)}</p>
-                    <p className="text-xs text-amber-600 font-medium">Reduced by {formatPrice(listing.originalPrice - listing.price)}</p>
+                    <p className="text-xs text-[#8b6a30] font-medium">Reduced by {formatPrice(listing.originalPrice - listing.price)}</p>
                   </div>
                 ) : (
                   <p className="text-3xl font-light text-[#2c2825] mb-1">{formatPrice(listing.price)}</p>
@@ -485,9 +485,9 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
               {/* Buyer match score callout */}
               {buyerMatch && (
                 <div className={`rounded-xl p-3 flex items-center justify-between ${
-                  buyerMatch.overall >= 70 ? "bg-emerald-50 border border-emerald-200"
+                  buyerMatch.overall >= 70 ? "bg-[#eaf0e8] border border-[#c0d0be]"
                   : buyerMatch.overall >= 50 ? "bg-[#faf9f7] border border-[#b8a88a]/30"
-                  : "bg-amber-50 border border-amber-200"
+                  : "bg-[#f5eedd] border border-[#e0d0b0]"
                 }`}>
                   <div>
                     <p className="text-xs text-[#8c8580]">Your Match</p>
@@ -539,10 +539,10 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
               {buyerAnswers?.budgetMax && (
                 <div className={`text-xs font-medium px-3 py-1.5 rounded-full mb-4 inline-flex items-center gap-1.5 ${
                   affordability.budgetComfort === "well within" || affordability.budgetComfort === "within"
-                    ? "bg-emerald-50 text-emerald-700"
+                    ? "bg-[#eaf0e8] text-[#3c5840]"
                     : affordability.budgetComfort === "at the top of"
                     ? "bg-[#faf9f7] text-[#b8a88a]"
-                    : "bg-amber-50 text-amber-700"
+                    : "bg-[#f5eedd] text-[#7a5a28]"
                 }`}>
                   <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
                   {affordability.budgetComfort === "well within" ? "Well within your budget"
@@ -620,13 +620,13 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                   <div>
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-xs text-[#8c8580]">Match score</span>
-                      <span className={`text-sm font-bold ${matchResult.score >= 70 ? "text-emerald-600" : matchResult.score >= 40 ? "text-amber-600" : "text-red-500"}`}>
+                      <span className={`text-sm font-bold ${matchResult.score >= 70 ? "text-[#3c5840]" : matchResult.score >= 40 ? "text-[#8b6a30]" : "text-[#8b4a38]"}`}>
                         {matchResult.score}%
                       </span>
                     </div>
                     <div className="h-2 bg-[#f0ece6] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all ${matchResult.score >= 70 ? "bg-emerald-500" : matchResult.score >= 40 ? "bg-amber-400" : "bg-red-400"}`}
+                        className={`h-full rounded-full transition-all ${matchResult.score >= 70 ? "bg-[#5e8860]" : matchResult.score >= 40 ? "bg-[#c4924a]" : "bg-[#c4785c]"}`}
                         style={{ width: `${matchResult.score}%` }}
                       />
                     </div>
@@ -638,7 +638,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                       <ul className="space-y-1">
                         {matchResult.reasons.map((r) => (
                           <li key={r} className="flex items-start gap-1.5 text-xs text-[#5c5550]">
-                            <CheckCircle2 size={12} className="text-emerald-500 shrink-0 mt-0.5" />
+                            <CheckCircle2 size={12} className="text-[#5e8860] shrink-0 mt-0.5" />
                             {r}
                           </li>
                         ))}
@@ -652,7 +652,7 @@ export default function ListingDetail({ listing }: { listing: Listing }) {
                       <ul className="space-y-1">
                         {matchResult.warnings.map((w) => (
                           <li key={w} className="flex items-start gap-1.5 text-xs text-[#5c5550]">
-                            <AlertTriangle size={12} className="text-amber-500 shrink-0 mt-0.5" />
+                            <AlertTriangle size={12} className="text-[#c4924a] shrink-0 mt-0.5" />
                             {w}
                           </li>
                         ))}

@@ -100,7 +100,9 @@ export default function LeadDetailPage() {
   useEffect(() => {
     if (initialLead) return;
     const supabase = createClient();
-    supabase.from("leads").select("*").eq("id", id).single().then(({ data }) => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase.from("leads").select("*").eq("id", id).eq("realtor_id", user.id).single().then(({ data }) => {
       if (data) {
         const row = data as Record<string, unknown>;
         setLead({
@@ -122,6 +124,7 @@ export default function LeadDetailPage() {
           } as Lead["answers"],
         });
       }
+      });
     });
   }, [id, initialLead]);
   const [newNote, setNewNote] = useState("");

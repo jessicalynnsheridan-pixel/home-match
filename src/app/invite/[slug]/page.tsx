@@ -5,10 +5,10 @@ export default async function InvitePage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ via?: string }>;
+  searchParams: Promise<{ via?: string; r?: string }>;
 }) {
   const { slug } = await params;
-  const { via } = await searchParams;
+  const { via, r } = await searchParams;
 
   // Map ?via= query param to an attribution source
   const sourceMap: Record<string, "qr_code" | "bio_link" | "text" | "website" | "invite_link"> = {
@@ -21,7 +21,8 @@ export default async function InvitePage({
   };
   const source = (via && sourceMap[via]) || "invite_link";
 
-  return <InviteClient slug={slug} source={source} />;
+  // r = realtor UUID passed through from the dashboard share link
+  return <InviteClient slug={slug} source={source} realtorId={r} />;
 }
 
 export function generateMetadata() {

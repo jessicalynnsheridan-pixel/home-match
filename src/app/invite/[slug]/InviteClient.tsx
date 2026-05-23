@@ -9,9 +9,10 @@ import { useBranding } from "@/context/BrandingContext";
 interface InviteClientProps {
   slug: string;
   source?: "invite_link" | "qr_code" | "bio_link" | "text" | "website";
+  realtorId?: string; // UUID passed through from dashboard share link
 }
 
-export default function InviteClient({ slug, source = "invite_link" }: InviteClientProps) {
+export default function InviteClient({ slug, source = "invite_link", realtorId }: InviteClientProps) {
   const router = useRouter();
   const { update } = useBranding();
   const [ready, setReady] = useState(false);
@@ -35,7 +36,9 @@ export default function InviteClient({ slug, source = "invite_link" }: InviteCli
   }, [slug, source, update]);
 
   function handleStart() {
-    router.push("/questionnaire");
+    // Pass the realtor UUID through so the questionnaire can attribute the lead correctly
+    const dest = realtorId ? `/questionnaire?r=${realtorId}` : "/questionnaire";
+    router.push(dest);
   }
 
   return (
