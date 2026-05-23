@@ -915,7 +915,9 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
       setRealtorId(user.id);
-      setRealtorName((user.user_metadata?.first_name as string) ?? "");
+      const firstName = (user.user_metadata?.first_name as string) ?? "";
+      const lastName = (user.user_metadata?.last_name as string) ?? "";
+      setRealtorName(firstName);
       const { data } = await supabase.from("leads").select("*").eq("realtor_id", user.id).order("submitted_at", { ascending: false });
       if (data) setRealLeads(data.map(mapSupabaseLead));
       setLoading(false);
@@ -923,8 +925,16 @@ export default function DashboardPage() {
     load();
   }, []);
 
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+  // Generate a branded invite link using the realtor's name slug — e.g. /invite/sarah-mitchell?r=<uuid>
+  // Falls back to the direct questionnaire link if realtorName is not available
+  const realtorSlug = realtorName
+    ? realtorName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+    : null;
   const shareableLink = realtorId
-    ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app"}/questionnaire?r=${realtorId}`
+    ? realtorSlug
+      ? `${APP_URL}/invite/${realtorSlug}?r=${realtorId}`
+      : `${APP_URL}/questionnaire?r=${realtorId}`
     : "";
 
   function copyLink() {

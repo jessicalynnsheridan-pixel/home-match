@@ -175,7 +175,10 @@ export default function QuestionnaireForm() {
       localStorage.setItem("homematch_answers", serialised);
     } catch { /* ignore */ }
 
-    const realtorId = searchParams.get("r");
+    const realtorIdRaw = searchParams.get("r");
+    // Basic UUID format check — prevents spam inserts with arbitrary ?r= values
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const realtorId = realtorIdRaw && UUID_RE.test(realtorIdRaw) ? realtorIdRaw : null;
     if (realtorId) {
       const score = scoreAnswers(answers);
       const matchScore = calcMatchScore(answers, score);
