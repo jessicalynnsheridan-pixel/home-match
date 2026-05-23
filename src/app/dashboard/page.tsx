@@ -917,7 +917,7 @@ export default function DashboardPage() {
       setRealtorId(user.id);
       const firstName = (user.user_metadata?.first_name as string) ?? "";
       const lastName = (user.user_metadata?.last_name as string) ?? "";
-      setRealtorName(firstName);
+      setRealtorName(firstName ? `${firstName}${lastName ? " " + lastName : ""}` : "");
       const { data } = await supabase.from("leads").select("*").eq("realtor_id", user.id).order("submitted_at", { ascending: false });
       if (data) setRealLeads(data.map(mapSupabaseLead));
       setLoading(false);

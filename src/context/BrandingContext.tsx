@@ -7,15 +7,15 @@ import { createClient } from "@/lib/supabase/client";
 
 const DEFAULTS: BrandingConfig = {
   agencyName: "HomeMatch Realty",
-  realtorName: "Sarah Mitchell",
-  realtorTitle: "Luxury Real Estate Advisor",
-  email: "sarah@homematch.ca",
-  phone: "(416) 555-0100",
+  realtorName: "Your Realtor",
+  realtorTitle: "Real Estate Advisor",
+  email: "",
+  phone: "",
   logoText: "HomeMatch",
   primaryColor: "#2c2825",
   accentColor: "#b8a88a",
   tagline: "A boutique real estate experience built around your life.",
-  website: "www.homematch.ca",
+  website: "",
 };
 
 interface BrandingContextValue {
