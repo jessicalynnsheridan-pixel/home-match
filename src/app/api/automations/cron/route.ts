@@ -57,7 +57,7 @@ function emailDay1Buyer(realtorName: string, lead: LeadRow) {
   const buyer = `${lead.answers.firstName ?? ""}`.trim() || "there";
   const city = lead.answers.preferredCity ?? "your target area";
   const budget = formatBudget(lead.answers.budgetMin, lead.answers.budgetMax);
-  const portalUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+  const portalUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourhomematch.org";
   return `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">
       <div style="background:#2c2825;padding:28px 32px 24px;border-radius:16px 16px 0 0">
@@ -127,7 +127,7 @@ function emailDay7Buyer(realtorName: string, lead: LeadRow) {
 // Inactivity alert goes to the realtor (CRM nudge, not buyer-facing)
 function emailInactivityRealtor(realtorName: string, lead: LeadRow, daysIdle: number) {
   const buyer = `${lead.answers.firstName ?? ""} ${lead.answers.lastName ?? ""}`.trim();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourhomematch.org";
   const scoreEmoji = lead.score === "Hot" ? "🔥" : "⚡";
   return `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#2c2825;background:#ffffff">

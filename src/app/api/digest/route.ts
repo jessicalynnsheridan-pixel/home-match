@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     const offerStage = leads.filter((l) => l.status === "Offer Stage");
 
     const realtorName = user.user_metadata?.first_name || user.email.split("@")[0];
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourhomematch.org";
 
     const hotRows = hot.slice(0, 3).map((l) => `
       <tr>

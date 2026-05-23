@@ -925,7 +925,7 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourhomematch.org";
   // Generate a branded invite link using the realtor's name slug — e.g. /invite/sarah-mitchell?r=<uuid>
   // Falls back to the direct questionnaire link if realtorName is not available
   const realtorSlug = realtorName

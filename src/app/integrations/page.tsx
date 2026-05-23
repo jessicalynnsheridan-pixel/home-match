@@ -447,7 +447,7 @@ function IntegrationsInner() {
           <p className="text-sm font-semibold text-[#2c2825] mb-1">Need a custom integration?</p>
           <p className="text-xs text-[#8c8580] mb-3">We can connect to Follow Up Boss, LionDesk, BoomTown, and most CRMs.</p>
           <a
-            href="mailto:setup@homematch.ca?subject=Custom integration request"
+            href="mailto:hello@yourhomematch.org?subject=Custom integration request"
             className="inline-flex items-center gap-1.5 text-xs px-5 py-2.5 rounded-full bg-[#2c2825] text-white hover:bg-[#1a1714] transition-colors font-medium"
           >
             <Mail size={12} /> Contact us

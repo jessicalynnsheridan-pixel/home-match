@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     : preApprovalStatus === "In progress"       ? "⏳ Pre-approval in progress"
     : "⚠️ No pre-approval yet";
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourhomematch.org";
 
   await fetch("https://api.resend.com/emails", {
     method: "POST",

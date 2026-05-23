@@ -49,7 +49,7 @@ function wrapInHtml(subject: string, text: string, realtorName: string): string 
 function emailDay1(realtorName: string, answers: LeadAnswers) {
   const first = answers.firstName ?? "there";
   const city = answers.preferredCity ?? "your target area";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://home-match-six.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourhomematch.org";
   return {
     subject: `Your home search is officially on 🏡`,
     html: `
